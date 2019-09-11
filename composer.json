@@ -1,0 +1,37 @@
+{
+    "name": "huangdijia/laravel-youdu",
+    "description": "youdu for laravel",
+    "type": "library",
+    "keywords": [
+        "laravel",
+        "youdu"
+    ],
+    "homepage": "https://github.com/huangdijia/laravel-youdu",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "huangdijia",
+            "email": "huangdijia@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0",
+        "illuminate/support": "^5.7|^5.8|^6.0|^7.0",
+        "illuminate/contracts": "^5.7|^5.8|^6.0|^7.0"
+    },
+    "autoload": {
+        "files": [
+            "src/helpers.php"
+        ],
+        "psr-4": {
+            "Huangdijia\\Youdu\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Huangdijia\\Youdu\\YouduServiceProvider"
+            ]
+        }
+    }
+}
