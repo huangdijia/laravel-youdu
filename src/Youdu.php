@@ -15,8 +15,6 @@ class Youdu
     private $appId;
     private $aesKey;
     private $http;
-    private $errno;
-    private $error;
 
     public function __construct(string $api = '', int $buin, string $appId = '', string $aesKey = '')
     {
@@ -25,26 +23,6 @@ class Youdu
         $this->appId  = $appId;
         $this->aesKey = $aesKey;
         $this->http   = new Client;
-    }
-
-    /**
-     * 获取错误编码
-     *
-     * @return string
-     */
-    public function getErrno()
-    {
-        return $this->errno;
-    }
-
-    /**
-     * 获取错误信息
-     *
-     * @return string
-     */
-    public function getError()
-    {
-        return $this->error;
     }
 
     /**
@@ -79,10 +57,7 @@ class Youdu
         $result = $pc->encrypt($msg, $this->appId);
 
         if ($result[0] != 0) {
-            $this->errno = $result[0];
-            $this->error = $result[1];
-
-            return false;
+            throw new \Exception($result[1], $result[0]);
         }
 
         return $result[1];
@@ -98,23 +73,17 @@ class Youdu
     private function decryptMsg(?string $encrypted)
     {
         if (strlen($this->aesKey) != 44) {
-            $this->errno = ErrorCode::$IllegalAesKey;
-            $this->error = 'Illegal AesKey';
-
-            return false;
+            throw new \Exception('Illegal AesKey', ErrorCode::$IllegalAesKey);
         }
 
-        $pc     = new Prpcrypt($this->aesKey);
-        $result = $pc->decrypt($encrypted, $this->appId);
+        $pc                    = new Prpcrypt($this->aesKey);
+        [$errcode, $decrypted] = $pc->decrypt($encrypted, $this->appId);
 
-        if ($result[0] != 0) {
-            $this->errno = $result[0];
-            $this->error = '';
-
-            return false;
+        if ($errcode != 0) {
+            throw new \Exception('Decrypt faild', $errcode);
         }
 
-        return $result[1];
+        return $decrypted;
     }
 
     /**
@@ -122,6 +91,7 @@ class Youdu
      *
      * @param string $uri
      * @param boolean $withAccessToken
+     *
      * @return string
      */
     private function url(string $uri = '', bool $withAccessToken = true)
@@ -139,6 +109,7 @@ class Youdu
      * 解析 Header
      *
      * @param string|null $header
+     *
      * @return array
      */
     private function decodeHeader(?string $header)
@@ -172,12 +143,7 @@ class Youdu
     public function getAccessToken()
     {
         return Cache::remember('youdu:tokens:' . $this->appId, 2 * 3600, function () {
-            $encrypted = $this->encryptMsg((string) time());
-
-            if (false === $encrypted) {
-                return false;
-            }
-
+            $encrypted  = $this->encryptMsg((string) time());
             $parameters = [
                 "buin"    => $this->buin,
                 "appId"   => $this->appId,
@@ -189,24 +155,11 @@ class Youdu
             $body = json_decode($resp['body']);
 
             if ($body->errcode != 0) {
-                $this->errno = $body->errcode;
-                $this->error = $body->errmsg;
-
-                return false;
+                throw new \Exception($body->errmsg, $body->errcode);
             }
 
             $decrypted = $this->decryptMsg($body->encrypt);
-
-            if (false === $decrypted) {
-                $this->errno = ErrorCode::$DecryptAESError;
-
-                return false;
-            }
-
-            $decoded = json_decode($decrypted, true);
-
-            $this->errno = null;
-            $this->error = null;
+            $decoded   = json_decode($decrypted, true);
 
             return $decoded['accessToken'];
         });
@@ -231,23 +184,14 @@ class Youdu
         $resp = $this->http->post($url, $parameters);
 
         if ($resp['httpCode'] != 200) {
-            $this->errno = ErrorCode::$IllegalHttpReq;
-            $this->error = "http request code " . $resp['httpCode'];
-
-            return false;
+            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
 
         if ($body['errcode'] !== 0) {
-            $this->errno = $body['errcode'];
-            $this->error = $body['errmsg'];
-
-            return false;
+            throw new \Exception($body['errmsg'], $body['errcode']);
         }
-
-        $this->errno = null;
-        $this->error = null;
 
         return true;
     }
@@ -262,38 +206,20 @@ class Youdu
     public function uploadFile(string $file = '', string $fileType = 'file')
     {
         if (!in_array($fileType, ['file', 'voice', 'video'])) {
-            $this->error = 'Unsupport file type ' . $fileType;
-
-            return false;
+            throw new \Exception('Unsupport file type ' . $fileType, 1);
         }
 
         $tmpFile       = storage_path('app/youdu_' . Str::random());
         $encryptedFile = $this->encryptMsg(file_get_contents($file));
-
-        if (false === $encryptedFile) {
-            $this->error = 'Encrypt file faild';
-
-            return false;
-        }
-
-        if (false === file_put_contents($tmpFile, $encryptedFile)) {
-            $this->error = 'Create tmpfile faild';
-
-            return false;
-        }
-
-        $encryptedMsg = $this->encryptMsg(json_encode([
+        $encryptedMsg  = $this->encryptMsg(json_encode([
             'type' => $fileType ?? 'file',
             'name' => basename($file),
             // 'buin'  => $this->buin,
             // 'appId' => $this->appId,
         ]));
 
-        if (false === $encryptedMsg) {
-            unlink($tmpFile);
-            $this->error = 'Encrypt msg faild';
-
-            return false;
+        if (false === file_put_contents($tmpFile, $encryptedFile)) {
+            throw new \Exception('Create tmpfile faild', 1);
         }
 
         $parameters = [
@@ -309,32 +235,17 @@ class Youdu
         if ($resp['errcode'] !== 0) {
             unlink($tmpFile);
 
-            $this->errno = $resp['errcode'];
-            $this->error = $resp['errmsg'];
-
-            return false;
+            throw new \Exception($resp['errmsg'], $resp['errcode']);
         }
 
         $decrypted = $this->decryptMsg($resp['encrypt']);
-
-        if (false === $decrypted) {
-            $this->error = 'Decrypt response faild';
-
-            return false;
-        }
-
-        $decoded = json_decode($decrypted, true);
+        $decoded   = json_decode($decrypted, true);
 
         if (empty($decoded['mediaId'])) {
-            $this->error = 'mediaId is empty';
-
-            return false;
+            throw new \Exception('mediaId is empty', 1);
         }
 
         unlink($tmpFile);
-
-        $this->errno = null;
-        $this->error = null;
 
         return $decoded['mediaId'];
     }
@@ -356,34 +267,18 @@ class Youdu
             "encrypt" => $encrypted,
         ];
 
-        $url  = $this->url('/cgi/media/get');
-        $resp = $this->http->Post($url, $parameters);
-
-        $header   = $this->decodeHeader($resp['header']);
-        $fileInfo = $this->decryptMsg($header['Encrypt']);
-
-        if (false === $fileInfo) {
-            $this->error = 'Parse fileinfo faild';
-
-            return false;
-        }
-
+        $url         = $this->url('/cgi/media/get');
+        $resp        = $this->http->Post($url, $parameters);
+        $header      = $this->decodeHeader($resp['header']);
+        $fileInfo    = $this->decryptMsg($header['Encrypt']);
         $fileInfo    = json_decode($fileInfo, true);
         $fileContent = $this->decryptMsg($resp['body']);
-
-        if (false === $fileContent) {
-            $this->error = 'Decrypt file content faild';
-
-            return false;
-        }
 
         $saveAs = rtrim($savePath, '/') . '/' . $fileInfo['name'];
         $saved  = file_put_contents($saveAs, $fileContent);
 
         if (!$saved) {
-            $this->error = 'save faild';
-
-            return false;
+            throw new \Exception('save faild', 1);
         }
 
         return true;

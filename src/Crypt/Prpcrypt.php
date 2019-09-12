@@ -20,10 +20,13 @@ class Prpcrypt
 
     /**
      * 对明文进行加密
+     * 
      * @param string $text 需要加密的明文
-     * @return string 加密后的密文
+     * @param string $appId
+     * 
+     * @return array
      */
-    public function encrypt($text, $appId)
+    public function encrypt(string $text = '', string $appId = '')
     {
         try {
             //获得16位随机字符串，填充到明文之前
@@ -43,8 +46,10 @@ class Prpcrypt
 
     /**
      * 对密文进行解密
+     * 
      * @param string $encrypted 需要解密的密文
-     * @return string 解密得到的明文
+     * 
+     * @return array
      */
     public function decrypt($encrypted, $appId)
     {
@@ -86,7 +91,8 @@ class Prpcrypt
 
     /**
      * 随机生成16位字符串
-     * @return string 生成的字符串
+     * 
+     * @return string
      */
     public function getRandomStr()
     {
