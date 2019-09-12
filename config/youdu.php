@@ -14,4 +14,6 @@ return [
         //     'ase_key' => env('YOUDU_ASE_KEY', ''),
         // ],
     ],
+
+    'file_save_path' => env('YOUDU_FILE_SAVE_PATH', storage_path('app/youdu')),
 ];

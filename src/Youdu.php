@@ -284,8 +284,65 @@ class Youdu
         return $decoded['mediaId'];
     }
 
-    public function downloadFile()
+    public function downloadFile(string $mediaId = '', ?string $savePath = null)
     {
-        //
+        $savePath   = $savePath ?? config('youdu.file_save_path');
+        $encrypted  = $this->encryptMsg(json_encode(['mediaId' => $mediaId]));
+        $parameters = [
+            "buin"    => $this->buin,
+            "appId"   => $this->appId,
+            "encrypt" => $encrypted,
+        ];
+
+        $url  = rtrim($this->api, '/') . '/cgi/media/get?accessToken=' . $this->getAccessToken();
+        $resp = (new Client)->Post($url, $parameters);
+
+        $header   = $this->decodeHeader($resp['header']);
+        $fileInfo = $this->decryptMsg($header['Encrypt']);
+
+        if (false === $fileInfo) {
+            $this->error = 'Parse fileinfo faild';
+
+            return false;
+        }
+
+        $fileInfo    = json_decode($fileInfo, true);
+        $fileContent = $this->decryptMsg($resp['body']);
+
+        if (false === $fileContent) {
+            $this->error = 'Decrypt file content faild';
+
+            return false;
+        }
+
+        $saveAs = rtrim($savePath, '/') . '/' . $fileInfo['name'];
+        $saved  = file_put_contents($saveAs, $fileContent);
+
+        if (!$saved) {
+            $this->error = 'save faild';
+
+            return false;
+        }
+
+        return true;
+    }
+
+    public function decodeHeader($header)
+    {
+        $result  = [];
+        $headers = explode("\n", $header);
+
+        foreach ($headers as $h) {
+            $row           = explode(":", $h);
+            [$key, $value] = [$row[0] ?? '', $row[1] ?? null];
+
+            if (!$key || !$value) {
+                continue;
+            }
+
+            $result[$key] = $value;
+        }
+
+        return $result;
     }
 }
