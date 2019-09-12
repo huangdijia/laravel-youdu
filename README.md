@@ -22,12 +22,25 @@ php artisan vendor:publish --provider="Huangdijia\\Youdu\\YouduServiceProvider"
 
 ## Usage
 
-### Send message
+### Send text message
 
 ~~~php
-Huangdijia\Youdu\Facades\Youdu::send('user1,user2', 'dept1,dept2', 'test'); // send to user and dept
-Huangdijia\Youdu\Facades\Youdu::sendToUser('user1,user2', 'test'); // send to user
-Huangdijia\Youdu\Facades\Youdu::sendToDept('dept1,dept2', 'test'); // send to user
+use Huangdijia\Youdu\Facades\Youdu;
+
+Youdu::send('user1|user2', 'dept1|dept2', 'test'); // send to user and dept
+Youdu::sendToUser('user1|user2', 'test'); // send to user
+Youdu::sendToDept('dept1|dept2', 'test'); // send to dept
+~~~
+
+### Send other type
+
+~~~php
+use Huangdijia\Youdu\Facades\Youdu;
+
+Youdu::send('user1|user2', 'dept1|dept2',new Text('test'));
+Youdu::sendToUser('user1|user2', new Image($mediaId)); // $mediaId 通过 uploadFile 接口获得
+Youdu::sendToDept('dept1|dept2', new File($mediaId)); // $mediaId 通过 uploadFile 接口获得
+// ...
 ~~~
 
 ### Message types
@@ -43,3 +56,19 @@ Huangdijia\Youdu\Facades\Youdu::sendToDept('dept1,dept2', 'test'); // send to us
 |系统|Huangdijia\Youdu\Messages\SysMsg|
 |短信|Huangdijia\Youdu\Messages\Sms|
 |邮件|Huangdijia\Youdu\Messages\Mail|
+
+### Upload file
+
+~~~php
+use Huangdijia\Youdu\Facades\Youdu;
+
+Youdu::uploadFile($file, $fileType); // $fileType image代表图片、file代表普通文件、voice代表语音、video代表视频
+~~~
+
+### Download file
+
+~~~php
+use Huangdijia\Youdu\Facades\Youdu;
+
+Youdu::downloadFile($mediaId, $savePath);
+~~~
