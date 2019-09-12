@@ -2,7 +2,7 @@
 
 namespace Huangdijia\Youdu\Messages\Items;
 
-class Exlink extends Item
+class SysMsg extends Item
 {
     public function __construct(array $items = [])
     {

@@ -6,29 +6,30 @@ use Illuminate\Support\ServiceProvider;
 
 class YouduServiceProvider extends ServiceProvider
 {
-    protected $defer = true;
-
     public function boot()
     {
         if ($this->app->runningInConsole()) {
-            $this->publishes([__DIR__ . '/../config/youdu.php' => config_path('youdu.php')]);
+            $this->publishes([__DIR__ . '/../config/youdu.php' => $this->app->basePath('config/youdu.php')]);
         }
     }
 
     public function register()
     {
-        $this->app->singleton(Youdu::class, function () {
-            return new Youdu(config('youdu.api'), (int) config('youdu.buin'), config('youdu.app_id', ''), config('youdu.ase_key', ''));
-        });
+        $this->mergeConfigFrom(__DIR__ . '/../config/youdu.php', 'youdu');
 
-        $this->app->alias(Youdu::class, 'youdu');
+        foreach (config('youdu.apps', []) as $name => $config) {
+            $this->app->singleton('youdu.' . $name, function () use ($config) {
+                return new Youdu(config('youdu.api'), (int) config('youdu.buin'), $config['app_id'], $config['ase_key']);
+            });
+        }
     }
 
     public function provides()
     {
-        return [
-            Youdu::class,
-            'youdu',
-        ];
+        return collect(config('youdu.apps', []))
+            ->transform(function ($item, $name) {
+                return 'youdu.' . $name;
+            })
+            ->all();
     }
 }

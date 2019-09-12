@@ -12,6 +12,15 @@ class Youdu extends Facade
 {
     public static function getFacadeAccessor()
     {
-        return 'youdu';
+        return 'youdu.' . config('youdu.default');
+    }
+
+    public static function app(string $name = 'default')
+    {
+        if (is_null(config('youdu.apps.' . $name, null))) {
+            throw new \Exception("youdu.apps.{$name} is undefined");
+        }
+
+        return app('youdu.' . $name);
     }
 }

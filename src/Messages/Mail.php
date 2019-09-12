@@ -2,7 +2,7 @@
 
 namespace Huangdijia\Youdu\Messages;
 
-class Image extends Message
+class Mail extends Message
 {
     protected $toUser;
     protected $toDept;

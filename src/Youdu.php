@@ -35,6 +35,16 @@ class Youdu
         return $this->error;
     }
 
+    public function getAppId()
+    {
+        return $this->appId;
+    }
+
+    public function getAesKey()
+    {
+        return $this->aesKey;
+    }
+
     /**
      * 加密
      *
