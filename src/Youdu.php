@@ -2,10 +2,10 @@
 
 namespace Huangdijia\Youdu;
 
-use Huangdijia\Youdu\Http\Client;
 use Huangdijia\Youdu\Crypt\Prpcrypt;
-use Illuminate\Support\Facades\Cache;
+use Huangdijia\Youdu\Http\Client;
 use Huangdijia\Youdu\Messages\MessageInterface;
+use Illuminate\Support\Facades\Cache;
 
 class Youdu
 {
@@ -119,24 +119,27 @@ class Youdu
         $resp   = $client->post($url, $parameters);
         $body   = json_decode($resp['body']);
 
-        if ($body->errcode == 0) {
-            $decrypted = $this->decryptMsg($body->encrypt);
+        if ($body->errcode != 0) {
+            $this->errno = $body->errcode;
+            $this->error = $body->errmsg;
 
-            if (false === $decrypted) {
-                $this->errno = ErrorCode::$DecryptAESError;
-
-                return false;
-            }
-
-            $decoded = json_decode($decrypted, true);
-
-            return $decoded['accessToken'];
+            return false;
         }
 
-        $this->errno = $body->errcode;
-        $this->error = $body->errmsg;
+        $decrypted = $this->decryptMsg($body->encrypt);
 
-        return false;
+        if (false === $decrypted) {
+            $this->errno = ErrorCode::$DecryptAESError;
+
+            return false;
+        }
+
+        $decoded = json_decode($decrypted, true);
+
+        $this->errno = null;
+        $this->error = null;
+
+        return $decoded['accessToken'];
     }
 
     /**
@@ -147,7 +150,7 @@ class Youdu
      */
     public function send(MessageInterface $message)
     {
-        $token = Cache::remember('youdu:tokens', 2 * 3600, function () {
+        $token = Cache::remember('youdu:tokens:' . $this->appId, 2 * 3600, function () {
             return $this->getAccessToken();
         });
 
@@ -168,23 +171,26 @@ class Youdu
         $client = new Client();
         $resp   = $client->post($url, $parameters);
 
-        if ($resp['httpCode'] == 200) {
-            $body = json_decode($resp['body'], true);
+        if ($resp['httpCode'] != 200) {
+            $this->errno = ErrorCode::$IllegalHttpReq;
+            $this->error = "http request code " . $resp['httpCode'];
 
-            if ($body['errcode'] !== 0) {
-                $this->errno = $body['errcode'];
-                $this->error = $body['errmsg'];
-
-                return false;
-            }
-
-            return true;
+            return false;
         }
 
-        $this->errno = ErrorCode::$IllegalHttpReq;
-        $this->error = "http request code " . $resp['httpCode'];
+        $body = json_decode($resp['body'], true);
 
-        return false;
+        if ($body['errcode'] !== 0) {
+            $this->errno = $body['errcode'];
+            $this->error = $body['errmsg'];
+
+            return false;
+        }
+
+        $this->errno = null;
+        $this->error = null;
+
+        return true;
     }
 
     public function uploadFile()
