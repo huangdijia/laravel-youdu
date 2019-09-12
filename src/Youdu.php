@@ -6,6 +6,7 @@ use Huangdijia\Youdu\Crypt\Prpcrypt;
 use Huangdijia\Youdu\Http\Client;
 use Huangdijia\Youdu\Messages\MessageInterface;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class Youdu
 {
@@ -102,44 +103,46 @@ class Youdu
      */
     public function getAccessToken()
     {
-        $encrypted = $this->encryptMsg((string) time());
+        return Cache::remember('youdu:tokens:' . $this->appId, 2 * 3600, function () {
+            $encrypted = $this->encryptMsg((string) time());
 
-        if (false === $encrypted) {
-            return false;
-        }
+            if (false === $encrypted) {
+                return false;
+            }
 
-        $parameters = [
-            "buin"    => $this->buin,
-            "appId"   => $this->appId,
-            "encrypt" => $encrypted,
-        ];
+            $parameters = [
+                "buin"    => $this->buin,
+                "appId"   => $this->appId,
+                "encrypt" => $encrypted,
+            ];
 
-        $client = new Client;
-        $url    = rtrim($this->api, '/') . '/cgi/gettoken';
-        $resp   = $client->post($url, $parameters);
-        $body   = json_decode($resp['body']);
+            $client = new Client;
+            $url    = rtrim($this->api, '/') . '/cgi/gettoken';
+            $resp   = $client->post($url, $parameters);
+            $body   = json_decode($resp['body']);
 
-        if ($body->errcode != 0) {
-            $this->errno = $body->errcode;
-            $this->error = $body->errmsg;
+            if ($body->errcode != 0) {
+                $this->errno = $body->errcode;
+                $this->error = $body->errmsg;
 
-            return false;
-        }
+                return false;
+            }
 
-        $decrypted = $this->decryptMsg($body->encrypt);
+            $decrypted = $this->decryptMsg($body->encrypt);
 
-        if (false === $decrypted) {
-            $this->errno = ErrorCode::$DecryptAESError;
+            if (false === $decrypted) {
+                $this->errno = ErrorCode::$DecryptAESError;
 
-            return false;
-        }
+                return false;
+            }
 
-        $decoded = json_decode($decrypted, true);
+            $decoded = json_decode($decrypted, true);
 
-        $this->errno = null;
-        $this->error = null;
+            $this->errno = null;
+            $this->error = null;
 
-        return $decoded['accessToken'];
+            return $decoded['accessToken'];
+        });
     }
 
     /**
@@ -150,9 +153,7 @@ class Youdu
      */
     public function send(MessageInterface $message)
     {
-        $token = Cache::remember('youdu:tokens:' . $this->appId, 2 * 3600, function () {
-            return $this->getAccessToken();
-        });
+        $token = $this->getAccessToken();
 
         if (!$token) {
             $this->error = 'Get access token faild';
@@ -193,9 +194,94 @@ class Youdu
         return true;
     }
 
-    public function uploadFile()
+    /**
+     * Undocumented function
+     *
+     * @param string $file
+     * @param string $fileType image代表图片、file代表普通文件、voice代表语音、video代表视频
+     * @return void
+     */
+    public function uploadFile(string $file = '', string $fileType = 'file')
     {
-        //
+        if (!in_array($fileType, ['file', 'voice', 'video'])) {
+            $this->error = 'Unsupport file type ' . $fileType;
+
+            return false;
+        }
+
+        $tmpFile       = storage_path('app/youdu_' . Str::random());
+        $encryptedFile = $this->encryptMsg(file_get_contents($file));
+
+        if (false === $encryptedFile) {
+            $this->error = 'Encrypt file faild';
+
+            return false;
+        }
+
+        if (false === file_put_contents($tmpFile, $encryptedFile)) {
+            $this->error = 'Create tmpfile faild';
+
+            return false;
+        }
+
+        $encryptedMsg = $this->encryptMsg(json_encode([
+            'type' => $fileType ?? 'file',
+            'name' => basename($file),
+            // 'buin'  => $this->buin,
+            // 'appId' => $this->appId,
+        ]));
+
+        if (false === $encryptedMsg) {
+            unlink($tmpFile);
+            $this->error = 'Encrypt msg faild';
+
+            return false;
+        }
+
+        $parameters = [
+            "file"    => make_curl_file(realpath($tmpFile)),
+            "encrypt" => $encryptedMsg,
+            "buin"    => $this->buin,
+            "appId"   => $this->appId,
+        ];
+
+        $token = $this->getAccessToken();
+        $url   = rtrim($this->api, '/') . '/cgi/media/upload?accessToken=' . $token;
+
+        $client = new Client;
+        $resp   = $client->upload($url, $parameters);
+
+        if ($resp['errcode'] !== 0) {
+            unlink($tmpFile);
+
+            $this->errno = $resp['errcode'];
+            $this->error = $resp['errmsg'];
+
+            return false;
+        }
+
+        $decrypted = $this->decryptMsg($resp['encrypt']);
+
+        if (false === $decrypted) {
+            $this->error = 'Decrypt response faild';
+
+            return false;
+        }
+
+        $decoded = json_decode($decrypted, true);
+
+        if (empty($decoded['mediaId'])) {
+            $this->error = 'mediaId is empty';
+
+            return false;
+        }
+
+        unlink($tmpFile);
+
+        $this->errno = null;
+        $this->error = null;
+
+        return $decoded['mediaId'];
     }
 
     public function downloadFile()

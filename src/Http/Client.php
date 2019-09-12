@@ -4,6 +4,13 @@ namespace Huangdijia\Youdu\Http;
 
 class Client
 {
+    /**
+     * GET
+     *
+     * @param string $url
+     * @param array $data
+     * @return array|bool
+     */
     public function get(string $url = '', array $data = [])
     {
         if (!empty($data)) {
@@ -22,6 +29,7 @@ class Client
 
         return json_decode($response, true);
     }
+
     /**
      * POST
      *
@@ -62,22 +70,22 @@ class Client
      * Upload
      *
      * @param string $url
-     * @param mixed $data
-     * @return void
+     * @param array $data
+     * @return array|bool
      */
-    public function upload(string $url, $data)
+    public function upload(string $url, array $data = [])
     {
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_SAFE_UPLOAD, false); // 5.6 给改成 true了, 弄回去
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $response = curl_exec($ch);
         curl_close($ch);
 
-        return json_decode($response);
+        return json_decode($response, true);
     }
+
 }
