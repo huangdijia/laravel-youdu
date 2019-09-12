@@ -5,6 +5,7 @@ namespace Huangdijia\Youdu;
 use Huangdijia\Youdu\Crypt\Prpcrypt;
 use Huangdijia\Youdu\Http\Client;
 use Huangdijia\Youdu\Messages\MessageInterface;
+use Huangdijia\Youdu\Messages\PopWindow;
 use Huangdijia\Youdu\Messages\Text;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -237,6 +238,78 @@ class Youdu
     public function sendToDept(string $toDept = '', $message = '')
     {
         return $this->send('', $toDept, $message);
+    }
+
+    /**
+     * 设置通知数
+     *
+     * @param string $account
+     * @param string $tip
+     * @param integer $msgCount
+     * @return bool
+     */
+    public function setNoticeCount(string $account = '', string $tip = '', int $msgCount = 0)
+    {
+        $parameters = [
+            'app_id'      => $this->appId,
+            'msg_encrypt' => $this->encryptMsg(json_encode([
+                "account" => $account,
+                "tip"     => $tip,
+                "count"   => $msgCount,
+            ])),
+        ];
+
+        $resp = $this->http->post($this->url('/cgi/set.ent.notice'), $parameters);
+
+        if ($resp['httpCode'] != 200) {
+            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+        }
+
+        $body = json_decode($resp['body'], true);
+
+        if ($body['errcode'] !== 0) {
+            throw new \Exception($body['errmsg'], $body['errcode']);
+        }
+
+        return true;
+    }
+
+    /**
+     * 应用弹窗
+     *
+     * @param string $toUser
+     * @param string $toDept
+     * @param \Huangdijia\Youdu\Messages\PopWindow $message
+     * @return bool
+     */
+    public function popWindow(string $toUser = '', string $toDept = '', PopWindow $message)
+    {
+        if ($toUser) {
+            $message->toUser($toUser);
+        }
+
+        if ($toDept) {
+            $message->toDept($toDept);
+        }
+
+        $parameters = [
+            'app_id'      => $this->appId,
+            'msg_encrypt' => $this->encryptMsg($message->toJson()),
+        ];
+
+        $resp = $this->http->post($this->url('/cgi/popwindow'), $parameters);
+        
+        if ($resp['httpCode'] != 200) {
+            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+        }
+
+        $body = json_decode($resp['body'], true);
+
+        if ($body['errcode'] !== 0) {
+            throw new \Exception($body['errmsg'], $body['errcode']);
+        }
+
+        return true;
     }
 
     /**
