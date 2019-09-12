@@ -201,7 +201,6 @@ class Youdu
 
         $url  = $this->url('/cgi/msg/send');
         $resp = $this->http->post($url, $parameters);
-        dump($resp);
 
         if ($resp['httpCode'] != 200) {
             throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
@@ -214,6 +213,30 @@ class Youdu
         }
 
         return true;
+    }
+
+    /**
+     * 发送消息给用户
+     *
+     * @param string $toUser
+     * @param \Huangdijia\Youdu\Messages\MessageInterface|string $message
+     * @return bool
+     */
+    public function sendToUser(string $toUser = '', $message = '')
+    {
+        return $this->send($toUser, '', $message);
+    }
+
+    /**
+     * 发送消息至部门
+     *
+     * @param string $toDept
+     * @param \Huangdijia\Youdu\Messages\MessageInterface|string $message
+     * @return bool
+     */
+    public function sendToDept(string $toDept = '', $message = '')
+    {
+        return $this->send('', $toDept, $message);
     }
 
     /**

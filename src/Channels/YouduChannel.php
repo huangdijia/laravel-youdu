@@ -3,8 +3,8 @@
 namespace App\Channels;
 
 use Huangdijia\Youdu\Facades\Youdu;
-use Illuminate\Notifications\Notification;
 use Huangdijia\Youdu\Messages\MessageInterface;
+use Illuminate\Notifications\Notification;
 
 class YouduChannel
 {
@@ -26,9 +26,7 @@ class YouduChannel
             return;
         }
 
-        $message->toUser($to);
-
         // Send notification to the $notifiable instance...
-        return Youdu::send($message);
+        return Youdu::send($to, '', $message);
     }
 }
