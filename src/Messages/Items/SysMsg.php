@@ -4,9 +4,28 @@ namespace Huangdijia\Youdu\Messages\Items;
 
 class SysMsg extends Item
 {
-    public function __construct(array $items = [])
+    protected $title;
+    protected $popDuration;
+
+    /**
+     * @param string $title 系统消息标题。最多允许64个字节
+     * @param integer $popDuration 弹窗显示时间，0及负数弹窗不消失，正数为对应显示秒数
+     * @param array $items 消息详细内容
+     */
+    public function __construct($title = '', $popDuration = 6, array $items = [])
     {
-        $this->items = $items;
+        $this->title       = $title;
+        $this->popDuration = $popDuration;
+        $this->items       = $items;
+    }
+
+    public function toArray()
+    {
+        return [
+            'title'       => $this->title,
+            'popDuration' => $this->popDuration,
+            'msg'         => $this->items,
+        ];
     }
 
     /**
