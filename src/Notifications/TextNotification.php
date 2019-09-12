@@ -45,7 +45,7 @@ class TextNotification extends Notification implements ShouldQueue
      */
     public function toYoudu($notificable)
     {
-        return new Text('', '', $this->message);
+        return new Text($this->message);
     }
 
     /**
