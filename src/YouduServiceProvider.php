@@ -2,6 +2,8 @@
 
 namespace Huangdijia\Youdu;
 
+use App\Channels\YouduChannel;
+use Illuminate\Notifications\ChannelManager;
 use Illuminate\Support\ServiceProvider;
 
 class YouduServiceProvider extends ServiceProvider
@@ -22,6 +24,10 @@ class YouduServiceProvider extends ServiceProvider
                 return new Youdu(config('youdu.api'), (int) config('youdu.buin'), $config['app_id'], $config['ase_key']);
             });
         }
+
+        $this->app->make(ChannelManager::class)->extend('youdu', function ($app) {
+            return $app->make(YouduChannel::class);
+        });
     }
 
     public function provides()

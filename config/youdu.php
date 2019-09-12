@@ -1,10 +1,10 @@
 <?php
 return [
-    'api'     => env('YOUDU_API', ''),
-    'buin'    => (int) env('YOUDU_BUIN', 0),
+    'api'            => env('YOUDU_API', ''),
+    'buin'           => (int) env('YOUDU_BUIN', 0),
 
-    'default' => 'default',
-    'apps'    => [
+    'default'        => 'default',
+    'apps'           => [
         'default' => [
             'app_id'  => env('YOUDU_APP_ID', ''),
             'ase_key' => env('YOUDU_ASE_KEY', ''),
@@ -16,4 +16,10 @@ return [
     ],
 
     'file_save_path' => env('YOUDU_FILE_SAVE_PATH', storage_path('app/youdu')),
+
+    'notification'   => [
+        'queue' => env('YOUDU_NOTIFICATION_QUEUE', 'youdu_notification'),
+        'delay' => env('YOUDU_NOTIFICATION_DELAY', 0),
+        'tries' => env('YOUDU_NOTIFICATION_TRIES', 3),
+    ],
 ];
