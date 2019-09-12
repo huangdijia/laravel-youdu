@@ -14,7 +14,7 @@ class Youdu
     private $buin;
     private $appId;
     private $aesKey;
-
+    private $http;
     private $errno;
     private $error;
 
@@ -24,23 +24,44 @@ class Youdu
         $this->buin   = $buin;
         $this->appId  = $appId;
         $this->aesKey = $aesKey;
+        $this->http   = new Client;
     }
 
+    /**
+     * 获取错误编码
+     *
+     * @return string
+     */
     public function getErrno()
     {
         return $this->errno;
     }
 
+    /**
+     * 获取错误信息
+     *
+     * @return string
+     */
     public function getError()
     {
         return $this->error;
     }
 
+    /**
+     * 获取 appId
+     *
+     * @return string
+     */
     public function getAppId()
     {
         return $this->appId;
     }
 
+    /**
+     * 获取 aesKey
+     *
+     * @return string
+     */
     public function getAesKey()
     {
         return $this->aesKey;
@@ -52,7 +73,7 @@ class Youdu
      * @param string $msg
      * @return string|bool
      */
-    public function encryptMsg(string $msg = '')
+    private function encryptMsg(string $msg = '')
     {
         $pc     = new Prpcrypt($this->aesKey);
         $result = $pc->encrypt($msg, $this->appId);
@@ -74,7 +95,7 @@ class Youdu
      * @param string|null $encrypted
      * @return bool|string
      */
-    public function decryptMsg(?string $encrypted)
+    private function decryptMsg(?string $encrypted)
     {
         if (strlen($this->aesKey) != 44) {
             $this->errno = ErrorCode::$IllegalAesKey;
@@ -97,6 +118,53 @@ class Youdu
     }
 
     /**
+     * 组装 URL
+     *
+     * @param string $uri
+     * @param boolean $withAccessToken
+     * @return string
+     */
+    private function url(string $uri = '', bool $withAccessToken = true)
+    {
+        $url = rtrim($this->api, '/') . '/' . ltrim($uri, '/');
+
+        if ($withAccessToken) {
+            $url .= '?accessToken=' . $this->getAccessToken();
+        }
+
+        return $url;
+    }
+
+    /**
+     * 解析 Header
+     *
+     * @param string|null $header
+     * @return array
+     */
+    private function decodeHeader(?string $header)
+    {
+        if (!$header) {
+            return [];
+        }
+
+        $result  = [];
+        $headers = explode("\n", $header);
+
+        foreach ($headers as $h) {
+            $row           = explode(":", $h);
+            [$key, $value] = [$row[0] ?? '', $row[1] ?? null];
+
+            if (!$key || !$value) {
+                continue;
+            }
+
+            $result[$key] = $value;
+        }
+
+        return $result;
+    }
+
+    /**
      * 获取token
      *
      * @return bool|string
@@ -116,10 +184,9 @@ class Youdu
                 "encrypt" => $encrypted,
             ];
 
-            $client = new Client;
-            $url    = rtrim($this->api, '/') . '/cgi/gettoken';
-            $resp   = $client->post($url, $parameters);
-            $body   = json_decode($resp['body']);
+            $url  = $this->url('/cgi/gettoken', false);
+            $resp = $this->http->post($url, $parameters);
+            $body = json_decode($resp['body']);
 
             if ($body->errcode != 0) {
                 $this->errno = $body->errcode;
@@ -153,14 +220,6 @@ class Youdu
      */
     public function send(MessageInterface $message)
     {
-        $token = $this->getAccessToken();
-
-        if (!$token) {
-            $this->error = 'Get access token faild';
-
-            return false;
-        }
-
         $encrypted  = $this->encryptMsg($message->toJson());
         $parameters = [
             "buin"    => $this->buin,
@@ -168,9 +227,8 @@ class Youdu
             "encrypt" => $encrypted,
         ];
 
-        $url    = rtrim($this->api, '/') . '/cgi/msg/send?accessToken=' . $token;
-        $client = new Client();
-        $resp   = $client->post($url, $parameters);
+        $url  = $this->url('/cgi/msg/send');
+        $resp = $this->http->post($url, $parameters);
 
         if ($resp['httpCode'] != 200) {
             $this->errno = ErrorCode::$IllegalHttpReq;
@@ -195,7 +253,7 @@ class Youdu
     }
 
     /**
-     * Undocumented function
+     * 上传文件
      *
      * @param string $file
      * @param string $fileType image代表图片、file代表普通文件、voice代表语音、video代表视频
@@ -245,11 +303,8 @@ class Youdu
             "appId"   => $this->appId,
         ];
 
-        $token = $this->getAccessToken();
-        $url   = rtrim($this->api, '/') . '/cgi/media/upload?accessToken=' . $token;
-
-        $client = new Client;
-        $resp   = $client->upload($url, $parameters);
+        $url  = $this->url('/cgi/media/upload');
+        $resp = $this->http->upload($url, $parameters);
 
         if ($resp['errcode'] !== 0) {
             unlink($tmpFile);
@@ -284,6 +339,13 @@ class Youdu
         return $decoded['mediaId'];
     }
 
+    /**
+     * 下载文件
+     *
+     * @param string $mediaId
+     * @param string|null $savePath
+     * @return bool
+     */
     public function downloadFile(string $mediaId = '', ?string $savePath = null)
     {
         $savePath   = $savePath ?? config('youdu.file_save_path');
@@ -294,8 +356,8 @@ class Youdu
             "encrypt" => $encrypted,
         ];
 
-        $url  = rtrim($this->api, '/') . '/cgi/media/get?accessToken=' . $this->getAccessToken();
-        $resp = (new Client)->Post($url, $parameters);
+        $url  = $this->url('/cgi/media/get');
+        $resp = $this->http->Post($url, $parameters);
 
         $header   = $this->decodeHeader($resp['header']);
         $fileInfo = $this->decryptMsg($header['Encrypt']);
@@ -325,24 +387,5 @@ class Youdu
         }
 
         return true;
-    }
-
-    public function decodeHeader($header)
-    {
-        $result  = [];
-        $headers = explode("\n", $header);
-
-        foreach ($headers as $h) {
-            $row           = explode(":", $h);
-            [$key, $value] = [$row[0] ?? '', $row[1] ?? null];
-
-            if (!$key || !$value) {
-                continue;
-            }
-
-            $result[$key] = $value;
-        }
-
-        return $result;
     }
 }
