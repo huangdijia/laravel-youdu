@@ -18,7 +18,7 @@ class Notification extends BaseNotification implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(MessageInterface $message, $delay = null)
+    public function __construct(MessageInterface $message, ?int $delay = null)
     {
         $this->queue   = config('youdu.notification.queue', 'youdu_notification');
         $this->delay   = $delay ?? config('youdu.notification.delay', 0);

@@ -7,12 +7,15 @@ use Illuminate\Contracts\Support\Jsonable;
 
 abstract class Message implements Arrayable, Jsonable, MessageInterface
 {
-    public function toUser($toUser = '')
+    protected $toUser = '';
+    protected $toDept = '';
+
+    public function toUser(string $toUser = '')
     {
         $this->toUser = $toUser;
     }
 
-    public function toDept($toDept = '')
+    public function toDept(string $toDept = '')
     {
         $this->toDept = $toDept;
     }

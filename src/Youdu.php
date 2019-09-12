@@ -5,6 +5,7 @@ namespace Huangdijia\Youdu;
 use Huangdijia\Youdu\Crypt\Prpcrypt;
 use Huangdijia\Youdu\Http\Client;
 use Huangdijia\Youdu\Messages\MessageInterface;
+use Huangdijia\Youdu\Messages\Text;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
@@ -166,13 +167,31 @@ class Youdu
     }
 
     /**
-     * 发送消息
+     * 发送应用消息
      *
-     * @param \Huangdijia\Youdu\Messages\MessageInterface $message
+     * @param string $toUser 接收成员的帐号列表。多个接收者用竖线分隔，最多支持1000个
+     * @param string $toDept 接收部门id列表。多个接收者用竖线分隔，最多支持100个
+     * @param \Huangdijia\Youdu\Messages\MessageInterface|string $message
      * @return bool
      */
-    public function send(MessageInterface $message)
+    public function send(string $toUser = '', string $toDept = '', $message = '')
     {
+        if (is_string($message)) {
+            $message = new Text($message);
+        }
+
+        if (!($message instanceof MessageInterface)) {
+            throw new \Exception("\$message must instanced of " . MessageInterface::class, 1);
+        }
+
+        if ($toUser) {
+            $message->toUser($toUser);
+        }
+
+        if ($toDept) {
+            $message->toDept($toDept);
+        }
+
         $encrypted  = $this->encryptMsg($message->toJson());
         $parameters = [
             "buin"    => $this->buin,
@@ -182,6 +201,7 @@ class Youdu
 
         $url  = $this->url('/cgi/msg/send');
         $resp = $this->http->post($url, $parameters);
+        dump($resp);
 
         if ($resp['httpCode'] != 200) {
             throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);

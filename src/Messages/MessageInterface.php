@@ -4,6 +4,6 @@ namespace Huangdijia\Youdu\Messages;
 
 interface MessageInterface
 {
-    public function toUser($toUser = '');
-    public function toDept($toDept = '');
+    public function toUser(string $toUser = '');
+    public function toDept(string $toDept = '');
 }
