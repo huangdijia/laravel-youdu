@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Channels;
+namespace Huangdijia\Youdu\Channels;
 
 use Huangdijia\Youdu\Facades\Youdu;
 use Huangdijia\Youdu\Messages\MessageInterface;
