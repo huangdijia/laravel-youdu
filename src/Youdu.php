@@ -248,7 +248,7 @@ class Youdu
      */
     public function uploadFile(string $file = '', string $fileType = 'file')
     {
-        if (!in_array($fileType, ['file', 'voice', 'video'])) {
+        if (!in_array($fileType, ['file', 'voice', 'video', 'image'])) {
             throw new \Exception('Unsupport file type ' . $fileType, 1);
         }
 

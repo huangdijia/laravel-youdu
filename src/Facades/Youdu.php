@@ -5,8 +5,15 @@ namespace Huangdijia\Youdu\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method array getToken()
- * @method array identify()
+ * @see \Huangdijia\Youdu\Youdu
+ * @method static string getAppId()
+ * @method static string getAesKey()
+ * @method static string getAccessToken()
+ * @method static bool send(string $toUser = '', string $toDept = '', $message = '')
+ * @method static bool sendToUser(string $toUser = '', $message = '')
+ * @method static bool sendToDept(string $toDept = '', $message = '')
+ * @method static string uploadFile(string $file = '', string $fileType = 'file')
+ * @method static bool downloadFile(string $mediaId = '', ?string $savePath = null)
  */
 class Youdu extends Facade
 {
