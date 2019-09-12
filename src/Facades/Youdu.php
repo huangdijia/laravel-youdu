@@ -6,9 +6,12 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @see \Huangdijia\Youdu\Youdu
+ * @method static int getBuin()
  * @method static string getAppId()
  * @method static string getAesKey()
- * @method static string getAccessToken()
+ * @method string url(string $msg = '', bool $withAccessToken = true)
+ * @method string encryptMsg(string $msg = '')
+ * @method string decryptMsg(?string $encrypted)
  * @method static bool send(string $toUser = '', string $toDept = '', $message = '')
  * @method static bool sendToUser(string $toUser = '', $message = '')
  * @method static bool sendToDept(string $toDept = '', $message = '')

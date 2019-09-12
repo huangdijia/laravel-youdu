@@ -2,6 +2,8 @@
 
 namespace Huangdijia\Youdu\Crypt;
 
+use Huangdijia\Youdu\Exceptions\ErrorCode;
+
 class SHA1
 {
     /**

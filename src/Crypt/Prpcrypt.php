@@ -2,7 +2,7 @@
 
 namespace Huangdijia\Youdu\Crypt;
 
-use Huangdijia\Youdu\ErrorCode;
+use Huangdijia\Youdu\Exceptions\ErrorCode;
 
 /**
  * Prpcrypt class

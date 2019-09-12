@@ -2,13 +2,14 @@
 
 namespace Huangdijia\Youdu;
 
-use Huangdijia\Youdu\Crypt\Prpcrypt;
-use Huangdijia\Youdu\Http\Client;
-use Huangdijia\Youdu\Messages\MessageInterface;
-use Huangdijia\Youdu\Messages\PopWindow;
-use Huangdijia\Youdu\Messages\Text;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
+use Huangdijia\Youdu\Messages\Text;
+use Huangdijia\Youdu\Crypt\Prpcrypt;
+use Huangdijia\Youdu\Facades\HttpClient;
+use Huangdijia\Youdu\Messages\PopWindow;
+use Huangdijia\Youdu\Facades\AccessToken;
+use Huangdijia\Youdu\Exceptions\ErrorCode;
+use Huangdijia\Youdu\Messages\MessageInterface;
 
 class Youdu
 {
@@ -16,15 +17,25 @@ class Youdu
     private $buin;
     private $appId;
     private $aesKey;
-    private $http;
+    private $crypter;
 
     public function __construct(string $api = '', int $buin, string $appId = '', string $aesKey = '')
     {
-        $this->api    = $api;
-        $this->buin   = $buin;
-        $this->appId  = $appId;
-        $this->aesKey = $aesKey;
-        $this->http   = new Client;
+        $this->api     = $api;
+        $this->buin    = $buin;
+        $this->appId   = $appId;
+        $this->aesKey  = $aesKey;
+        $this->crypter = new Prpcrypt($aesKey);
+    }
+
+    /**
+     * 获取 buin
+     *
+     * @return int
+     */
+    public function getBuin()
+    {
+        return $this->buin;
     }
 
     /**
@@ -53,16 +64,15 @@ class Youdu
      * @param string $msg
      * @return string|bool
      */
-    private function encryptMsg(string $msg = '')
+    public function encryptMsg(string $msg = '')
     {
-        $pc     = new Prpcrypt($this->aesKey);
-        $result = $pc->encrypt($msg, $this->appId);
+        [$errcode, $encrypted] = $this->crypter->encrypt($msg, $this->appId);
 
-        if ($result[0] != 0) {
-            throw new \Exception($result[1], $result[0]);
+        if ($errcode != 0) {
+            throw new \Exception($encrypted, $errcode);
         }
 
-        return $result[1];
+        return $encrypted;
 
     }
 
@@ -72,14 +82,13 @@ class Youdu
      * @param string|null $encrypted
      * @return bool|string
      */
-    private function decryptMsg(?string $encrypted)
+    public function decryptMsg(?string $encrypted)
     {
         if (strlen($this->aesKey) != 44) {
             throw new \Exception('Illegal AesKey', ErrorCode::$IllegalAesKey);
         }
 
-        $pc                    = new Prpcrypt($this->aesKey);
-        [$errcode, $decrypted] = $pc->decrypt($encrypted, $this->appId);
+        [$errcode, $decrypted] = $this->crypter->decrypt($encrypted, $this->appId);
 
         if ($errcode != 0) {
             throw new \Exception('Decrypt faild', $errcode);
@@ -96,12 +105,12 @@ class Youdu
      *
      * @return string
      */
-    private function url(string $uri = '', bool $withAccessToken = true)
+    public function url(string $uri = '', bool $withAccessToken = true)
     {
         $url = rtrim($this->api, '/') . '/' . ltrim($uri, '/');
 
         if ($withAccessToken) {
-            $url .= '?accessToken=' . $this->getAccessToken();
+            $url .= '?accessToken=' . AccessToken::get($this->buin, $this->appId);
         }
 
         return $url;
@@ -138,36 +147,6 @@ class Youdu
     }
 
     /**
-     * 获取token
-     *
-     * @return bool|string
-     */
-    public function getAccessToken()
-    {
-        return Cache::remember('youdu:tokens:' . $this->appId, 2 * 3600, function () {
-            $encrypted  = $this->encryptMsg((string) time());
-            $parameters = [
-                "buin"    => $this->buin,
-                "appId"   => $this->appId,
-                "encrypt" => $encrypted,
-            ];
-
-            $url  = $this->url('/cgi/gettoken', false);
-            $resp = $this->http->post($url, $parameters);
-            $body = json_decode($resp['body']);
-
-            if ($body->errcode != 0) {
-                throw new \Exception($body->errmsg, $body->errcode);
-            }
-
-            $decrypted = $this->decryptMsg($body->encrypt);
-            $decoded   = json_decode($decrypted, true);
-
-            return $decoded['accessToken'];
-        });
-    }
-
-    /**
      * 发送应用消息
      *
      * @param string $toUser 接收成员的帐号列表。多个接收者用竖线分隔，最多支持1000个
@@ -201,7 +180,7 @@ class Youdu
         ];
 
         $url  = $this->url('/cgi/msg/send');
-        $resp = $this->http->post($url, $parameters);
+        $resp = HttpClient::post($url, $parameters);
 
         if ($resp['httpCode'] != 200) {
             throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
@@ -259,7 +238,7 @@ class Youdu
             ])),
         ];
 
-        $resp = $this->http->post($this->url('/cgi/set.ent.notice'), $parameters);
+        $resp = HttpClient::post($this->url('/cgi/set.ent.notice'), $parameters);
 
         if ($resp['httpCode'] != 200) {
             throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
@@ -297,8 +276,8 @@ class Youdu
             'msg_encrypt' => $this->encryptMsg($message->toJson()),
         ];
 
-        $resp = $this->http->post($this->url('/cgi/popwindow'), $parameters);
-        
+        $resp = HttpClient::post($this->url('/cgi/popwindow'), $parameters);
+
         if ($resp['httpCode'] != 200) {
             throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
@@ -330,8 +309,6 @@ class Youdu
         $encryptedMsg  = $this->encryptMsg(json_encode([
             'type' => $fileType ?? 'file',
             'name' => basename($file),
-            // 'buin'  => $this->buin,
-            // 'appId' => $this->appId,
         ]));
 
         if (false === file_put_contents($tmpFile, $encryptedFile)) {
@@ -346,7 +323,7 @@ class Youdu
         ];
 
         $url  = $this->url('/cgi/media/upload');
-        $resp = $this->http->upload($url, $parameters);
+        $resp = HttpClient::upload($url, $parameters);
 
         if ($resp['errcode'] !== 0) {
             unlink($tmpFile);
@@ -384,7 +361,7 @@ class Youdu
         ];
 
         $url         = $this->url('/cgi/media/get');
-        $resp        = $this->http->Post($url, $parameters);
+        $resp        = HttpClient::Post($url, $parameters);
         $header      = $this->decodeHeader($resp['header']);
         $fileInfo    = $this->decryptMsg($header['Encrypt']);
         $fileInfo    = json_decode($fileInfo, true);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Huangdijia\Youdu;
+namespace Huangdijia\Youdu\Exceptions;
 
 class ErrorCode
 {
