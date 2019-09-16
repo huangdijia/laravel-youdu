@@ -122,7 +122,7 @@ class Dept
      */
     public function delete(int $deptId)
     {
-        $resp    = HttpClient::get($this->youdu->url('/cgi/dept/delete'), ['id' => $decoded]);
+        $resp    = HttpClient::get($this->youdu->url('/cgi/dept/delete'), ['id' => $deptId]);
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
