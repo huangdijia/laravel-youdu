@@ -56,7 +56,7 @@ class User
     /**
      * 创建用户
      *
-     * @param integer $userId 用户id(帐号)，企业内必须唯一。长度为1~64个字符（包括汉字和英文字母）
+     * @param integer|string $userId 用户id(帐号)，企业内必须唯一。长度为1~64个字符（包括汉字和英文字母）
      * @param string $name 用户名称。长度为0~64个字符（包括汉字和英文字母，可为空）
      * @param integer $gender 性别，整型。0表示男性，1表示女性
      * @param string $mobile 手机号码。企业内必须唯一
@@ -65,7 +65,7 @@ class User
      * @param array $dept 所属部门列表,不超过20个
      * @return bool
      */
-    public function create(int $userId, string $name, int $gender = 0, string $mobile = '', string $phone = '', string $email = '', array $dept = [])
+    public function create($userId, string $name, int $gender = 0, string $mobile = '', string $phone = '', string $email = '', array $dept = [])
     {
         $parameters = $this->youdu->encryptMsg(json_encode([
             "buin"   => $this->youdu->getBuin(),
@@ -97,7 +97,7 @@ class User
     /**
      * 更新用户
      *
-     * @param integer $userId 用户id(帐号)，企业内必须唯一。长度为1~64个字符（包括汉字和英文字母）
+     * @param integer|string $userId 用户id(帐号)，企业内必须唯一。长度为1~64个字符（包括汉字和英文字母）
      * @param string $name 用户名称。长度为0~64个字符（包括汉字和英文字母，可为空）
      * @param integer $gender 性别，整型。0表示男性，1表示女性
      * @param string $mobile 手机号码。企业内必须唯一
@@ -106,7 +106,7 @@ class User
      * @param array $dept 所属部门列表,不超过20个
      * @return bool
      */
-    public function update(int $userId, string $name, int $gender = 0, string $mobile = '', string $phone = '', string $email = '', array $dept = [])
+    public function update($userId, string $name, int $gender = 0, string $mobile = '', string $phone = '', string $email = '', array $dept = [])
     {
         $parameters = $this->youdu->encryptMsg(json_encode([
             "buin"   => $this->youdu->getBuin(),
@@ -138,14 +138,14 @@ class User
     /**
      * 更新职位信息
      *
-     * @param int $userId 用户id(帐号)，企业内必须唯一。长度为1~64个字符（包括汉字和英文字母）
+     * @param int|string $userId 用户id(帐号)，企业内必须唯一。长度为1~64个字符（包括汉字和英文字母）
      * @param integer $deptId 部门Id。用户必须在该部门内
      * @param string $position 职务
      * @param integer $weight 职务权重。用户拥有多个职务时，权重值越大的职务排序越靠前
      * @param integer $sortId 用户在部门中的排序，值越大排序越靠前
      * @return bool
      */
-    public function updatePosition(int $userId, int $deptId, string $position = '', int $weight = 0, int $sortId = 0)
+    public function updatePosition($userId, int $deptId, string $position = '', int $weight = 0, int $sortId = 0)
     {
         $parameters = $this->youdu->encryptMsg(json_encode([
             "buin"     => $this->youdu->getBuin(),
@@ -217,10 +217,10 @@ class User
     /**
      * 用户详情
      *
-     * @param integer $userId
+     * @param integer|string $userId
      * @return array
      */
-    public function get(int $userId)
+    public function get($userId)
     {
         $resp    = HttpClient::get($this->youdu->url('/cgi/user/get'), ['userId' => $userId]);
         $decoded = json_decode($resp['body'], true);
@@ -237,12 +237,12 @@ class User
     /**
      * 设置认证信息
      *
-     * @param integer $userId
+     * @param integer|string $userId
      * @param integer $authType 认证方式：0本地认证，2第三方认证
      * @param string $passwd 原始密码md5加密后转16进制的小写字符串
      * @return bool
      */
-    public function setAuth(int $userId, int $authType = 0, string $passwd = '')
+    public function setAuth($userId, int $authType = 0, string $passwd = '')
     {
         // md5 -> hex -> lower
         $passwd = strtolower(bin2hex(md5($passwd)));
@@ -273,11 +273,11 @@ class User
     /**
      * 设置头像
      *
-     * @param integer $userId
+     * @param integer|string $userId
      * @param string $file
      * @return bool
      */
-    public function setAvatar(int $userId, string $file)
+    public function setAvatar($userId, string $file)
     {
         $url = $this->youdu->url('/cgi/avatar/set');
         // TODO
@@ -286,11 +286,11 @@ class User
     /**
      * 获取头像
      *
-     * @param integer $userId
+     * @param integer|string $userId
      * @param integer $size
      * @return string
      */
-    public function getAvatar(int $userId, int $size = 0)
+    public function getAvatar($userId, int $size = 0)
     {
         $resp      = HttpClient::get($this->youdu->url('/cgi/avatar/get'), ['userId' => $userId, 'size' => $size]);
         $decrypted = $this->youdu->decryptMsg($resp['body'] ?? '');

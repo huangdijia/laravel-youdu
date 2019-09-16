@@ -206,10 +206,10 @@ class Group
      * 查询用户是否是群成员
      *
      * @param string $groupId
-     * @param integer $userId
+     * @param string|integer $userId
      * @return boolean
      */
-    public function isMember(string $groupId, int $userId)
+    public function isMember(string $groupId, $userId)
     {
         $resp    = HttpClient::get($this->youdu->url('/cgi/group/ismember'), ['id' => $groupId, 'userId' => $userId]);
         $decoded = json_decode($resp['body'], true);
