@@ -42,6 +42,8 @@ class Group
     public function create(string $name)
     {
         $parameters = [
+            'buin'    => $this->youdu->getBuin(),
+            'appId'   => $this->youdu->getAppId(),
             'encrypt' => $this->youdu->encryptMsg(json_encode([
                 'name' => $name,
             ])),
@@ -59,7 +61,7 @@ class Group
             throw new \Exception($body['errmsg'], $body['errcode']);
         }
 
-        $decrypted = $this->decryptMsg($body['encrypt']);
+        $decrypted = $this->youdu->decryptMsg($body['encrypt']);
         $decoded   = json_decode($decrypted, true);
 
         return $decoded['id'];
@@ -73,7 +75,7 @@ class Group
      */
     public function delete(string $groupId)
     {
-        $resp    = HttpClient::get($this->youdu->url('/cgi/group/delete'), ['groupId' => (array) $groupId]);
+        $resp    = HttpClient::get($this->youdu->url('/cgi/group/delete'), ['groupId' => $groupId]);
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
@@ -93,6 +95,8 @@ class Group
     public function update(string $groupId, string $name)
     {
         $parameters = [
+            'buin'    => $this->youdu->getBuin(),
+            'appId'   => $this->youdu->getAppId(),
             'encrypt' => $this->youdu->encryptMsg(json_encode([
                 'id'   => $groupId,
                 'name' => $name,
@@ -144,6 +148,8 @@ class Group
     public function addMember(string $groupId, array $members = [])
     {
         $parameters = [
+            'buin'    => $this->youdu->getBuin(),
+            'appId'   => $this->youdu->getAppId(),
             'encrypt' => $this->youdu->encryptMsg(json_encode([
                 'id'       => $groupId,
                 'userList' => $members,

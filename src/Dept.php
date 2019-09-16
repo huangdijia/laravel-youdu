@@ -41,11 +41,38 @@ class Dept
      * @param integer $parentId 父部门id。根部门id为0
      * @param integer $sortId 整型。在父部门中的排序值。值越大排序越靠前。填0自动生成。同级部门不允许重复（推荐全局唯一）
      * @param string $alias 字符串。部门id的别名（通常存放以字符串表示的部门id）。唯一不为空，相同会覆盖旧数据。
-     * @return bool
+     * @return int
      */
     public function create(int $deptId, string $name, int $parentId = 0, $sortId = 0, string $alias = '')
     {
-        $url = $this->youdu->url('/cgi/dept/create');
+        $parameters = [
+            'buin'    => $this->youdu->getBuin(),
+            'appId'   => $this->youdu->getAppId(),
+            'encrypt' => $this->youdu->encryptMsg(json_encode([
+                'id'       => $deptId,
+                'name'     => $name,
+                'parentId' => $parentId,
+                'sortId'   => $sortId,
+                'alias'    => $alias,
+            ])),
+        ];
+
+        $resp = HttpClient::post($this->youdu->url('/cgi/dept/create'), $parameters);
+
+        if ($resp['httpCode'] != 200) {
+            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+        }
+
+        $body = json_decode($resp['body'], true);
+
+        if ($body['errcode'] !== 0) {
+            throw new \Exception($body['errmsg'], $body['errcode']);
+        }
+
+        $decrypted = $this->youdu->decryptMsg($body['encrypt']);
+        $decoded   = json_decode($decrypted, true);
+
+        return $decoded['id'];
     }
 
     /**
@@ -60,7 +87,31 @@ class Dept
      */
     public function update(int $deptId, string $name, int $parentId = 0, $sortId = 0, string $alias = '')
     {
-        $url = $this->youdu->url('/cgi/dept/update');
+        $parameters = [
+            'buin'    => $this->youdu->getBuin(),
+            'appId'   => $this->youdu->getAppId(),
+            'encrypt' => $this->youdu->encryptMsg(json_encode([
+                'id'       => $deptId,
+                'name'     => $name,
+                'parentId' => $parentId,
+                'sortId'   => $sortId,
+                'alias'    => $alias,
+            ])),
+        ];
+
+        $resp = HttpClient::post($this->youdu->url('/cgi/dept/update'), $parameters);
+
+        if ($resp['httpCode'] != 200) {
+            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+        }
+
+        $body = json_decode($resp['body'], true);
+
+        if ($body['errcode'] !== 0) {
+            throw new \Exception($body['errmsg'], $body['errcode']);
+        }
+
+        return true;
     }
 
     /**
@@ -69,16 +120,23 @@ class Dept
      * @param integer $deptId 部门id，整型。必须大于0
      * @return bool
      */
-    public function delete(int $deptId, string $name, int $parentId = 0, $sortId = 0, string $alias = '')
+    public function delete(int $deptId)
     {
-        $url = $this->youdu->url('/cgi/dept/delete');
+        $resp    = HttpClient::get($this->youdu->url('/cgi/dept/delete'), ['id' => $decoded]);
+        $decoded = json_decode($resp['body'], true);
+
+        if ($decoded['errcode'] !== 0) {
+            throw new \Exception($decoded['errmsg'], 1);
+        }
+
+        return true;
     }
 
     /**
      * 获取部门ID
      *
      * @param string $alias 部门alias。携带时查询该alias对应的部门id。不带alias参数时查询全部映射关系。
-     * @return void
+     * @return array
      */
     public function getId(string $alias = '')
     {
