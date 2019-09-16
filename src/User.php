@@ -244,8 +244,30 @@ class User
      */
     public function setAuth(int $userId, int $authType = 0, string $passwd = '')
     {
-        $url = $this->youdu->url('/cgi/user/setauth');
-        // TODO
+        // md5 -> hex -> lower
+        $passwd = strtolower(bin2hex(md5($passwd)));
+
+        $parameters = $this->youdu->encryptMsg(json_encode([
+            "buin"     => $this->youdu->getBuin(),
+            "appId"    => $this->youdu->getAppId(),
+            "userId"   => $userId,
+            "authType" => $authType,
+            "passwd"   => $passwd,
+        ]));
+
+        $resp = HttpClient::post($this->youdu->url('/cgi/user/setauth'), $parameters);
+
+        if ($resp['httpCode'] != 200) {
+            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+        }
+
+        $body = json_decode($resp['body'], true);
+
+        if ($body['errcode'] !== 0) {
+            throw new \Exception($body['errmsg'], $body['errcode']);
+        }
+
+        return true;
     }
 
     /**
