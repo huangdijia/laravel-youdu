@@ -7,11 +7,11 @@ return [
     'apps'           => [
         'default' => [
             'app_id'  => env('YOUDU_APP_ID', ''),
-            'ase_key' => env('YOUDU_ASE_KEY', ''),
+            'aes_key' => env('YOUDU_AES_KEY', ''),
         ],
         // 'other' => [
         //     'app_id'  => env('YOUDU_APP_ID', ''),
-        //     'ase_key' => env('YOUDU_ASE_KEY', ''),
+        //     'aes_key' => env('YOUDU_AES_KEY', ''),
         // ],
     ],
 

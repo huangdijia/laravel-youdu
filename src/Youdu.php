@@ -2,22 +2,25 @@
 
 namespace Huangdijia\Youdu;
 
-use Illuminate\Support\Str;
-use Huangdijia\Youdu\Messages\Text;
 use Huangdijia\Youdu\Crypt\Prpcrypt;
-use Huangdijia\Youdu\Facades\HttpClient;
-use Huangdijia\Youdu\Messages\PopWindow;
-use Huangdijia\Youdu\Facades\AccessToken;
 use Huangdijia\Youdu\Exceptions\ErrorCode;
+use Huangdijia\Youdu\Facades\HttpClient;
 use Huangdijia\Youdu\Messages\MessageInterface;
+use Huangdijia\Youdu\Messages\PopWindow;
+use Huangdijia\Youdu\Messages\Text;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class Youdu
 {
-    private $api;
-    private $buin;
-    private $appId;
-    private $aesKey;
-    private $crypter;
+    protected $api;
+    protected $buin;
+    protected $appId;
+    protected $aesKey;
+    protected $crypter;
+    protected $dept;
+    protected $group;
+    protected $user;
 
     public function __construct(string $api = '', int $buin, string $appId = '', string $aesKey = '')
     {
@@ -26,6 +29,24 @@ class Youdu
         $this->appId   = $appId;
         $this->aesKey  = $aesKey;
         $this->crypter = new Prpcrypt($aesKey);
+        $this->dept    = new Dept($this);
+        $this->group   = new Group($this);
+        $this->user    = new User($this);
+    }
+
+    public function dept()
+    {
+        return $this->dept;
+    }
+
+    public function group()
+    {
+        return $this->group;
+    }
+
+    public function user()
+    {
+        return $this->user;
     }
 
     /**
@@ -97,6 +118,34 @@ class Youdu
         return $decrypted;
     }
 
+    public function getAccessToken()
+    {
+        $appId = $this->appId;
+        $buin  = $this->buin;
+
+        return Cache::remember('youdu:tokens:' . $appId, 2 * 3600, function () use ($buin, $appId) {
+            $encrypted  = $this->encryptMsg((string) time());
+            $parameters = [
+                "buin"    => $buin,
+                "appId"   => $appId,
+                "encrypt" => $encrypted,
+            ];
+
+            $url  = $this->url('/cgi/gettoken', false);
+            $resp = HttpClient::post($url, $parameters);
+            $body = json_decode($resp['body'], true);
+
+            if ($body['errcode'] != 0) {
+                throw new \Exception($body['errmsg'], $body['errcode']);
+            }
+
+            $decrypted = $this->decryptMsg($body['encrypt']);
+            $decoded   = json_decode($decrypted, true);
+
+            return $decoded['accessToken'];
+        });
+    }
+
     /**
      * 组装 URL
      *
@@ -110,7 +159,7 @@ class Youdu
         $url = rtrim($this->api, '/') . '/' . ltrim($uri, '/');
 
         if ($withAccessToken) {
-            $url .= '?accessToken=' . AccessToken::get($this->buin, $this->appId);
+            $url .= '?accessToken=' . $this->getAccessToken();
         }
 
         return $url;

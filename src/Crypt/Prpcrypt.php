@@ -11,31 +11,32 @@ use Huangdijia\Youdu\Exceptions\ErrorCode;
  */
 class Prpcrypt
 {
-    public $key;
+    protected $key;
+    protected $encoder;
 
     public function __construct($key = '')
     {
-        $this->key = base64_decode($key);
+        $this->key     = base64_decode($key);
+        $this->encoder = new PKCS7Encoder;
     }
 
     /**
      * 对明文进行加密
-     * 
+     *
      * @param string $text 需要加密的明文
      * @param string $appId
-     * 
+     *
      * @return array
      */
     public function encrypt(string $text = '', string $appId = '')
     {
         try {
             //获得16位随机字符串，填充到明文之前
-            $random     = $this->getRandomStr();
-            $text       = $random . pack("N", strlen($text)) . $text . $appId;
-            $iv         = substr($this->key, 0, 16);
-            $pkcEncoder = new PKCS7Encoder;
-            $text       = $pkcEncoder->encode($text);
-            $encrypted  = openssl_encrypt($text, 'AES-256-CBC', $this->key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
+            $random    = $this->getRandomStr();
+            $text      = $random . pack("N", strlen($text)) . $text . $appId;
+            $iv        = substr($this->key, 0, 16);
+            $text      = $this->encoder->encode($text);
+            $encrypted = openssl_encrypt($text, 'AES-256-CBC', $this->key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
 
             // 使用BASE64对加密后的字符串进行编码
             return [ErrorCode::$OK, base64_encode($encrypted)];
@@ -46,9 +47,9 @@ class Prpcrypt
 
     /**
      * 对密文进行解密
-     * 
+     *
      * @param string $encrypted 需要解密的密文
-     * 
+     *
      * @return array
      */
     public function decrypt($encrypted, $appId)
@@ -64,8 +65,7 @@ class Prpcrypt
 
         try {
             //去除补位字符
-            $pkcEncoder = new PKCS7Encoder;
-            $result     = $pkcEncoder->decode($decrypted);
+            $result = $this->encoder->decode($decrypted);
 
             //去除16位随机字符串,网络字节序和AppId
             if (strlen($result) < 16) {
@@ -81,7 +81,7 @@ class Prpcrypt
             return [ErrorCode::$IllegalBuffer, null];
         }
 
-        if ($fromAppId != $appId) {
+        if ($fromAppId != "sysOrgAssistant" && $fromAppId != $appId) {
             return [ErrorCode::$ValidateAppIdError, null];
         }
 
@@ -91,7 +91,7 @@ class Prpcrypt
 
     /**
      * 随机生成16位字符串
-     * 
+     *
      * @return string
      */
     public function getRandomStr()
