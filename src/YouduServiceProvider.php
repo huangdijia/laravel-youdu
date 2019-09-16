@@ -42,6 +42,10 @@ class YouduServiceProvider extends ServiceProvider
             return new Dept();
         });
 
+        $this->app->singleton('youdu.group', function() {
+            return new Group();
+        });
+
         $this->app->make(ChannelManager::class)->extend('youdu', function ($app) {
             return $app->make(YouduChannel::class);
         });

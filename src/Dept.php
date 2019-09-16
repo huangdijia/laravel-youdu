@@ -15,6 +15,15 @@ class Dept
      */
     public function getList(int $parentDeptId = 0)
     {
-        return HttpClient::get(Youdu::url('/cgi/dept/list'), ['id' => $parentDeptId]);
+        $resp    = HttpClient::get(Youdu::url('/cgi/dept/list'), ['id' => $parentDeptId]);
+        $decoded = json_decode($resp['body'], true);
+
+        if ($decoded['errcode'] !== 0) {
+            throw new \Exception($decoded['errmsg'], 1);
+        }
+
+        $decrypted = Youdu::decryptMsg($decoded['encrypt'] ?? ''); // decrypt faild
+
+        return $decrypted['deptList'] ?? [];
     }
 }

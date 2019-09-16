@@ -25,9 +25,18 @@ class Client
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $response = curl_exec($ch);
+        
+        $httpCode   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $header     = substr($response, 0, $headerSize);
+        $body       = substr($response, $headerSize);
         curl_close($ch);
 
-        return json_decode($response, true);
+        return [
+            'header'   => $header,
+            'body'     => $body,
+            'httpCode' => $httpCode,
+        ];
     }
 
     /**
