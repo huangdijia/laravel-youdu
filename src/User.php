@@ -315,6 +315,10 @@ class User
 
         $decoded = json_decode($resp['body'], true);
 
+        if (($decoded['status']['code'] ?? 0) != 0) {
+            throw new \Exception($decoded['status']['message'], 1);
+        }
+
         return $decoded['userInfo'] ?? [];
     }
 }
