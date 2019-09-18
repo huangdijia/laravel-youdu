@@ -3,6 +3,7 @@
 namespace Huangdijia\Youdu;
 
 use Huangdijia\Youdu\Facades\HttpClient;
+use Huangdijia\Youdu\Exceptions\ErrorCode;
 
 class User
 {
@@ -296,5 +297,24 @@ class User
         $decrypted = $this->youdu->decryptMsg($resp['body'] ?? '');
 
         return $decrypted;
+    }
+
+    /**
+     * 单点登录
+     *
+     * @param string $token
+     * @return array
+     */
+    public function identify(string $token)
+    {
+        $resp = HttpClient::get($this->youdu->url('/cgi/identify?token=' . $token, false));
+
+        if ($resp['httpCode'] != 200) {
+            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+        }
+
+        $decoded = json_decode($resp['body'], true);
+
+        return $decoded['userInfo'] ?? [];
     }
 }
