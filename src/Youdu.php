@@ -118,6 +118,11 @@ class Youdu
         return $decrypted;
     }
 
+    /**
+     * Get access token
+     * 
+     * @return string
+     */
     public function getAccessToken()
     {
         $appId = $this->appId;
