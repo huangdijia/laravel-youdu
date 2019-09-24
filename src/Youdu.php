@@ -34,16 +34,31 @@ class Youdu
         $this->user    = new User($this);
     }
 
+    /**
+     * 部门
+     * 
+     * @return \Huangdijia\Youdu\Dept
+     */
     public function dept()
     {
         return $this->dept;
     }
 
+    /**
+     * 群
+     * 
+     * @return \Huangdijia\Youdu\Group
+     */
     public function group()
     {
         return $this->group;
     }
 
+    /**
+     * 用户
+     *
+     * @return \Huangdijia\Youdu\User
+     */
     public function user()
     {
         return $this->user;
