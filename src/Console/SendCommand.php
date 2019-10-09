@@ -28,7 +28,7 @@ class SendCommand extends Command
         $message = (string) $this->argument('message');
 
         try {
-            Youdu::send($toUser, $toUser, $message);
+            Youdu::send($toUser, $toDept, $message);
         } catch (\Exception $e) {
             $this->warn($e->getMessage());
             return;
