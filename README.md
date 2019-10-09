@@ -18,7 +18,17 @@ php artisan vendor:publish --provider="Huangdijia\\Youdu\\YouduServiceProvider"
 
 ### Lumen
 
-> TODO
+add `YouduServiceProvider` to `bootstrap/app.php`
+
+~~~php
+$app->register(Huangdijia\Youdu\YouduServiceProvider::class);
+~~~
+
+copy `youdu.php` to `config/`
+
+~~~bash
+cp vendor/huangdijia/laravel-youdu-message/config/youdu.php config
+~~~
 
 ## Usage
 
