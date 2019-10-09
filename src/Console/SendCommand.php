@@ -7,18 +7,7 @@ use Illuminate\Console\Command;
 
 class SendCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'youdu:send {message} {--to= : } {--dept= : }';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
+    protected $signature   = 'youdu:send {message} {--to= : Users, implode by \'|\'} {--dept= : Depts, implode by \'|\'}';
     protected $description = 'Send a youdu message';
 
     public function handle()
