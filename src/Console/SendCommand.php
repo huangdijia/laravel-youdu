@@ -19,7 +19,7 @@ class SendCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Get data from analytics website';
+    protected $description = 'Send a youdu message';
 
     public function handle()
     {
