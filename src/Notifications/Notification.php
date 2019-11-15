@@ -2,7 +2,7 @@
 
 namespace App\Notifications;
 
-use Huangdijia\Youdu\Messages\MessageInterface;
+use Huangdijia\Youdu\Contracts\Message;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification as BaseNotification;
@@ -18,7 +18,7 @@ class Notification extends BaseNotification implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(MessageInterface $message, ?int $delay = null)
+    public function __construct(Message $message, ?int $delay = null)
     {
         $this->queue   = config('youdu.notification.queue', 'youdu_notification');
         $this->delay   = $delay ?? config('youdu.notification.delay', 0);
