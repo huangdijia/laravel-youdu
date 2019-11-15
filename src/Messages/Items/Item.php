@@ -2,10 +2,11 @@
 
 namespace Huangdijia\Youdu\Messages\Items;
 
+use Huangdijia\Youdu\Contracts\MessageItem;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 
-class Item implements ItemInterface, Arrayable, Jsonable
+class Item implements MessageItem, Arrayable, Jsonable
 {
     protected $items = [];
 

@@ -2,11 +2,12 @@
 
 namespace Huangdijia\Youdu\Channels;
 
-use Huangdijia\Youdu\Facades\Youdu;
+use Huangdijia\Youdu\Contracts\Channel;
+use Huangdijia\Youdu\Facades\Youdu as YouduFacace;
 use Huangdijia\Youdu\Messages\MessageInterface;
 use Illuminate\Notifications\Notification;
 
-class YouduChannel
+class Youdu implements Channel
 {
     /**
      * Send the given notification.
@@ -27,6 +28,6 @@ class YouduChannel
         }
 
         // Send notification to the $notifiable instance...
-        return Youdu::send($to, '', $message);
+        return YouduFacace::send($to, '', $message);
     }
 }

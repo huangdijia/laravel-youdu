@@ -2,10 +2,11 @@
 
 namespace Huangdijia\Youdu\Messages;
 
+use Huangdijia\Youdu\Contracts\Message as MessageContract;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 
-abstract class Message implements Arrayable, Jsonable, MessageInterface
+abstract class Message implements MessageContract, Arrayable, Jsonable
 {
     protected $toUser = '';
     protected $toDept = '';
