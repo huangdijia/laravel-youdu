@@ -19,7 +19,7 @@ class YouduChannel implements Channel
     public function send($notifiable, Notification $notification)
     {
         $message = $notification->toYoudu($notifiable);
-        $app     = $notification->app();
+        $app     = is_callable([$notification, 'app']) ? $notification->app() : '';
 
         if (
             !($to = $notifiable->routeNotificationFor('youdu', $notification))
