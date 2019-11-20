@@ -7,7 +7,7 @@ use Huangdijia\Youdu\Contracts\Message;
 use Huangdijia\Youdu\Facades\Youdu as YouduFacade;
 use Illuminate\Notifications\Notification;
 
-class Youdu implements Channel
+class YouduChannel implements Channel
 {
     /**
      * Send the given notification.

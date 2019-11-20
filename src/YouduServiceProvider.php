@@ -2,7 +2,7 @@
 
 namespace Huangdijia\Youdu;
 
-use Huangdijia\Youdu\Channels\Youdu as YouduChannel;
+use Huangdijia\Youdu\Channels\YouduChannel;
 use Huangdijia\Youdu\Http\Client;
 use Illuminate\Notifications\ChannelManager;
 use Illuminate\Support\ServiceProvider;
