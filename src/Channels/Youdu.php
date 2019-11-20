@@ -4,7 +4,7 @@ namespace Huangdijia\Youdu\Channels;
 
 use Huangdijia\Youdu\Contracts\Channel;
 use Huangdijia\Youdu\Contracts\Message;
-use Huangdijia\Youdu\Facades\Youdu as YouduFacace;
+use Huangdijia\Youdu\Facades\Youdu as YouduFacade;
 use Illuminate\Notifications\Notification;
 
 class Youdu implements Channel
@@ -19,6 +19,7 @@ class Youdu implements Channel
     public function send($notifiable, Notification $notification)
     {
         $message = $notification->toYoudu($notifiable);
+        $app     = $notification->app();
 
         if (
             !($to = $notifiable->routeNotificationFor('youdu', $notification))
@@ -27,7 +28,6 @@ class Youdu implements Channel
             return;
         }
 
-        // Send notification to the $notifiable instance...
-        return YouduFacace::send($to, '', $message);
+        return YouduFacade::app($app)->send($to, '', $message);
     }
 }

@@ -11,6 +11,7 @@ class Notification extends BaseNotification implements ShouldQueue
 {
     use Queueable;
 
+    protected $app;
     protected $message;
 
     /**
@@ -18,12 +19,14 @@ class Notification extends BaseNotification implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(Message $message, ?int $delay = null)
+    public function __construct(Message $message, string $app = 'default', ?int $delay = null)
     {
-        $this->queue   = config('youdu.notification.queue', 'youdu_notification');
-        $this->delay   = $delay ?? config('youdu.notification.delay', 0);
-        $this->tries   = config('youdu.notification.tries', 3);
         $this->message = $message;
+        $this->app     = $app;
+
+        $this->delay = $delay ?? config('youdu.notification.delay', 0);
+        $this->tries = config('youdu.notification.tries', 3);
+        $this->queue = config('youdu.notification.queue', 'youdu_notification');
     }
 
     /**
@@ -38,7 +41,17 @@ class Notification extends BaseNotification implements ShouldQueue
     }
 
     /**
-     * 獲取內容
+     * Get the notification's delivery youdu app.
+     *
+     * @return string
+     */
+    public function app()
+    {
+        return $this->app;
+    }
+
+    /**
+     * Get the notification's message
      *
      * @param mixed $notificable
      * @return mixed
@@ -58,6 +71,7 @@ class Notification extends BaseNotification implements ShouldQueue
     {
         return [
             'via'     => 'youdu',
+            'app'     => $this->app,
             'message' => $this->message->toArray(),
         ];
     }

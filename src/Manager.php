@@ -15,6 +15,23 @@ class Manager
     }
 
     /**
+     * Get config
+     * 
+     * @param string|null $key
+     * @param mixed $default
+     */
+    public function config(?stirng $key = null, $default = null)
+    {
+        if (is_null($key)) {
+            return $this->config;
+        }
+
+        return Arr::get($this->config, $key, $default);
+    }
+
+    /**
+     * Get app
+     * 
      * @param string|null $name
      */
     public function app(?string $name = null)
