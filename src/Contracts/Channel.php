@@ -2,6 +2,8 @@
 
 namespace Huangdijia\Youdu\Contracts;
 
+use \Illuminate\Notifications\Notification;
+
 interface Channel
 {
     /**
