@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Notifications;
+namespace Huangdijia\Youdu\Notifications;
 
 use Huangdijia\Youdu\Contracts\Message;
 use Illuminate\Bus\Queueable;
