@@ -21,6 +21,7 @@ class Youdu
     protected $dept;
     protected $group;
     protected $user;
+    protected $session;
 
     public function __construct(string $api = '', int $buin, string $appId = '', string $aesKey = '')
     {
@@ -32,6 +33,7 @@ class Youdu
         $this->dept    = new Dept($this);
         $this->group   = new Group($this);
         $this->user    = new User($this);
+        $this->session    = new Session($this);
     }
 
     /**
@@ -62,6 +64,16 @@ class Youdu
     public function user()
     {
         return $this->user;
+    }
+
+    /**
+     * 会话
+     *
+     * @return \Huangdijia\Youdu\Session
+     */
+    public function session()
+    {
+        return $this->session;
     }
 
     /**
