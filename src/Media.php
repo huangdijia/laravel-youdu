@@ -53,6 +53,10 @@ class Media
      */
     public function upload(string $file = '', string $fileType = 'file')
     {
+        if (!in_array($fileType, ['file', 'voice', 'video', 'image'])) {
+            throw new \Exception('Unsupport file type ' . $fileType, 1);
+        }
+
         if (preg_match('/^https?:\/\//i', $file)) { // 远程文件
             $contextOptions = stream_context_create([
                 "ssl" => [
@@ -63,10 +67,6 @@ class Media
 
             $originalContent = file_get_contents($file, false, $contextOptions);
         } else { // 本地文件
-            if (!in_array($fileType, ['file', 'voice', 'video', 'image'])) {
-                throw new \Exception('Unsupport file type ' . $fileType, 1);
-            }
-
             $originalContent = file_get_contents($file);
         }
 

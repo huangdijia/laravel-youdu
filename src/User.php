@@ -2,8 +2,9 @@
 
 namespace Huangdijia\Youdu;
 
-use Huangdijia\Youdu\Facades\HttpClient;
 use Huangdijia\Youdu\Exceptions\ErrorCode;
+use Huangdijia\Youdu\Facades\HttpClient;
+use Illuminate\Support\Str;
 
 class User
 {
@@ -280,12 +281,56 @@ class User
      */
     public function setAvatar($userId, string $file)
     {
-        $url = $this->app->url('/cgi/avatar/set');
-        // TODO
+        if (preg_match('/^https?:\/\//i', $file)) { // 远程文件
+            $contextOptions = stream_context_create([
+                "ssl" => [
+                    "verify_peer"      => false,
+                    "verify_peer_name" => false,
+                ],
+            ]);
+
+            $originalContent = file_get_contents($file, false, $contextOptions);
+        } else { // 本地文件
+            $originalContent = file_get_contents($file);
+        }
+
+        // 加密文件
+        $tmpFile       = storage_path('app/youdu_' . Str::random());
+        $encryptedFile = $this->app->encryptMsg($originalContent);
+        $encryptedMsg  = $this->app->encryptMsg(json_encode([
+            'type' => 'image',
+            'name' => basename($file),
+        ]));
+
+        // 保存加密文件
+        if (false === file_put_contents($tmpFile, $encryptedFile)) {
+            throw new \Exception('Create tmpfile faild', 1);
+        }
+
+        // 封装上传参数
+        $parameters = [
+            "userId"  => $userId,
+            "file"    => make_curl_file(realpath($tmpFile)),
+            "encrypt" => $encryptedMsg,
+            "buin"    => $this->app->getBuin(),
+            "appId"   => $this->app->getAppId(),
+        ];
+
+        // 开始上传
+        $url  = $this->app->url('/cgi/avatar/set');
+        $resp = HttpClient::upload($url, $parameters);
+
+        if ($resp['errcode'] !== 0) {
+            unlink($tmpFile);
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
-     * 获取头像
+     * 获取头像（头像二进制数据）
      *
      * @param integer|string $userId
      * @param integer $size
