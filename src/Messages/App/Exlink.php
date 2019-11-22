@@ -7,7 +7,7 @@ class Exlink extends Message
     protected $exlink;
 
     /**
-     * 隐式链接
+     * 外链消息
      *
      * @param \Huangdijia\Youdu\Messages\App\Items\Exlink $exlink 消息内容，支持表情，最长不超过600个字符，超出部分将自动截取
      */
