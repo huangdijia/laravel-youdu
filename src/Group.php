@@ -16,12 +16,18 @@ class Group
     /**
      * 获取群列表
      *
-     * @param integer|array $userId
+     * @param string|int $userId
      * @return array
      */
-    public function lists($userId = 0)
+    public function lists($userId = '')
     {
-        $resp    = HttpClient::get($this->app->url('/cgi/group/list'), ['userId' => (array) $userId]);
+        $parameters = [];
+
+        if ($userId) {
+            $parameters['userId'] = $userId;
+        }
+
+        $resp    = HttpClient::get($this->app->url('/cgi/group/list'), $parameters);
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
