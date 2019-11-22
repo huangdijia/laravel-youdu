@@ -297,7 +297,6 @@ class App
         }
 
         $message->toAll($onlineOnly);
-        return $message->toJson();
 
         return $this->send($message);
     }
