@@ -35,6 +35,34 @@ class YouduServiceProvider extends ServiceProvider
         $this->app->make(ChannelManager::class)->extend('youdu', function ($app) {
             return $app->make(YouduChannel::class);
         });
+
+        $this->compat();
+    }
+
+    protected function compat()
+    {
+        $aliases = [
+            "Huangdijia\\Youdu\\App"                          => "Huangdijia\\Youdu\\Youdu",
+            "Huangdijia\\Youdu\\Messages\\App\\Exlink"        => "Huangdijia\\Youdu\\Messages\\Exlink",
+            "Huangdijia\\Youdu\\Messages\\App\\File"          => "Huangdijia\\Youdu\\Messages\\File",
+            "Huangdijia\\Youdu\\Messages\\App\\Image"         => "Huangdijia\\Youdu\\Messages\\Image",
+            "Huangdijia\\Youdu\\Messages\\App\\Link"          => "Huangdijia\\Youdu\\Messages\\Link",
+            "Huangdijia\\Youdu\\Messages\\App\\Mail"          => "Huangdijia\\Youdu\\Messages\\Mail",
+            "Huangdijia\\Youdu\\Messages\\App\\Message"       => "Huangdijia\\Youdu\\Messages\\Message",
+            "Huangdijia\\Youdu\\Messages\\App\\Mpnews"        => "Huangdijia\\Youdu\\Messages\\Mpnews",
+            "Huangdijia\\Youdu\\Messages\\App\\PopWindow"     => "Huangdijia\\Youdu\\Messages\\PopWindow",
+            "Huangdijia\\Youdu\\Messages\\App\\Sms"           => "Huangdijia\\Youdu\\Messages\\Sms",
+            "Huangdijia\\Youdu\\Messages\\App\\SysMsg"        => "Huangdijia\\Youdu\\Messages\\SysMsg",
+            "Huangdijia\\Youdu\\Messages\\App\\Text"          => "Huangdijia\\Youdu\\Messages\\Text",
+            "Huangdijia\\Youdu\\Messages\\App\\Items\\Exlink" => "Huangdijia\\Youdu\\Messages\\Items\\Exlink",
+            "Huangdijia\\Youdu\\Messages\\App\\Items\\Item"   => "Huangdijia\\Youdu\\Messages\\Items\\Item",
+            "Huangdijia\\Youdu\\Messages\\App\\Items\\Mpnews" => "Huangdijia\\Youdu\\Messages\\Items\\Mpnews",
+            "Huangdijia\\Youdu\\Messages\\App\\Items\\SysMsg" => "Huangdijia\\Youdu\\Messages\\Items\\SysMsg",
+        ];
+
+        collect($aliases)->each(function ($alias, $original) {
+            class_alias($original, $alias, true);
+        });
     }
 
     public function provides()

@@ -6,11 +6,11 @@ use Huangdijia\Youdu\Facades\HttpClient;
 
 class Group
 {
-    protected $youdu;
+    protected $app;
 
-    public function __construct(Youdu $youdu)
+    public function __construct(App $app)
     {
-        $this->youdu = $youdu;
+        $this->app = $app;
     }
 
     /**
@@ -21,14 +21,14 @@ class Group
      */
     public function lists($userId = 0)
     {
-        $resp    = HttpClient::get($this->youdu->url('/cgi/group/list'), ['userId' => (array) $userId]);
+        $resp    = HttpClient::get($this->app->url('/cgi/group/list'), ['userId' => (array) $userId]);
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
             throw new \Exception($decoded['errmsg'], 1);
         }
 
-        $decrypted = $this->youdu->decryptMsg($decoded['encrypt'] ?? '');
+        $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
 
         return json_decode($decrypted, true)['groupList'] ?? [];
     }
@@ -42,14 +42,14 @@ class Group
     public function create(string $name)
     {
         $parameters = [
-            'buin'    => $this->youdu->getBuin(),
-            'appId'   => $this->youdu->getAppId(),
-            'encrypt' => $this->youdu->encryptMsg(json_encode([
+            'buin'    => $this->app->getBuin(),
+            'appId'   => $this->app->getAppId(),
+            'encrypt' => $this->app->encryptMsg(json_encode([
                 'name' => $name,
             ])),
         ];
 
-        $resp = HttpClient::post($this->youdu->url('/cgi/group/create'), $parameters);
+        $resp = HttpClient::post($this->app->url('/cgi/group/create'), $parameters);
 
         if ($resp['httpCode'] != 200) {
             throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
@@ -61,7 +61,7 @@ class Group
             throw new \Exception($body['errmsg'], $body['errcode']);
         }
 
-        $decrypted = $this->youdu->decryptMsg($body['encrypt']);
+        $decrypted = $this->app->decryptMsg($body['encrypt']);
         $decoded   = json_decode($decrypted, true);
 
         return $decoded['id'];
@@ -75,7 +75,7 @@ class Group
      */
     public function delete(string $groupId)
     {
-        $resp    = HttpClient::get($this->youdu->url('/cgi/group/delete'), ['groupId' => $groupId]);
+        $resp    = HttpClient::get($this->app->url('/cgi/group/delete'), ['groupId' => $groupId]);
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
@@ -95,15 +95,15 @@ class Group
     public function update(string $groupId, string $name)
     {
         $parameters = [
-            'buin'    => $this->youdu->getBuin(),
-            'appId'   => $this->youdu->getAppId(),
-            'encrypt' => $this->youdu->encryptMsg(json_encode([
+            'buin'    => $this->app->getBuin(),
+            'appId'   => $this->app->getAppId(),
+            'encrypt' => $this->app->encryptMsg(json_encode([
                 'id'   => $groupId,
                 'name' => $name,
             ])),
         ];
 
-        $resp = HttpClient::post($this->youdu->url('/cgi/group/update'), $parameters);
+        $resp = HttpClient::post($this->app->url('/cgi/group/update'), $parameters);
 
         if ($resp['httpCode'] != 200) {
             throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
@@ -126,14 +126,14 @@ class Group
      */
     public function info(string $groupId)
     {
-        $resp    = HttpClient::get($this->youdu->url('/cgi/group/info'), ['id' => $groupId]);
+        $resp    = HttpClient::get($this->app->url('/cgi/group/info'), ['id' => $groupId]);
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
             throw new \Exception($decoded['errmsg'], 1);
         }
 
-        $decrypted = $this->youdu->decryptMsg($decoded['encrypt'] ?? '');
+        $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
 
         return json_decode($decrypted, true) ?? [];
     }
@@ -148,15 +148,15 @@ class Group
     public function addMember(string $groupId, array $members = [])
     {
         $parameters = [
-            'buin'    => $this->youdu->getBuin(),
-            'appId'   => $this->youdu->getAppId(),
-            'encrypt' => $this->youdu->encryptMsg(json_encode([
+            'buin'    => $this->app->getBuin(),
+            'appId'   => $this->app->getAppId(),
+            'encrypt' => $this->app->encryptMsg(json_encode([
                 'id'       => $groupId,
                 'userList' => $members,
             ])),
         ];
 
-        $resp = HttpClient::post($this->youdu->url('/cgi/group/addmember'), $parameters);
+        $resp = HttpClient::post($this->app->url('/cgi/group/addmember'), $parameters);
 
         if ($resp['httpCode'] != 200) {
             throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
@@ -181,13 +181,13 @@ class Group
     public function delMember(string $groupId, array $members = [])
     {
         $parameters = [
-            'encrypt' => $this->youdu->encryptMsg(json_encode([
+            'encrypt' => $this->app->encryptMsg(json_encode([
                 'id'       => $groupId,
                 'userList' => $members,
             ])),
         ];
 
-        $resp = HttpClient::post($this->youdu->url('/cgi/group/delmember'), $parameters);
+        $resp = HttpClient::post($this->app->url('/cgi/group/delmember'), $parameters);
 
         if ($resp['httpCode'] != 200) {
             throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
@@ -211,14 +211,14 @@ class Group
      */
     public function isMember(string $groupId, $userId)
     {
-        $resp    = HttpClient::get($this->youdu->url('/cgi/group/ismember'), ['id' => $groupId, 'userId' => $userId]);
+        $resp    = HttpClient::get($this->app->url('/cgi/group/ismember'), ['id' => $groupId, 'userId' => $userId]);
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
             throw new \Exception($decoded['errmsg'], 1);
         }
 
-        $decrypted = $this->youdu->decryptMsg($decoded['encrypt'] ?? '');
+        $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
 
         return json_decode($decrypted, true)['belong'] ?? false;
     }

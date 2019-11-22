@@ -2,16 +2,16 @@
 
 namespace Huangdijia\Youdu;
 
-use Huangdijia\Youdu\Contracts\Message;
+use Huangdijia\Youdu\Contracts\AppMessage;
 use Huangdijia\Youdu\Crypt\Prpcrypt;
 use Huangdijia\Youdu\Exceptions\ErrorCode;
 use Huangdijia\Youdu\Facades\HttpClient;
+use Huangdijia\Youdu\Messages\App\Text;
 use Huangdijia\Youdu\Messages\PopWindow;
-use Huangdijia\Youdu\Messages\Text;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
-class Youdu
+class App
 {
     protected $api;
     protected $buin;
@@ -33,7 +33,7 @@ class Youdu
         $this->dept    = new Dept($this);
         $this->group   = new Group($this);
         $this->user    = new User($this);
-        $this->session    = new Session($this);
+        $this->session = new Session($this);
     }
 
     /**
@@ -232,7 +232,7 @@ class Youdu
      *
      * @param string $toUser 接收成员的帐号列表。多个接收者用竖线分隔，最多支持1000个
      * @param string $toDept 接收部门id列表。多个接收者用竖线分隔，最多支持100个
-     * @param \Huangdijia\Youdu\Contracts\Message|string $message
+     * @param \Huangdijia\Youdu\Contracts\AppMessage|string $message
      * @return bool
      */
     public function send(string $toUser = '', string $toDept = '', $message = '')
@@ -241,8 +241,8 @@ class Youdu
             $message = new Text($message);
         }
 
-        if (!($message instanceof Message)) {
-            throw new \Exception("\$message must instanced of " . Message::class, 1);
+        if (!($message instanceof AppMessage)) {
+            throw new \Exception("\$message must instanced of " . AppMessage::class, 1);
         }
 
         if ($toUser) {
@@ -280,7 +280,7 @@ class Youdu
      * 发送消息给用户
      *
      * @param string $toUser
-     * @param \Huangdijia\Youdu\Contracts\Message|string $message
+     * @param \Huangdijia\Youdu\Contracts\AppMessage|string $message
      * @return bool
      */
     public function sendToUser(string $toUser = '', $message = '')
@@ -292,7 +292,7 @@ class Youdu
      * 发送消息至部门
      *
      * @param string $toDept
-     * @param \Huangdijia\Youdu\Contracts\Message|string $message
+     * @param \Huangdijia\Youdu\Contracts\AppMessage|string $message
      * @return bool
      */
     public function sendToDept(string $toDept = '', $message = '')

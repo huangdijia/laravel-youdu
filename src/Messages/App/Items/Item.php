@@ -1,12 +1,12 @@
 <?php
 
-namespace Huangdijia\Youdu\Messages\Items;
+namespace Huangdijia\Youdu\Messages\App\Items;
 
-use Huangdijia\Youdu\Contracts\MessageItem;
+use Huangdijia\Youdu\Contracts\AppMessageItem;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 
-class Item implements MessageItem, Arrayable, Jsonable
+class Item implements AppMessageItem, Arrayable, Jsonable
 {
     protected $items = [];
 

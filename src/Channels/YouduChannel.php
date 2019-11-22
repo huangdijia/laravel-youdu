@@ -3,7 +3,7 @@
 namespace Huangdijia\Youdu\Channels;
 
 use Huangdijia\Youdu\Contracts\Channel;
-use Huangdijia\Youdu\Contracts\Message;
+use Huangdijia\Youdu\Contracts\AppMessage;
 use Huangdijia\Youdu\Facades\Youdu as YouduFacade;
 use Illuminate\Notifications\Notification;
 
@@ -23,7 +23,7 @@ class YouduChannel implements Channel
 
         if (
             !($to = $notifiable->routeNotificationFor('youdu', $notification))
-            || !($message instanceof Message)
+            || !($message instanceof AppMessage)
         ) {
             return;
         }

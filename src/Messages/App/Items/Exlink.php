@@ -1,6 +1,6 @@
 <?php
 
-namespace Huangdijia\Youdu\Messages\Items;
+namespace Huangdijia\Youdu\Messages\App\Items;
 
 class Exlink extends Item
 {

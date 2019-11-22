@@ -8,12 +8,10 @@
     ],
     "homepage": "https://github.com/huangdijia/laravel-youdu",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "huangdijia",
-            "email": "huangdijia@gmail.com"
-        }
-    ],
+    "authors": [{
+        "name": "huangdijia",
+        "email": "huangdijia@gmail.com"
+    }],
     "require": {
         "php": ">=7.0.0",
         "illuminate/support": "^5.7|^5.8|^6.0|^7.0",

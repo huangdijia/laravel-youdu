@@ -1,6 +1,6 @@
 <?php
 
-namespace Huangdijia\Youdu\Messages;
+namespace Huangdijia\Youdu\Messages\App;
 
 class Exlink extends Message
 {
@@ -9,9 +9,9 @@ class Exlink extends Message
     /**
      * 隐式链接
      *
-     * @param \Huangdijia\Youdu\Messages\Items\Exlink $exlink 消息内容，支持表情，最长不超过600个字符，超出部分将自动截取
+     * @param \Huangdijia\Youdu\Messages\App\Items\Exlink $exlink 消息内容，支持表情，最长不超过600个字符，超出部分将自动截取
      */
-    public function __construct(\Huangdijia\Youdu\Messages\Items\Exlink $exlink)
+    public function __construct(Items\Exlink $exlink)
     {
         $this->exlink = $exlink;
     }
@@ -21,7 +21,7 @@ class Exlink extends Message
         return [
             "toUser"  => $this->toUser,
             "toDept"  => $this->toDept,
-            "msgType" => "exlink", // 消息类型，这里固定为：exlink
+            "msgType" => "exlink",
             "exlink"  => $this->exlink->toArray(),
         ];
     }

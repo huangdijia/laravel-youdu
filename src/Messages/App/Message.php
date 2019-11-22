@@ -1,8 +1,8 @@
 <?php
 
-namespace Huangdijia\Youdu\Messages;
+namespace Huangdijia\Youdu\Messages\App;
 
-use Huangdijia\Youdu\Contracts\Message as MessageContract;
+use Huangdijia\Youdu\Contracts\AppMessage as MessageContract;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 

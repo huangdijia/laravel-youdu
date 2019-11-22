@@ -1,6 +1,6 @@
 <?php
 
-namespace Huangdijia\Youdu\Messages;
+namespace Huangdijia\Youdu\Messages\App;
 
 class Sms extends Message
 {
@@ -23,7 +23,7 @@ class Sms extends Message
         return [
             "toUser"  => $this->toUser,
             "toDept"  => $this->toDept,
-            "msgType" => "sms", // 消息类型，这里固定为：sms
+            "msgType" => "sms",
             "sms"     => [
                 "from"    => $this->from,
                 "content" => $this->content,

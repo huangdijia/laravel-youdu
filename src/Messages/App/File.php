@@ -1,6 +1,6 @@
 <?php
 
-namespace Huangdijia\Youdu\Messages;
+namespace Huangdijia\Youdu\Messages\App;
 
 class File extends Message
 {
@@ -21,7 +21,7 @@ class File extends Message
         return [
             "toUser"  => $this->toUser,
             "toDept"  => $this->toDept,
-            "msgType" => "file", // 消息类型，这里固定为：file
+            "msgType" => "file",
             "file"    => [
                 "media_id" => $this->mediaId,
             ],

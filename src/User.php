@@ -7,11 +7,11 @@ use Huangdijia\Youdu\Exceptions\ErrorCode;
 
 class User
 {
-    protected $youdu;
+    protected $app;
 
-    public function __construct(Youdu $youdu)
+    public function __construct(App $app)
     {
-        $this->youdu = $youdu;
+        $this->app = $app;
     }
 
     /**
@@ -22,14 +22,14 @@ class User
      */
     public function simpleList(?int $deptId = 0)
     {
-        $resp    = HttpClient::get($this->youdu->url('/cgi/user/simplelist'), ['deptId' => $deptId]);
+        $resp    = HttpClient::get($this->app->url('/cgi/user/simplelist'), ['deptId' => $deptId]);
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
             throw new \Exception($decoded['errmsg'], 1);
         }
 
-        $decrypted = $this->youdu->decryptMsg($decoded['encrypt'] ?? '');
+        $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
 
         return json_decode($decrypted, true)['userList'] ?? [];
     }
@@ -42,14 +42,14 @@ class User
      */
     public function lists(?int $deptId = 0)
     {
-        $resp    = HttpClient::get($this->youdu->url('/cgi/user/list'), ['deptId' => $deptId]);
+        $resp    = HttpClient::get($this->app->url('/cgi/user/list'), ['deptId' => $deptId]);
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
             throw new \Exception($decoded['errmsg'], 1);
         }
 
-        $decrypted = $this->youdu->decryptMsg($decoded['encrypt'] ?? '');
+        $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
 
         return json_decode($decrypted, true)['userList'] ?? [];
     }
@@ -68,9 +68,9 @@ class User
      */
     public function create($userId, string $name, int $gender = 0, string $mobile = '', string $phone = '', string $email = '', array $dept = [])
     {
-        $parameters = $this->youdu->encryptMsg(json_encode([
-            "buin"   => $this->youdu->getBuin(),
-            "appId"  => $this->youdu->getAppId(),
+        $parameters = $this->app->encryptMsg(json_encode([
+            "buin"   => $this->app->getBuin(),
+            "appId"  => $this->app->getAppId(),
             "userId" => $userId,
             "name"   => $name,
             "gender" => $gender,
@@ -80,7 +80,7 @@ class User
             "dept"   => $dept,
         ]));
 
-        $resp = HttpClient::post($this->youdu->url('/cgi/user/create'), $parameters);
+        $resp = HttpClient::post($this->app->url('/cgi/user/create'), $parameters);
 
         if ($resp['httpCode'] != 200) {
             throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
@@ -109,9 +109,9 @@ class User
      */
     public function update($userId, string $name, int $gender = 0, string $mobile = '', string $phone = '', string $email = '', array $dept = [])
     {
-        $parameters = $this->youdu->encryptMsg(json_encode([
-            "buin"   => $this->youdu->getBuin(),
-            "appId"  => $this->youdu->getAppId(),
+        $parameters = $this->app->encryptMsg(json_encode([
+            "buin"   => $this->app->getBuin(),
+            "appId"  => $this->app->getAppId(),
             "userId" => $userId,
             "name"   => $name,
             "gender" => $gender,
@@ -121,7 +121,7 @@ class User
             "dept"   => $dept,
         ]));
 
-        $resp = HttpClient::post($this->youdu->url('/cgi/user/update'), $parameters);
+        $resp = HttpClient::post($this->app->url('/cgi/user/update'), $parameters);
 
         if ($resp['httpCode'] != 200) {
             throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
@@ -148,9 +148,9 @@ class User
      */
     public function updatePosition($userId, int $deptId, string $position = '', int $weight = 0, int $sortId = 0)
     {
-        $parameters = $this->youdu->encryptMsg(json_encode([
-            "buin"     => $this->youdu->getBuin(),
-            "appId"    => $this->youdu->getAppId(),
+        $parameters = $this->app->encryptMsg(json_encode([
+            "buin"     => $this->app->getBuin(),
+            "appId"    => $this->app->getAppId(),
             "userId"   => $userId,
             "deptId"   => $deptId,
             "position" => $position,
@@ -158,7 +158,7 @@ class User
             "sortId"   => $sortId,
         ]));
 
-        $resp = HttpClient::post($this->youdu->url('/cgi/user/positionupdate'), $parameters);
+        $resp = HttpClient::post($this->app->url('/cgi/user/positionupdate'), $parameters);
 
         if ($resp['httpCode'] != 200) {
             throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
@@ -183,13 +183,13 @@ class User
     {
         // batch delete
         if (is_array($userId)) {
-            $parameters = $this->youdu->encryptMsg(json_encode([
-                "buin"    => $this->youdu->getBuin(),
-                "appId"   => $this->youdu->getAppId(),
+            $parameters = $this->app->encryptMsg(json_encode([
+                "buin"    => $this->app->getBuin(),
+                "appId"   => $this->app->getAppId(),
                 "delList" => $userId,
             ]));
 
-            $resp = HttpClient::post($this->youdu->url('/cgi/user/batchdelete'), $parameters);
+            $resp = HttpClient::post($this->app->url('/cgi/user/batchdelete'), $parameters);
 
             if ($resp['httpCode'] != 200) {
                 throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
@@ -205,7 +205,7 @@ class User
         }
 
         // single delete
-        $resp    = HttpClient::get($this->youdu->url('/cgi/user/delete'), ['userId' => $userId]);
+        $resp    = HttpClient::get($this->app->url('/cgi/user/delete'), ['userId' => $userId]);
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
@@ -223,14 +223,14 @@ class User
      */
     public function get($userId)
     {
-        $resp    = HttpClient::get($this->youdu->url('/cgi/user/get'), ['userId' => $userId]);
+        $resp    = HttpClient::get($this->app->url('/cgi/user/get'), ['userId' => $userId]);
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
             throw new \Exception($decoded['errmsg'], 1);
         }
 
-        $decrypted = $this->youdu->decryptMsg($decoded['encrypt'] ?? '');
+        $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
 
         return json_decode($decrypted, true) ?? [];
     }
@@ -248,15 +248,15 @@ class User
         // md5 -> hex -> lower
         $passwd = strtolower(bin2hex(md5($passwd)));
 
-        $parameters = $this->youdu->encryptMsg(json_encode([
-            "buin"     => $this->youdu->getBuin(),
-            "appId"    => $this->youdu->getAppId(),
+        $parameters = $this->app->encryptMsg(json_encode([
+            "buin"     => $this->app->getBuin(),
+            "appId"    => $this->app->getAppId(),
             "userId"   => $userId,
             "authType" => $authType,
             "passwd"   => $passwd,
         ]));
 
-        $resp = HttpClient::post($this->youdu->url('/cgi/user/setauth'), $parameters);
+        $resp = HttpClient::post($this->app->url('/cgi/user/setauth'), $parameters);
 
         if ($resp['httpCode'] != 200) {
             throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
@@ -280,7 +280,7 @@ class User
      */
     public function setAvatar($userId, string $file)
     {
-        $url = $this->youdu->url('/cgi/avatar/set');
+        $url = $this->app->url('/cgi/avatar/set');
         // TODO
     }
 
@@ -293,8 +293,8 @@ class User
      */
     public function getAvatar($userId, int $size = 0)
     {
-        $resp      = HttpClient::get($this->youdu->url('/cgi/avatar/get'), ['userId' => $userId, 'size' => $size]);
-        $decrypted = $this->youdu->decryptMsg($resp['body'] ?? '');
+        $resp      = HttpClient::get($this->app->url('/cgi/avatar/get'), ['userId' => $userId, 'size' => $size]);
+        $decrypted = $this->app->decryptMsg($resp['body'] ?? '');
 
         return $decrypted;
     }
@@ -307,7 +307,7 @@ class User
      */
     public function identify(string $token)
     {
-        $resp = HttpClient::get($this->youdu->url('/cgi/identify?token=' . $token, false));
+        $resp = HttpClient::get($this->app->url('/cgi/identify?token=' . $token, false));
 
         if ($resp['httpCode'] != 200) {
             throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);

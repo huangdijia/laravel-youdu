@@ -2,7 +2,7 @@
 
 namespace Huangdijia\Youdu\Contracts;
 
-interface Message
+interface AppMessage
 {
     /**
      * Set users

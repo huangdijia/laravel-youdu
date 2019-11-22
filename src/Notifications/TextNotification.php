@@ -2,7 +2,7 @@
 
 namespace Huangdijia\Youdu\Notifications;
 
-use Huangdijia\Youdu\Messages\Text;
+use Huangdijia\Youdu\Messages\App\Text;
 
 class TextNotification extends Notification
 {

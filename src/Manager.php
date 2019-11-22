@@ -16,7 +16,7 @@ class Manager
 
     /**
      * Get config
-     * 
+     *
      * @param string|null $key
      * @param mixed $default
      */
@@ -31,29 +31,29 @@ class Manager
 
     /**
      * Get app
-     * 
+     *
      * @param string|null $name
      */
     public function app(?string $name = null)
     {
         $name = $name ?: Arr::get($this->config, 'default', 'default');
 
-        if (isset($this->apps[$name])) {
-            return $this->apps[$name];
+        if (!isset($this->apps[$name])) {
+            if (!isset($this->config['apps'][$name])) {
+                throw new \Exception("config 'youdu.apps.{$name}' is undefined", 1);
+            }
+
+            $config = $this->config['apps'][$name];
+
+            $this->apps[$name] = new App(
+                $this->config['api'],
+                $this->config['buin'],
+                $config['app_id'],
+                $config['aes_key']
+            );
         }
 
-        if (!isset($this->config['apps'][$name])) {
-            throw new \Exception("config 'youdu.apps.{$name}' is undefined", 1);
-        }
-
-        $config = $this->config['apps'][$name];
-
-        return $this->apps[$name] = new Youdu(
-            $this->config['api'],
-            $this->config['buin'],
-            $config['app_id'],
-            $config['aes_key']
-        );
+        return $this->apps[$name];
     }
 
     /**

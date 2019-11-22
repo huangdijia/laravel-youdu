@@ -1,6 +1,6 @@
 <?php
 
-namespace Huangdijia\Youdu\Messages;
+namespace Huangdijia\Youdu\Messages\App;
 
 class Mpnews extends Message
 {
@@ -9,9 +9,9 @@ class Mpnews extends Message
     /**
      * 图文消息
      *
-     * @param \Huangdijia\Youdu\Messages\Items\Mpnews $mpnews 消息内容，支持表情，最长不超过600个字符，超出部分将自动截取
+     * @param \Huangdijia\Youdu\Messages\App\Items\Mpnews $mpnews 消息内容，支持表情，最长不超过600个字符，超出部分将自动截取
      */
-    public function __construct(\Huangdijia\Youdu\Messages\Items\Mpnews $mpnews)
+    public function __construct(Items\Mpnews $mpnews)
     {
         $this->mpnews = $mpnews;
     }
@@ -21,7 +21,7 @@ class Mpnews extends Message
         return [
             "toUser"  => $this->toUser,
             "toDept"  => $this->toDept,
-            "msgType" => "mpnews", // 消息类型，这里固定为：mpnews
+            "msgType" => "mpnews",
             "mpnews"  => $this->mpnews->toArray(),
         ];
     }

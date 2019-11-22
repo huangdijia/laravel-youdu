@@ -9,11 +9,11 @@ use Huangdijia\Youdu\Contracts\SessionMessage;
 
 class Session
 {
-    protected $youdu;
+    protected $app;
 
-    public function __construct(Youdu $youdu)
+    public function __construct(App $app)
     {
-        $this->youdu = $youdu;
+        $this->app = $app;
     }
 
     /**
@@ -28,9 +28,9 @@ class Session
     public function create(string $title, string $creator = '', array $member = [], string $type = 'multi')
     {
         $parameters = [
-            'buin'    => $this->youdu->getBuin(),
-            'appId'   => $this->youdu->getAppId(),
-            'encrypt' => $this->youdu->encryptMsg(json_encode([
+            'buin'    => $this->app->getBuin(),
+            'appId'   => $this->app->getAppId(),
+            'encrypt' => $this->app->encryptMsg(json_encode([
                 'title'   => $title,
                 'creator' => $creator,
                 'type'    => $type,
@@ -46,7 +46,7 @@ class Session
             return (string) $item;
         }, $member);
 
-        $resp = HttpClient::post($this->youdu->url('/cgi/session/create'), $parameters);
+        $resp = HttpClient::post($this->app->url('/cgi/session/create'), $parameters);
 
         if ($resp['httpCode'] != 200) {
             throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
@@ -58,7 +58,7 @@ class Session
             throw new \Exception($body['errmsg'], $body['errcode']);
         }
 
-        $decrypted = $this->youdu->decryptMsg($body['encrypt']);
+        $decrypted = $this->app->decryptMsg($body['encrypt']);
         $decoded   = json_decode($decrypted, true);
 
         return $decoded;
@@ -85,9 +85,9 @@ class Session
         }, $delMember);
 
         $parameters = [
-            'buin'    => $this->youdu->getBuin(),
-            'appId'   => $this->youdu->getAppId(),
-            'encrypt' => $this->youdu->encryptMsg(json_encode([
+            'buin'    => $this->app->getBuin(),
+            'appId'   => $this->app->getAppId(),
+            'encrypt' => $this->app->encryptMsg(json_encode([
                 'sessionId' => $sessionId,
                 'title'     => $title,
                 'opUser'    => $opUser,
@@ -96,7 +96,7 @@ class Session
             ])),
         ];
 
-        $resp = HttpClient::post($this->youdu->url('/cgi/session/update'), $parameters);
+        $resp = HttpClient::post($this->app->url('/cgi/session/update'), $parameters);
 
         if ($resp['httpCode'] != 200) {
             throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
@@ -108,7 +108,7 @@ class Session
             throw new \Exception($body['errmsg'], $body['errcode']);
         }
 
-        $decrypted = $this->youdu->decryptMsg($body['encrypt']);
+        $decrypted = $this->app->decryptMsg($body['encrypt']);
         $decoded   = json_decode($decrypted, true);
 
         return $decoded;
@@ -122,14 +122,14 @@ class Session
      */
     public function info(string $sessionId)
     {
-        $resp    = HttpClient::get($this->youdu->url('/cgi/session/get'), ['sessionId' => $sessionId]);
+        $resp    = HttpClient::get($this->app->url('/cgi/session/get'), ['sessionId' => $sessionId]);
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
             throw new \Exception($decoded['errmsg'], 1);
         }
 
-        $decrypted = $this->youdu->decryptMsg($decoded['encrypt'] ?? '');
+        $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
 
         return json_decode($decrypted, true) ?? [];
     }
@@ -146,12 +146,12 @@ class Session
     public function send(SessionMessage $message)
     {
         $parameters = [
-            'buin'    => $this->youdu->getBuin(),
-            'appId'   => $this->youdu->getAppId(),
-            'encrypt' => $this->youdu->encryptMsg($message->toJson()),
+            'buin'    => $this->app->getBuin(),
+            'appId'   => $this->app->getAppId(),
+            'encrypt' => $this->app->encryptMsg($message->toJson()),
         ];
 
-        $resp = HttpClient::post($this->youdu->url('/cgi/session/send'), $parameters);
+        $resp = HttpClient::post($this->app->url('/cgi/session/send'), $parameters);
 
         if ($resp['httpCode'] != 200) {
             throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);

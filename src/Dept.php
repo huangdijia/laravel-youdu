@@ -6,11 +6,11 @@ use Huangdijia\Youdu\Facades\HttpClient;
 
 class Dept
 {
-    protected $youdu;
+    protected $app;
 
-    public function __construct(Youdu $youdu)
+    public function __construct(App $app)
     {
-        $this->youdu = $youdu;
+        $this->app = $app;
     }
 
     /**
@@ -21,14 +21,14 @@ class Dept
      */
     public function lists(int $parentDeptId = 0)
     {
-        $resp    = HttpClient::get($this->youdu->url('/cgi/dept/list'), ['id' => $parentDeptId]);
+        $resp    = HttpClient::get($this->app->url('/cgi/dept/list'), ['id' => $parentDeptId]);
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
             throw new \Exception($decoded['errmsg'], 1);
         }
 
-        $decrypted = $this->youdu->decryptMsg($decoded['encrypt'] ?? '');
+        $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
 
         return json_decode($decrypted, true)['deptList'] ?? [];
     }
@@ -46,9 +46,9 @@ class Dept
     public function create(int $deptId, string $name, int $parentId = 0, $sortId = 0, string $alias = '')
     {
         $parameters = [
-            'buin'    => $this->youdu->getBuin(),
-            'appId'   => $this->youdu->getAppId(),
-            'encrypt' => $this->youdu->encryptMsg(json_encode([
+            'buin'    => $this->app->getBuin(),
+            'appId'   => $this->app->getAppId(),
+            'encrypt' => $this->app->encryptMsg(json_encode([
                 'id'       => $deptId,
                 'name'     => $name,
                 'parentId' => $parentId,
@@ -57,7 +57,7 @@ class Dept
             ])),
         ];
 
-        $resp = HttpClient::post($this->youdu->url('/cgi/dept/create'), $parameters);
+        $resp = HttpClient::post($this->app->url('/cgi/dept/create'), $parameters);
 
         if ($resp['httpCode'] != 200) {
             throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
@@ -69,7 +69,7 @@ class Dept
             throw new \Exception($body['errmsg'], $body['errcode']);
         }
 
-        $decrypted = $this->youdu->decryptMsg($body['encrypt']);
+        $decrypted = $this->app->decryptMsg($body['encrypt']);
         $decoded   = json_decode($decrypted, true);
 
         return $decoded['id'];
@@ -88,9 +88,9 @@ class Dept
     public function update(int $deptId, string $name, int $parentId = 0, $sortId = 0, string $alias = '')
     {
         $parameters = [
-            'buin'    => $this->youdu->getBuin(),
-            'appId'   => $this->youdu->getAppId(),
-            'encrypt' => $this->youdu->encryptMsg(json_encode([
+            'buin'    => $this->app->getBuin(),
+            'appId'   => $this->app->getAppId(),
+            'encrypt' => $this->app->encryptMsg(json_encode([
                 'id'       => $deptId,
                 'name'     => $name,
                 'parentId' => $parentId,
@@ -99,7 +99,7 @@ class Dept
             ])),
         ];
 
-        $resp = HttpClient::post($this->youdu->url('/cgi/dept/update'), $parameters);
+        $resp = HttpClient::post($this->app->url('/cgi/dept/update'), $parameters);
 
         if ($resp['httpCode'] != 200) {
             throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
@@ -122,7 +122,7 @@ class Dept
      */
     public function delete(int $deptId)
     {
-        $resp    = HttpClient::get($this->youdu->url('/cgi/dept/delete'), ['id' => $deptId]);
+        $resp    = HttpClient::get($this->app->url('/cgi/dept/delete'), ['id' => $deptId]);
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
@@ -140,14 +140,14 @@ class Dept
      */
     public function getId(string $alias = '')
     {
-        $resp    = HttpClient::get($this->youdu->url('/cgi/dept/list'), ['alias' => $alias]);
+        $resp    = HttpClient::get($this->app->url('/cgi/dept/list'), ['alias' => $alias]);
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
             throw new \Exception($decoded['errmsg'], 1);
         }
 
-        $decrypted = $this->youdu->decryptMsg($decoded['encrypt'] ?? '');
+        $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
 
         return json_decode($decrypted, true)['aliasList'] ?? [];
     }
