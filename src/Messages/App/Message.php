@@ -23,6 +23,16 @@ abstract class Message implements MessageContract, Arrayable, Jsonable
 
     public function toJson($options = JSON_UNESCAPED_UNICODE)
     {
-        return json_encode($this->toArray(), $options);
+        $data = $this->toArray();
+
+        if (is_null($this->toUser)) {
+            unset($data['toUser']);
+        }
+
+        if (is_null($this->toDept)) {
+            unset($data['toDept']);
+        }
+
+        return json_encode($data, $options);
     }
 }
