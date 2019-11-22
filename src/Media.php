@@ -53,21 +53,37 @@ class Media
      */
     public function upload(string $file = '', string $fileType = 'file')
     {
-        if (!in_array($fileType, ['file', 'voice', 'video', 'image'])) {
-            throw new \Exception('Unsupport file type ' . $fileType, 1);
+        if (preg_match('/^https?:\/\//i', $file)) { // 远程文件
+            $contextOptions = stream_context_create([
+                "ssl" => [
+                    "verify_peer"      => false,
+                    "verify_peer_name" => false,
+                ],
+            ]);
+
+            $originalContent = file_get_contents($file, false, $contextOptions);
+        } else { // 本地文件
+            if (!in_array($fileType, ['file', 'voice', 'video', 'image'])) {
+                throw new \Exception('Unsupport file type ' . $fileType, 1);
+            }
+
+            $originalContent = file_get_contents($file);
         }
 
+        // 加密文件
         $tmpFile       = storage_path('app/youdu_' . Str::random());
-        $encryptedFile = $this->app->encryptMsg(file_get_contents($file));
+        $encryptedFile = $this->app->encryptMsg($originalContent);
         $encryptedMsg  = $this->app->encryptMsg(json_encode([
             'type' => $fileType ?? 'file',
             'name' => basename($file),
         ]));
 
+        // 保存加密文件
         if (false === file_put_contents($tmpFile, $encryptedFile)) {
             throw new \Exception('Create tmpfile faild', 1);
         }
 
+        // 封装上传参数
         $parameters = [
             "file"    => make_curl_file(realpath($tmpFile)),
             "encrypt" => $encryptedMsg,
@@ -75,9 +91,11 @@ class Media
             "appId"   => $this->app->getAppId(),
         ];
 
+        // 开始上传
         $url  = $this->app->url('/cgi/media/upload');
         $resp = HttpClient::upload($url, $parameters);
 
+        // 出错后删除加密文件
         if ($resp['errcode'] !== 0) {
             unlink($tmpFile);
 
@@ -91,6 +109,7 @@ class Media
             throw new \Exception('mediaId is empty', 1);
         }
 
+        // 删除加密文件
         unlink($tmpFile);
 
         return $decoded['mediaId'];
