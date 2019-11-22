@@ -24,17 +24,17 @@ class YouduServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/youdu.php', 'youdu');
 
-        $this->app->when(Manager::class)
-            ->needs('$config')
-            ->give(config('youdu'));
-
-        $this->app->singleton('youdu.manager', function ($app) {
-            return $app->make(Manager::class);
+        $this->app->singleton(Manager::class, function ($app) {
+            return new Manager(config('youdu'));
         });
 
-        $this->app->singleton('youdu.http.client', function ($app) {
-            return $app->make(Client::class);
+        $this->app->alias(Manager::class, 'youdu.manager');
+
+        $this->app->singleton(Client::class, function ($app) {
+            return new Client();
         });
+
+        $this->app->alias(Client::class, 'youdu.http.client');
 
         $this->app->make(ChannelManager::class)->extend('youdu', function ($app) {
             return $app->make(YouduChannel::class);
@@ -72,8 +72,14 @@ class YouduServiceProvider extends ServiceProvider
     public function provides()
     {
         return collect(config('youdu.apps', []))
-            ->transform(function ($item, $name) {
-                return 'youdu.' . $name;
+            ->merge([
+                Client::class,
+                Manager::class,
+                'youdu.manager',
+                'youdu.http.client',
+            ])
+            ->transform(function ($item, $app) {
+                return 'youdu.' . $app;
             })
             ->all();
     }
