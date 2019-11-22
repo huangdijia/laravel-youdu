@@ -8,20 +8,20 @@ use Illuminate\Contracts\Support\Jsonable;
 
 abstract class Message implements MessageContract, Arrayable, Jsonable
 {
-    protected $toUser = '';
-    protected $toDept = '';
+    protected $toUser;
+    protected $toDept;
 
-    public function toUser(string $toUser = '')
+    public function toUser(string $toUser)
     {
         $this->toUser = $toUser;
     }
 
-    public function toDept(string $toDept = '')
+    public function toDept(string $toDept)
     {
         $this->toDept = $toDept;
     }
 
-    public function toJson($options = 0)
+    public function toJson($options = JSON_UNESCAPED_UNICODE)
     {
         return json_encode($this->toArray(), $options);
     }

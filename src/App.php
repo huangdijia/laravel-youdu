@@ -6,8 +6,9 @@ use Huangdijia\Youdu\Contracts\AppMessage;
 use Huangdijia\Youdu\Crypt\Prpcrypt;
 use Huangdijia\Youdu\Exceptions\ErrorCode;
 use Huangdijia\Youdu\Facades\HttpClient;
-use Huangdijia\Youdu\Messages\App\Text;
 use Huangdijia\Youdu\Messages\App\PopWindow;
+use Huangdijia\Youdu\Messages\App\SysMsg;
+use Huangdijia\Youdu\Messages\App\Text;
 use Illuminate\Support\Facades\Cache;
 
 class App
@@ -212,29 +213,11 @@ class App
     /**
      * 发送应用消息
      *
-     * @param string $toUser 接收成员的帐号列表。多个接收者用竖线分隔，最多支持1000个
-     * @param string $toDept 接收部门id列表。多个接收者用竖线分隔，最多支持100个
      * @param \Huangdijia\Youdu\Contracts\AppMessage|string $message
      * @return bool
      */
-    public function send(string $toUser = '', string $toDept = '', $message = '')
+    public function send(AppMessage $message)
     {
-        if (is_string($message)) {
-            $message = new Text($message);
-        }
-
-        if (!($message instanceof AppMessage)) {
-            throw new \Exception("\$message must instanced of " . AppMessage::class, 1);
-        }
-
-        if ($toUser) {
-            $message->toUser($toUser);
-        }
-
-        if ($toDept) {
-            $message->toDept($toDept);
-        }
-
         $encrypted  = $this->encryptMsg($message->toJson());
         $parameters = [
             "buin"    => $this->buin,
@@ -261,25 +244,62 @@ class App
     /**
      * 发送消息给用户
      *
-     * @param string $toUser
+     * @param string $toUser 接收成员的帐号列表。多个接收者用竖线分隔，最多支持1000个
      * @param \Huangdijia\Youdu\Contracts\AppMessage|string $message
      * @return bool
      */
     public function sendToUser(string $toUser = '', $message = '')
     {
-        return $this->send($toUser, '', $message);
+        if (is_string($message)) {
+            $message = new Text($message);
+        }
+
+        $message->toUser($toUser);
+
+        return $this->send($message);
     }
 
     /**
      * 发送消息至部门
      *
-     * @param string $toDept
+     * @param string $toDept $toDept 接收部门id列表。多个接收者用竖线分隔，最多支持100个
      * @param \Huangdijia\Youdu\Contracts\AppMessage|string $message
      * @return bool
      */
     public function sendToDept(string $toDept = '', $message = '')
     {
-        return $this->send('', $toDept, $message);
+        if (is_string($message)) {
+            $message = new Text($message);
+        }
+
+        $message->toDept($toDept);
+
+        return $this->send($message);
+    }
+
+    /**
+     * 发送系统消息
+     *
+     * @param \Huangdijia\Youdu\Messages\App\SysMsg|string $message
+     * @param boolean $onlineOnly
+     * @return bool
+     */
+    public function sendToAll($message, bool $onlineOnly = false)
+    {
+        if (is_string($message)) {
+            $items = new Messages\App\Items\SysMsg();
+            $items->addText($message);
+            $message = new SysMsg($items);
+        }
+
+        if (!($message instanceof SysMsg)) {
+            throw new \Exception('$message must instanceof' . SysMsg::class);
+        }
+
+        $message->toAll($onlineOnly);
+        return $message->toJson();
+
+        return $this->send($message);
     }
 
     /**

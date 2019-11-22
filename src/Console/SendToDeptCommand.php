@@ -3,22 +3,24 @@
 namespace Huangdijia\Youdu\Console;
 
 use Huangdijia\Youdu\Facades\Youdu;
+use Huangdijia\Youdu\Messages\App\Text;
 use Illuminate\Console\Command;
 
-class SendCommand extends Command
+class SendToDeptCommand extends Command
 {
-    protected $signature   = 'youdu:send {message} {--to= : Users, implode by \'|\'} {--dept= : Depts, implode by \'|\'} {--app=default}';
+    protected $signature   = 'youdu:sendToDept {dept} {message} {--app=default}';
     protected $description = 'Send a youdu message';
 
     public function handle()
     {
-        $toUser  = (string) $this->option('to');
-        $toDept  = (string) $this->option('dept');
+        $toDept  = (string) $this->argument('dept');
         $message = (string) $this->argument('message');
         $app     = (string) $this->option('app');
 
         try {
-            Youdu::app($app)->send($toUser, $toDept, $message);
+            $message = new Text($message);
+
+            Youdu::app($app)->sendToDept($message);
         } catch (\Exception $e) {
             $this->warn($e->getMessage());
             return;

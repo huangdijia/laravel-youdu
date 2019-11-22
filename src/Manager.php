@@ -6,7 +6,7 @@ use Illuminate\Support\Arr;
 
 class Manager
 {
-    protected $apps;
+    protected $apps = [];
     protected $config;
 
     public function __construct(array $config)
@@ -30,7 +30,7 @@ class Manager
     }
 
     /**
-     * Get app
+     * Get an app
      *
      * @param string|null $name
      */
@@ -57,7 +57,9 @@ class Manager
     }
 
     /**
-     * @return mixed
+     * Get all app
+     * 
+     * @return array
      */
     public function apps()
     {

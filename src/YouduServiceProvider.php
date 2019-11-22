@@ -15,7 +15,8 @@ class YouduServiceProvider extends ServiceProvider
             $this->publishes([__DIR__ . '/../config/youdu.php' => $this->app->basePath('config/youdu.php')]);
 
             $this->commands([
-                Console\SendCommand::class,
+                Console\SendToUserCommand::class,
+                Console\SendToDeptCommand::class,
             ]);
         }
     }

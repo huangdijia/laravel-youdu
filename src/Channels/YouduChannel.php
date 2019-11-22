@@ -4,7 +4,7 @@ namespace Huangdijia\Youdu\Channels;
 
 use Huangdijia\Youdu\Contracts\Channel;
 use Huangdijia\Youdu\Contracts\AppMessage;
-use Huangdijia\Youdu\Facades\Youdu as YouduFacade;
+use Huangdijia\Youdu\Facades\Youdu;
 use Illuminate\Notifications\Notification;
 
 class YouduChannel implements Channel
@@ -28,6 +28,6 @@ class YouduChannel implements Channel
             return;
         }
 
-        return YouduFacade::app($app)->send($to, '', $message);
+        return Youdu::app($app)->sendToUser($to, $message);
     }
 }

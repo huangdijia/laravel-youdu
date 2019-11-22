@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @see \Huangdijia\Youdu\App
+ * @method static mixed config(?stirng $key = null, $default = null)
+ * @method static \Huangdijia\Youdu\App app(string $name)
+ * @method static array apps()
  * @method static int getBuin()
  * @method static string getAppId()
  * @method static string getAesKey()
@@ -17,10 +20,11 @@ use Illuminate\Support\Facades\Facade;
  * @method string url(string $uri = '', bool $withAccessToken = true)
  * @method string encryptMsg(string $unencrypted = '')
  * @method string decryptMsg(?string $encrypted)
- * @method static bool send(string $toUser = '', string $toDept = '', $message = '')
+ * @method static string getAccessToken()
+ * @method static bool send(\Huangdijia\Youdu\Contracts\AppMessage $message)
  * @method static bool sendToUser(string $toUser = '', $message = '')
  * @method static bool sendToDept(string $toDept = '', $message = '')
- * @method static string getAccessToken()
+ * @method static bool sendToAll(\Huangdijia\Youdu\Messages\App\SysMsg $message, bool $onlineOnly = false)
  * @method static bool setNoticeCount(string $account = '', string $tip = '', int $msgCount = 0)
  * @method static bool popWindow(string $toUser = '', string $toDept = '', PopWindow $message)
  */

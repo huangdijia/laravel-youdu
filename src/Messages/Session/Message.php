@@ -12,30 +12,30 @@ abstract class Message implements SessionMessage, Arrayable, Jsonable
     protected $receiver;
     protected $sessionId;
 
-    public function sender(string $sender = '')
+    public function sender(string $sender)
     {
         $this->sender = $sender;
     }
 
-    public function receiver(string $receiver = '')
+    public function receiver(string $receiver)
     {
         $this->receiver = $receiver;
     }
 
-    public function session(string $sessionId = '')
+    public function session(string $sessionId)
     {
         $this->sessionId = $sessionId;
     }
 
-    public function toJson($options = 0)
+    public function toJson($options = JSON_UNESCAPED_UNICODE)
     {
         $data = $this->toArray();
 
-        if (!$this->receiver) {
+        if (is_null($this->receiver)) {
             unset($data['receiver']);
         }
 
-        if (!$this->sessionId) {
+        if (is_null($this->sessionId)) {
             unset($data['sessionId']);
         }
 
