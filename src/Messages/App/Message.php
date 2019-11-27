@@ -2,11 +2,12 @@
 
 namespace Huangdijia\Youdu\Messages\App;
 
-use Huangdijia\Youdu\Contracts\AppMessage as MessageContract;
+use Huangdijia\Youdu\Contracts\AppMessage;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
+use JsonSerializable;
 
-abstract class Message implements MessageContract, Arrayable, Jsonable
+abstract class Message implements AppMessage, Arrayable, Jsonable, JsonSerializable
 {
     protected $toUser;
     protected $toDept;
@@ -23,6 +24,11 @@ abstract class Message implements MessageContract, Arrayable, Jsonable
 
     public function toJson($options = JSON_UNESCAPED_UNICODE)
     {
+        return json_encode($this->jsonSerialize(), $options);
+    }
+
+    public function jsonSerialize()
+    {
         $data = $this->toArray();
 
         if (is_null($this->toUser)) {
@@ -33,6 +39,6 @@ abstract class Message implements MessageContract, Arrayable, Jsonable
             unset($data['toDept']);
         }
 
-        return json_encode($data, $options);
+        return $data;
     }
 }
