@@ -62,15 +62,15 @@ Youdu::sendToDept('dept1|dept2', new File($mediaId)); // $mediaId 通过 uploadF
 
 |类型|类|
 |--|--|
-|文本|Huangdijia\Youdu\Messages\Text|
-|图片|Huangdijia\Youdu\Messages\Image|
-|文件|Huangdijia\Youdu\Messages\File|
-|图文|Huangdijia\Youdu\Messages\Mpnews|
-|链接|Huangdijia\Youdu\Messages\Link|
-|外部链接|Huangdijia\Youdu\Messages\Exlink|
-|系统|Huangdijia\Youdu\Messages\SysMsg|
-|短信|Huangdijia\Youdu\Messages\Sms|
-|邮件|Huangdijia\Youdu\Messages\Mail|
+|文本|Huangdijia\Youdu\Messages\App\Text|
+|图片|Huangdijia\Youdu\Messages\App\Image|
+|文件|Huangdijia\Youdu\Messages\App\File|
+|图文|Huangdijia\Youdu\Messages\App\Mpnews|
+|链接|Huangdijia\Youdu\Messages\App\Link|
+|外部链接|Huangdijia\Youdu\Messages\App\Exlink|
+|系统|Huangdijia\Youdu\Messages\App\SysMsg|
+|短信|Huangdijia\Youdu\Messages\App\Sms|
+|邮件|Huangdijia\Youdu\Messages\App\Mail|
 
 ### Upload file
 
