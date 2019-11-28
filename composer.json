@@ -1,6 +1,6 @@
 {
     "name": "huangdijia/laravel-youdu",
-    "description": "youdu for laravel",
+    "description": "youdu sdk for laravel",
     "type": "library",
     "keywords": [
         "laravel",
