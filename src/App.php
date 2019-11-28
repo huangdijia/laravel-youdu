@@ -9,6 +9,7 @@ use Huangdijia\Youdu\Facades\HttpClient;
 use Huangdijia\Youdu\Messages\App\PopWindow;
 use Huangdijia\Youdu\Messages\App\SysMsg;
 use Huangdijia\Youdu\Messages\App\Text;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 class App
@@ -168,7 +169,7 @@ class App
         $appId = $this->appId;
         $buin  = $this->buin;
 
-        return Cache::remember('youdu:tokens:' . $appId, 2 * 3600, function () use ($buin, $appId) {
+        return Cache::remember('youdu:tokens:' . $appId, Carbon::now()->addHours(2), function () use ($buin, $appId) {
             $encrypted  = $this->encryptMsg((string) time());
             $parameters = [
                 "buin"    => $buin,
