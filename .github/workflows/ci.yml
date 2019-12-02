@@ -43,5 +43,6 @@ jobs:
 
       - name: Test
         run: |
+          cp phpunit.xml.dist phpunit.xml
           composer test
           # vendor/bin/phpunit
