@@ -6,7 +6,7 @@ use Huangdijia\Youdu\App;
 use Huangdijia\Youdu\Dept;
 use Huangdijia\Youdu\Facades\Youdu;
 use Huangdijia\Youdu\Group;
-use Huangdijia\Youdu\Http\Client;
+use Huangdijia\Youdu\Contracts\HttpClient;
 use Huangdijia\Youdu\Manager;
 use Huangdijia\Youdu\Media;
 use Huangdijia\Youdu\Session;
@@ -76,7 +76,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
     public function testContainers()
     {
         $this->assertInstanceOf(Manager::class, app('youdu.manager'));
-        // $this->assertInstanceOf(Client::class, app('youdu.http.client'));
+        $this->assertInstanceOf(HttpClient::class, app('youdu.http.client'));
     }
 
     /**
