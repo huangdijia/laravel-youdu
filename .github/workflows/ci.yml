@@ -1,4 +1,4 @@
-name: YOUDU MESSAGE TEST
+name: YOUDU ACTIONS
 
 on: [push]
 
