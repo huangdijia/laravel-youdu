@@ -47,4 +47,5 @@ jobs:
         run: |
           # cd $HOME/laravel-youdu/laravel-youdu
           # cd /home/runner/work/laravel-youdu/laravel-youdu
-          composer test
+          # composer test
+          vendor/bin/phpunit
