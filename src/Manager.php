@@ -20,7 +20,7 @@ class Manager
      * @param string|null $key
      * @param mixed $default
      */
-    public function config(?stirng $key = null, $default = null)
+    public function config(?string $key = null, $default = null)
     {
         if (is_null($key)) {
             return $this->config;

@@ -1,3 +1,5 @@
 composer.lock
 vendor
 tests
+*.bak
+*.phpunit.result.cache
