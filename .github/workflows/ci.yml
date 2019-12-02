@@ -39,10 +39,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd $HOME/laravel-youdu/laravel-youdu
+          # cd $HOME/laravel-youdu/laravel-youdu
+          cd /home/runner/work/laravel-youdu/laravel-youdu
           composer install --dev
 
       - name: Test
         run: |
-          cd $HOME/laravel-youdu/laravel-youdu
+          # cd $HOME/laravel-youdu/laravel-youdu
+          cd /home/runner/work/laravel-youdu/laravel-youdu
           composer test
