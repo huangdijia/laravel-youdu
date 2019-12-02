@@ -43,7 +43,5 @@ jobs:
 
       - name: Test
         run: |
-          cp phpunit.xml.dist phpunit.xml
-          ls -al
           composer test
           # vendor/bin/phpunit
