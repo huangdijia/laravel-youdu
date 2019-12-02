@@ -2,26 +2,43 @@
 
 namespace Huangdijia\Youdu\Http;
 
+use CURLFile;
+use Huangdijia\Youdu\Contracts\HttpClient;
 use Huangdijia\Youdu\Exceptions\Http\RequestException;
 
-class Client
+class Curl implements HttpClient
 {
+    protected $baseUri;
+
+    /**
+     * construct
+     *
+     * @param string $baseUri
+     * @param integer $timeout
+     */
+    public function __construct(string $baseUri = '', int $timeout = 2)
+    {
+        $this->baseUri = trim($baseUri, '/');
+    }
+
     /**
      * GET
      *
-     * @param string $url
+     * @param string $uri
      * @param array $data
      * @return array|bool
      * @throws \Huangdijia\Youdu\Exceptions\Http\RequestException
      */
-    public function get(string $url = '', array $data = [])
+    public function get(string $uri = '', array $data = [])
     {
         if (!empty($data)) {
-            $url .= (false !== strpos($url, '?') ? '&' : '&') . http_build_query($data);
+            $uri .= (false !== strpos($uri, '?') ? '&' : '&') . http_build_query($data);
         }
 
+        $uri = $this->baseUri . $uri;
+
         $options = [
-            CURLOPT_URL            => $url,
+            CURLOPT_URL            => $uri,
             CURLOPT_HEADER         => true,
             CURLOPT_SSL_VERIFYPEER => 0,
             CURLOPT_RETURNTRANSFER => true,
@@ -52,15 +69,17 @@ class Client
     /**
      * POST
      *
-     * @param string $url
+     * @param string $uri
      * @param array $data
      * @return array
      * @throws \Huangdijia\Youdu\Exceptions\Http\RequestException
      */
-    public function post(string $url, array $data = [])
+    public function post(string $uri, array $data = [])
     {
+        $uri = $this->baseUri . $uri;
+
         $options = [
-            CURLOPT_URL            => $url,
+            CURLOPT_URL            => $uri,
             CURLOPT_POST           => 1,
             CURLOPT_HEADER         => true,
             CURLOPT_SSL_VERIFYPEER => 0,
@@ -97,15 +116,17 @@ class Client
     /**
      * Upload
      *
-     * @param string $url
+     * @param string $uri
      * @param array $data
      * @return array|bool
      * @throws \Huangdijia\Youdu\Exceptions\Http\RequestException
      */
-    public function upload(string $url, array $data = [])
+    public function upload(string $uri, array $data = [])
     {
+        $uri = $this->baseUri . $uri;
+        
         $options = [
-            CURLOPT_URL            => $url,
+            CURLOPT_URL            => $uri,
             CURLOPT_POST           => 1,
             CURLOPT_POSTFIELDS     => $data,
             CURLOPT_RETURNTRANSFER => true,
@@ -122,6 +143,21 @@ class Client
         curl_close($ch);
 
         return json_decode($response, true);
+    }
+
+    /**
+     * Make a upload file
+     *
+     * @param string $file
+     * @return CURLFile
+     */
+    public function makeUploadFile(string $file)
+    {
+        $mime = mime_content_type($file);
+        $info = pathinfo($file);
+        $name = $info['basename'];
+
+        return new CURLFile($file, $mime, $name);
     }
 
 }

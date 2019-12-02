@@ -2,10 +2,11 @@
 
 namespace Huangdijia\Youdu;
 
-use Huangdijia\Youdu\Channels\YouduChannel;
-use Huangdijia\Youdu\Http\Client;
-use Illuminate\Notifications\ChannelManager;
+use Huangdijia\Youdu\Http\Curl;
+use Huangdijia\Youdu\Http\Guzzle;
 use Illuminate\Support\ServiceProvider;
+use Huangdijia\Youdu\Channels\YouduChannel;
+use Illuminate\Notifications\ChannelManager;
 
 class YouduServiceProvider extends ServiceProvider
 {
@@ -31,11 +32,10 @@ class YouduServiceProvider extends ServiceProvider
 
         $this->app->alias(Manager::class, 'youdu.manager');
 
-        $this->app->singleton(Client::class, function ($app) {
-            return new Client();
+        $this->app->singleton('youdu.http.client', function ($app) {
+            // return new Curl(config('youdu.api'));
+            return new Guzzle(config('youdu.api'));
         });
-
-        $this->app->alias(Client::class, 'youdu.http.client');
 
         $this->app->make(ChannelManager::class)->extend('youdu', function ($app) {
             return $app->make(YouduChannel::class);
@@ -46,7 +46,6 @@ class YouduServiceProvider extends ServiceProvider
     {
         return collect(config('youdu.apps', []))
             ->merge([
-                Client::class,
                 Manager::class,
                 'youdu.manager',
                 'youdu.http.client',

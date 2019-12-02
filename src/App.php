@@ -202,7 +202,7 @@ class App
      */
     public function url(string $uri = '', bool $withAccessToken = true)
     {
-        $url = rtrim($this->api, '/') . '/' . ltrim($uri, '/');
+        $url = '/' . ltrim($uri, '/');
 
         if ($withAccessToken) {
             $url .= '?accessToken=' . $this->getAccessToken();

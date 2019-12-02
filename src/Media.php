@@ -85,7 +85,7 @@ class Media
 
         // 封装上传参数
         $parameters = [
-            "file"    => make_curl_file(realpath($tmpFile)),
+            "file"    => HttpClient::makeUploadFile(realpath($tmpFile)),
             "encrypt" => $encryptedMsg,
             "buin"    => $this->app->getBuin(),
             "appId"   => $this->app->getAppId(),

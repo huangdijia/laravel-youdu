@@ -76,7 +76,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
     public function testContainers()
     {
         $this->assertInstanceOf(Manager::class, app('youdu.manager'));
-        $this->assertInstanceOf(Client::class, app('youdu.http.client'));
+        // $this->assertInstanceOf(Client::class, app('youdu.http.client'));
     }
 
     /**
@@ -92,4 +92,35 @@ class TestCase extends \Orchestra\Testbench\TestCase
         $this->assertInstanceOf(Session::class, Youdu::session());
         $this->assertInstanceOf(User::class, Youdu::user());
     }
+
+    public function testGetAccessToken()
+    {
+        $token = Youdu::getAccessToken();
+        $this->assertNotEmpty($token);
+    }
+
+    public function testSendAppMessage()
+    {
+        $this->assertTrue(true, Youdu::sendToUser('10400', 'test'));
+    }
+
+    // public function testDept()
+    // {
+    //     $depts = Youdu::dept()->lists();
+    //     $this->assertNotEmpty($depts);
+    // }
+
+    // public function testUploadLocalFile()
+    // {
+    //     $mediaId = Youdu::media()->upload('/Users/hdj/Downloads/YD20191128-154517.png', 'image');
+    //     $sent    = Youdu::sendToUser('10400', new \Huangdijia\Youdu\Messages\App\Image($mediaId));
+    //     $this->assertTrue($sent);
+    // }
+
+    // public function testUploadRemoteFile()
+    // {
+    //     $mediaId = Youdu::media()->upload('http://s1.dev.8591.com.tw/img/active/2019/summerback/logo.gif', 'image');
+    //     $sent    = Youdu::sendToUser('10400', new \Huangdijia\Youdu\Messages\App\Image($mediaId));
+    //     $this->assertTrue($sent);
+    // }
 }
