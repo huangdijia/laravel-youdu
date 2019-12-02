@@ -18,6 +18,9 @@
         "illuminate/notifications": "^5.5|^6.0|^7.0",
         "illuminate/contracts": "^5.5|^6.0|^7.0"
     },
+    "require-dev": {
+        "orchestra/testbench": "^4.0"
+    },
     "autoload": {
         "files": [
             "src/helpers.php"
@@ -27,9 +30,6 @@
         }
     },
     "autoload-dev": {
-        "classmap": [
-            "tests/TestCase.php"
-        ],
         "psr-4": {
             "Huangdijia\\Youdu\\Tests\\": "tests/"
         }
@@ -43,8 +43,5 @@
                 "Huangdijia\\Youdu\\YouduServiceProvider"
             ]
         }
-    },
-    "require-dev": {
-        "orchestra/testbench": "^4.0"
     }
 }
