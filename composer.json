@@ -35,7 +35,7 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/phpunit"
+        "test": "vendor/bin/phpunit -c phpunit.xml.dist tests/Test*.php"
     },
     "extra": {
         "laravel": {
