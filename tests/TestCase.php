@@ -93,16 +93,16 @@ class TestCase extends \Orchestra\Testbench\TestCase
         $this->assertInstanceOf(User::class, Youdu::user());
     }
 
-    public function testGetAccessToken()
-    {
-        $token = Youdu::getAccessToken();
-        $this->assertNotEmpty($token);
-    }
+    // public function testGetAccessToken()
+    // {
+    //     $token = Youdu::getAccessToken();
+    //     $this->assertNotEmpty($token);
+    // }
 
-    public function testSendAppMessage()
-    {
-        $this->assertTrue(true, Youdu::sendToUser('10400', 'test'));
-    }
+    // public function testSendAppMessage()
+    // {
+    //     $this->assertTrue(true, Youdu::sendToUser('10400', 'test'));
+    // }
 
     // public function testDept()
     // {
