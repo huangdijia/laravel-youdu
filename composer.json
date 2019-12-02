@@ -35,7 +35,7 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/phpunit -c phpunit.xml.dist tests/TestCase.php"
+        "test": "@php vendor/bin/phpunit -c ./ --color"
     },
     "extra": {
         "laravel": {
