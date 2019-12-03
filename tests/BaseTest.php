@@ -10,7 +10,6 @@ use Huangdijia\Youdu\Manager;
 use Huangdijia\Youdu\Media;
 use Huangdijia\Youdu\Session;
 use Huangdijia\Youdu\User;
-use Huangdijia\Youdu\YouduServiceProvider;
 
 class BaseTest extends TestCase
 {
