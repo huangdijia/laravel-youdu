@@ -32,8 +32,7 @@ class Guzzle implements HttpClient
      */
     public function get(string $uri, array $data = [])
     {
-        // fix url to uri
-        $uri      = $this->url2uri($uri) . (false === strpos($uri, '?') ? '?' : '&') . http_build_query($data);
+        $uri      .= (false === strpos($uri, '?') ? '?' : '&') . http_build_query($data);
         $response = $this->client->request('GET', $uri);
 
         return [
@@ -52,8 +51,6 @@ class Guzzle implements HttpClient
      */
     public function post(string $uri, array $data = [])
     {
-        // fix url to uri
-        $uri      = $this->url2uri($uri);
         $response = $this->client->request('POST', $uri, [
             'json' => $data,
         ]);
@@ -74,8 +71,6 @@ class Guzzle implements HttpClient
      */
     public function upload(string $uri, array $data = [])
     {
-        // fix url to uri
-        $uri   = $this->url2uri($uri);
         $parts = [];
 
         foreach ((array) $data as $key => $value) {
@@ -90,17 +85,6 @@ class Guzzle implements HttpClient
         ]);
 
         return json_decode($response->getBody()->getContents(), true);
-    }
-
-    /**
-     * url transform to uri
-     *
-     * @param string $url
-     * @return string
-     */
-    public function url2uri(string $url)
-    {
-        return preg_replace('/^https?:\/\/([^\/]+)/', '', $url);
     }
 
     /**
