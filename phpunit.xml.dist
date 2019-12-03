@@ -9,10 +9,10 @@
         </testsuite>
     </testsuites>
     <php>
-        <env name="APP_KEY" value="AckfSECXIvnK5r28GVIWUAxmbBSjTsmF" />
+        <env name="APP_KEY" value="APP_KEY" />
         <env name="YOUDU_API" value="http://localhost:7080" />
         <env name="YOUDU_BUIN" value="12345678" />
-        <env name="YOUDU_DEFAULT_APP_ID" value="88888888" />
-        <env name="YOUDU_DEFAULT_AES_KEY" value="AckfSECXIvnK5r28GVIWUAxmbBSjTsmF" />
+        <env name="YOUDU_DEFAULT_APP_ID" value="YOUDU_APP_ID" />
+        <env name="YOUDU_DEFAULT_AES_KEY" value="YOUDU_AES_KEY" />
     </php>
 </phpunit>

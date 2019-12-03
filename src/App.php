@@ -202,13 +202,13 @@ class App
      */
     public function url(string $uri = '', bool $withAccessToken = true)
     {
-        $url = '/' . ltrim($uri, '/');
+        $uri = '/' . ltrim($uri, '/');
 
         if ($withAccessToken) {
-            $url .= '?accessToken=' . $this->getAccessToken();
+            $uri .= '?accessToken=' . $this->getAccessToken();
         }
 
-        return $url;
+        return $uri;
     }
 
     /**
