@@ -36,7 +36,7 @@
         }
     },
     "scripts": {
-        "test": "@php vendor/bin/phpunit"
+        "test": "@php vendor/bin/phpunit ./tests/BaseTest.php"
     },
     "extra": {
         "laravel": {

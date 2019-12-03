@@ -49,7 +49,7 @@ class Media
      *
      * @param string $file
      * @param string $fileType image代表图片、file代表普通文件、voice代表语音、video代表视频
-     * @return void
+     * @return string
      */
     public function upload(string $file = '', string $fileType = 'file')
     {
