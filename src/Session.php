@@ -2,11 +2,12 @@
 
 namespace Huangdijia\Youdu;
 
-use Huangdijia\Youdu\Facades\HttpClient;
+use Huangdijia\Youdu\Exceptions\AccessTokenDoesNotExistException;
 use Huangdijia\Youdu\Exceptions\ErrorCode;
 use Huangdijia\Youdu\Exceptions\Exception;
+use Huangdijia\Youdu\Facades\HttpClient;
+use Huangdijia\Youdu\Messages\Session\Message;
 use Huangdijia\Youdu\Messages\Session\Text;
-use Huangdijia\Youdu\Contracts\SessionMessage;
 
 class Session
 {
@@ -138,13 +139,12 @@ class Session
     /**
      * 发送会话消息
      *
-     * @param string $sender
-     * @param string $message
-     * @param string $receiver
-     * @param string $sessionId
+     * @param \Huangdijia\Youdu\Messages\Session\Message $message
      * @return bool
+     * @throws Exception
+     * @throws AccessTokenDoesNotExistException
      */
-    public function send(SessionMessage $message)
+    public function send(Message $message)
     {
         $parameters = [
             'buin'    => $this->app->getBuin(),

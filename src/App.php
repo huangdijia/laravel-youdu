@@ -2,16 +2,17 @@
 
 namespace Huangdijia\Youdu;
 
-use Illuminate\Support\Carbon;
 use Huangdijia\Youdu\Crypt\Prpcrypt;
-use Illuminate\Support\Facades\Cache;
-use Huangdijia\Youdu\Messages\App\Text;
-use Huangdijia\Youdu\Facades\HttpClient;
-use Huangdijia\Youdu\Messages\App\SysMsg;
-use Huangdijia\Youdu\Contracts\AppMessage;
+use Huangdijia\Youdu\Exceptions\AccessTokenDoesNotExistException;
 use Huangdijia\Youdu\Exceptions\ErrorCode;
 use Huangdijia\Youdu\Exceptions\Exception;
+use Huangdijia\Youdu\Facades\HttpClient;
+use Huangdijia\Youdu\Messages\App\Message;
 use Huangdijia\Youdu\Messages\App\PopWindow;
+use Huangdijia\Youdu\Messages\App\SysMsg;
+use Huangdijia\Youdu\Messages\App\Text;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class App
 {
@@ -206,7 +207,13 @@ class App
         $uri = '/' . ltrim($uri, '/');
 
         if ($withAccessToken) {
-            $uri .= '?accessToken=' . $this->getAccessToken();
+            $token = $this->getAccessToken();
+
+            if (!$token) {
+                throw new AccessTokenDoesNotExistException("AccessToken does not exist", 1);
+            }
+
+            $uri .= "?accessToken={$token}";
         }
 
         return $uri;
@@ -215,10 +222,10 @@ class App
     /**
      * 发送应用消息
      *
-     * @param \Huangdijia\Youdu\Contracts\AppMessage|string $message
+     * @param \Huangdijia\Youdu\Messages\App\Message $message
      * @return bool
      */
-    public function send(AppMessage $message)
+    public function send(Message $message)
     {
         $encrypted  = $this->encryptMsg($message->toJson());
         $parameters = [
@@ -247,7 +254,7 @@ class App
      * 发送消息给用户
      *
      * @param string $toUser 接收成员的帐号列表。多个接收者用竖线分隔，最多支持1000个
-     * @param \Huangdijia\Youdu\Contracts\AppMessage|string $message
+     * @param \Huangdijia\Youdu\Messages\App\Message|string $message
      * @return bool
      */
     public function sendToUser(string $toUser = '', $message = '')
@@ -265,7 +272,7 @@ class App
      * 发送消息至部门
      *
      * @param string $toDept $toDept 接收部门id列表。多个接收者用竖线分隔，最多支持100个
-     * @param \Huangdijia\Youdu\Contracts\AppMessage|string $message
+     * @param \Huangdijia\Youdu\Messages\App\Message|string $message
      * @return bool
      */
     public function sendToDept(string $toDept = '', $message = '')
