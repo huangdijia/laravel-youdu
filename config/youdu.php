@@ -1,6 +1,8 @@
 <?php
 return [
     'api'            => env('YOUDU_API', ''),
+    'timeout'        => (int) env('YOUDU_TIMEOUT', 2),
+
     'buin'           => (int) env('YOUDU_BUIN', 0),
 
     'default'        => 'default',
@@ -9,9 +11,9 @@ return [
             'app_id'  => env('YOUDU_APP_ID', ''),
             'aes_key' => env('YOUDU_AES_KEY', ''),
         ],
-        // 'other' => [
-        //     'app_id'  => env('YOUDU_APP_ID', ''),
-        //     'aes_key' => env('YOUDU_AES_KEY', ''),
+        // 'another' => [
+        //     'app_id'  => env('ANOTHER_YOUDU_APP_ID', ''),
+        //     'aes_key' => env('ANOTHER_YOUDU_AES_KEY', ''),
         // ],
     ],
 
