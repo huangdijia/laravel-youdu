@@ -2,11 +2,7 @@
 
 namespace Huangdijia\Youdu\Tests;
 
-use Huangdijia\Youdu\App;
-use Huangdijia\Youdu\Dept;
 use Huangdijia\Youdu\Facades\Youdu;
-use Huangdijia\Youdu\Media;
-use Huangdijia\Youdu\YouduServiceProvider;
 
 class AppTest extends TestCase
 {

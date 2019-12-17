@@ -3,6 +3,8 @@
 namespace Huangdijia\Youdu;
 
 use Huangdijia\Youdu\Facades\HttpClient;
+use Huangdijia\Youdu\Exceptions\ErrorCode;
+use Huangdijia\Youdu\Exceptions\Exception;
 
 class Group
 {
@@ -31,7 +33,7 @@ class Group
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
-            throw new \Exception($decoded['errmsg'], 1);
+            throw new Exception($decoded['errmsg'], 1);
         }
 
         $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
@@ -58,13 +60,13 @@ class Group
         $resp = HttpClient::post($this->app->url('/cgi/group/create'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
 
         if ($body['errcode'] !== 0) {
-            throw new \Exception($body['errmsg'], $body['errcode']);
+            throw new Exception($body['errmsg'], $body['errcode']);
         }
 
         $decrypted = $this->app->decryptMsg($body['encrypt']);
@@ -85,7 +87,7 @@ class Group
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
-            throw new \Exception($decoded['errmsg'], 1);
+            throw new Exception($decoded['errmsg'], 1);
         }
 
         return true;
@@ -112,13 +114,13 @@ class Group
         $resp = HttpClient::post($this->app->url('/cgi/group/update'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
 
         if ($body['errcode'] !== 0) {
-            throw new \Exception($body['errmsg'], $body['errcode']);
+            throw new Exception($body['errmsg'], $body['errcode']);
         }
 
         return true;
@@ -136,7 +138,7 @@ class Group
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
-            throw new \Exception($decoded['errmsg'], 1);
+            throw new Exception($decoded['errmsg'], 1);
         }
 
         $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
@@ -165,13 +167,13 @@ class Group
         $resp = HttpClient::post($this->app->url('/cgi/group/addmember'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
 
         if ($body['errcode'] !== 0) {
-            throw new \Exception($body['errmsg'], $body['errcode']);
+            throw new Exception($body['errmsg'], $body['errcode']);
         }
 
         return true;
@@ -196,13 +198,13 @@ class Group
         $resp = HttpClient::post($this->app->url('/cgi/group/delmember'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
 
         if ($body['errcode'] !== 0) {
-            throw new \Exception($body['errmsg'], $body['errcode']);
+            throw new Exception($body['errmsg'], $body['errcode']);
         }
 
         return true;
@@ -221,7 +223,7 @@ class Group
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
-            throw new \Exception($decoded['errmsg'], 1);
+            throw new Exception($decoded['errmsg'], 1);
         }
 
         $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');

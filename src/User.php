@@ -2,9 +2,10 @@
 
 namespace Huangdijia\Youdu;
 
-use Huangdijia\Youdu\Exceptions\ErrorCode;
-use Huangdijia\Youdu\Facades\HttpClient;
 use Illuminate\Support\Str;
+use Huangdijia\Youdu\Facades\HttpClient;
+use Huangdijia\Youdu\Exceptions\ErrorCode;
+use Huangdijia\Youdu\Exceptions\Exception;
 
 class User
 {
@@ -27,7 +28,7 @@ class User
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
-            throw new \Exception($decoded['errmsg'], 1);
+            throw new Exception($decoded['errmsg'], 1);
         }
 
         $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
@@ -47,7 +48,7 @@ class User
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
-            throw new \Exception($decoded['errmsg'], 1);
+            throw new Exception($decoded['errmsg'], 1);
         }
 
         $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
@@ -84,13 +85,13 @@ class User
         $resp = HttpClient::post($this->app->url('/cgi/user/create'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
 
         if ($body['errcode'] !== 0) {
-            throw new \Exception($body['errmsg'], $body['errcode']);
+            throw new Exception($body['errmsg'], $body['errcode']);
         }
 
         return true;
@@ -125,13 +126,13 @@ class User
         $resp = HttpClient::post($this->app->url('/cgi/user/update'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
 
         if ($body['errcode'] !== 0) {
-            throw new \Exception($body['errmsg'], $body['errcode']);
+            throw new Exception($body['errmsg'], $body['errcode']);
         }
 
         return true;
@@ -162,13 +163,13 @@ class User
         $resp = HttpClient::post($this->app->url('/cgi/user/positionupdate'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
 
         if ($body['errcode'] !== 0) {
-            throw new \Exception($body['errmsg'], $body['errcode']);
+            throw new Exception($body['errmsg'], $body['errcode']);
         }
 
         return true;
@@ -193,13 +194,13 @@ class User
             $resp = HttpClient::post($this->app->url('/cgi/user/batchdelete'), $parameters);
 
             if ($resp['httpCode'] != 200) {
-                throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+                throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
             }
 
             $body = json_decode($resp['body'], true);
 
             if ($body['errcode'] !== 0) {
-                throw new \Exception($body['errmsg'], $body['errcode']);
+                throw new Exception($body['errmsg'], $body['errcode']);
             }
 
             return true;
@@ -210,7 +211,7 @@ class User
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
-            throw new \Exception($decoded['errmsg'], 1);
+            throw new Exception($decoded['errmsg'], 1);
         }
 
         return true;
@@ -228,7 +229,7 @@ class User
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
-            throw new \Exception($decoded['errmsg'], 1);
+            throw new Exception($decoded['errmsg'], 1);
         }
 
         $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
@@ -260,13 +261,13 @@ class User
         $resp = HttpClient::post($this->app->url('/cgi/user/setauth'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
 
         if ($body['errcode'] !== 0) {
-            throw new \Exception($body['errmsg'], $body['errcode']);
+            throw new Exception($body['errmsg'], $body['errcode']);
         }
 
         return true;
@@ -304,7 +305,7 @@ class User
 
         // 保存加密文件
         if (false === file_put_contents($tmpFile, $encryptedFile)) {
-            throw new \Exception('Create tmpfile faild', 1);
+            throw new Exception('Create tmpfile faild', 1);
         }
 
         // 封装上传参数
@@ -355,13 +356,13 @@ class User
         $resp = HttpClient::get($this->app->url('/cgi/identify?token=' . $token, false));
 
         if ($resp['httpCode'] != 200) {
-            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $decoded = json_decode($resp['body'], true);
 
         if (($decoded['status']['code'] ?? 0) != 0) {
-            throw new \Exception($decoded['status']['message'], 1);
+            throw new Exception($decoded['status']['message'], 1);
         }
 
         return $decoded['userInfo'] ?? [];

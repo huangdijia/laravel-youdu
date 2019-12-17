@@ -3,6 +3,7 @@
 namespace Huangdijia\Youdu;
 
 use Illuminate\Support\Arr;
+use Huangdijia\Youdu\Exceptions\Exception;
 
 class Manager
 {
@@ -40,7 +41,7 @@ class Manager
 
         if (!isset($this->apps[$name])) {
             if (!isset($this->config['apps'][$name])) {
-                throw new \Exception("config 'youdu.apps.{$name}' is undefined", 1);
+                throw new Exception("config 'youdu.apps.{$name}' is undefined", 1);
             }
 
             $config = $this->config['apps'][$name];

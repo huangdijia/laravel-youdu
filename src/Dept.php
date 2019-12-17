@@ -3,6 +3,8 @@
 namespace Huangdijia\Youdu;
 
 use Huangdijia\Youdu\Facades\HttpClient;
+use Huangdijia\Youdu\Exceptions\ErrorCode;
+use Huangdijia\Youdu\Exceptions\Exception;
 
 class Dept
 {
@@ -25,7 +27,7 @@ class Dept
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
-            throw new \Exception($decoded['errmsg'], 1);
+            throw new Exception($decoded['errmsg'], 1);
         }
 
         $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
@@ -60,13 +62,13 @@ class Dept
         $resp = HttpClient::post($this->app->url('/cgi/dept/create'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
 
         if ($body['errcode'] !== 0) {
-            throw new \Exception($body['errmsg'], $body['errcode']);
+            throw new Exception($body['errmsg'], $body['errcode']);
         }
 
         $decrypted = $this->app->decryptMsg($body['encrypt']);
@@ -102,13 +104,13 @@ class Dept
         $resp = HttpClient::post($this->app->url('/cgi/dept/update'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
 
         if ($body['errcode'] !== 0) {
-            throw new \Exception($body['errmsg'], $body['errcode']);
+            throw new Exception($body['errmsg'], $body['errcode']);
         }
 
         return true;
@@ -126,7 +128,7 @@ class Dept
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
-            throw new \Exception($decoded['errmsg'], 1);
+            throw new Exception($decoded['errmsg'], 1);
         }
 
         return true;
@@ -144,7 +146,7 @@ class Dept
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
-            throw new \Exception($decoded['errmsg'], 1);
+            throw new Exception($decoded['errmsg'], 1);
         }
 
         $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');

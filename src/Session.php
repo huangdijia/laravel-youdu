@@ -4,6 +4,7 @@ namespace Huangdijia\Youdu;
 
 use Huangdijia\Youdu\Facades\HttpClient;
 use Huangdijia\Youdu\Exceptions\ErrorCode;
+use Huangdijia\Youdu\Exceptions\Exception;
 use Huangdijia\Youdu\Messages\Session\Text;
 use Huangdijia\Youdu\Contracts\SessionMessage;
 
@@ -39,7 +40,7 @@ class Session
         ];
 
         if (count($member) < 3) {
-            throw new \Exception("Members too less", 1);
+            throw new Exception("Members too less", 1);
         }
 
         $member = array_map(function ($item) {
@@ -49,13 +50,13 @@ class Session
         $resp = HttpClient::post($this->app->url('/cgi/session/create'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
 
         if ($body['errcode'] !== 0) {
-            throw new \Exception($body['errmsg'], $body['errcode']);
+            throw new Exception($body['errmsg'], $body['errcode']);
         }
 
         $decrypted = $this->app->decryptMsg($body['encrypt']);
@@ -99,13 +100,13 @@ class Session
         $resp = HttpClient::post($this->app->url('/cgi/session/update'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
 
         if ($body['errcode'] !== 0) {
-            throw new \Exception($body['errmsg'], $body['errcode']);
+            throw new Exception($body['errmsg'], $body['errcode']);
         }
 
         $decrypted = $this->app->decryptMsg($body['encrypt']);
@@ -126,7 +127,7 @@ class Session
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
-            throw new \Exception($decoded['errmsg'], 1);
+            throw new Exception($decoded['errmsg'], 1);
         }
 
         $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
@@ -154,13 +155,13 @@ class Session
         $resp = HttpClient::post($this->app->url('/cgi/session/send'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
 
         if ($body['errcode'] !== 0) {
-            throw new \Exception($body['errmsg'], $body['errcode']);
+            throw new Exception($body['errmsg'], $body['errcode']);
         }
 
         return true;

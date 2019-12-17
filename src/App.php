@@ -2,15 +2,16 @@
 
 namespace Huangdijia\Youdu;
 
-use Huangdijia\Youdu\Contracts\AppMessage;
-use Huangdijia\Youdu\Crypt\Prpcrypt;
-use Huangdijia\Youdu\Exceptions\ErrorCode;
-use Huangdijia\Youdu\Facades\HttpClient;
-use Huangdijia\Youdu\Messages\App\PopWindow;
-use Huangdijia\Youdu\Messages\App\SysMsg;
-use Huangdijia\Youdu\Messages\App\Text;
 use Illuminate\Support\Carbon;
+use Huangdijia\Youdu\Crypt\Prpcrypt;
 use Illuminate\Support\Facades\Cache;
+use Huangdijia\Youdu\Messages\App\Text;
+use Huangdijia\Youdu\Facades\HttpClient;
+use Huangdijia\Youdu\Messages\App\SysMsg;
+use Huangdijia\Youdu\Contracts\AppMessage;
+use Huangdijia\Youdu\Exceptions\ErrorCode;
+use Huangdijia\Youdu\Exceptions\Exception;
+use Huangdijia\Youdu\Messages\App\PopWindow;
 
 class App
 {
@@ -131,7 +132,7 @@ class App
         [$errcode, $encrypted] = $this->crypter->encrypt($unencrypted, $this->appId);
 
         if ($errcode != 0) {
-            throw new \Exception($encrypted, $errcode);
+            throw new Exception($encrypted, $errcode);
         }
 
         return $encrypted;
@@ -147,13 +148,13 @@ class App
     public function decryptMsg(?string $encrypted)
     {
         if (strlen($this->aesKey) != 44) {
-            throw new \Exception('Illegal aesKey', ErrorCode::$IllegalAesKey);
+            throw new Exception('Illegal aesKey', ErrorCode::$IllegalAesKey);
         }
 
         [$errcode, $decrypted] = $this->crypter->decrypt($encrypted, $this->appId);
 
         if ($errcode != 0) {
-            throw new \Exception('Decrypt faild', $errcode);
+            throw new Exception('Decrypt faild', $errcode);
         }
 
         return $decrypted;
@@ -182,7 +183,7 @@ class App
             $body = json_decode($resp['body'], true);
 
             if ($body['errcode'] != 0) {
-                throw new \Exception($body['errmsg'], $body['errcode']);
+                throw new Exception($body['errmsg'], $body['errcode']);
             }
 
             $decrypted = $this->decryptMsg($body['encrypt']);
@@ -230,13 +231,13 @@ class App
         $resp = HttpClient::post($url, $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
 
         if ($body['errcode'] !== 0) {
-            throw new \Exception($body['errmsg'], $body['errcode']);
+            throw new Exception($body['errmsg'], $body['errcode']);
         }
 
         return true;
@@ -294,7 +295,7 @@ class App
         }
 
         if (!($message instanceof SysMsg)) {
-            throw new \Exception('$message must instanceof' . SysMsg::class);
+            throw new Exception('$message must instanceof' . SysMsg::class);
         }
 
         $message->toAll($onlineOnly);
@@ -324,13 +325,13 @@ class App
         $resp = HttpClient::post($this->url('/cgi/set.ent.notice'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
 
         if ($body['errcode'] !== 0) {
-            throw new \Exception($body['errmsg'], $body['errcode']);
+            throw new Exception($body['errmsg'], $body['errcode']);
         }
 
         return true;
@@ -362,13 +363,13 @@ class App
         $resp = HttpClient::post($this->url('/cgi/popwindow'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
 
         if ($body['errcode'] !== 0) {
-            throw new \Exception($body['errmsg'], $body['errcode']);
+            throw new Exception($body['errmsg'], $body['errcode']);
         }
 
         return true;

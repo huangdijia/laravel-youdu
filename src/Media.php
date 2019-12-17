@@ -2,8 +2,10 @@
 
 namespace Huangdijia\Youdu;
 
-use Huangdijia\Youdu\Facades\HttpClient;
 use Illuminate\Support\Str;
+use Huangdijia\Youdu\Facades\HttpClient;
+use Huangdijia\Youdu\Exceptions\ErrorCode;
+use Huangdijia\Youdu\Exceptions\Exception;
 
 class Media
 {
@@ -54,7 +56,7 @@ class Media
     public function upload(string $file = '', string $fileType = 'file')
     {
         if (!in_array($fileType, ['file', 'voice', 'video', 'image'])) {
-            throw new \Exception('Unsupport file type ' . $fileType, 1);
+            throw new Exception('Unsupport file type ' . $fileType, 1);
         }
 
         if (preg_match('/^https?:\/\//i', $file)) { // 远程文件
@@ -80,7 +82,7 @@ class Media
 
         // 保存加密文件
         if (false === file_put_contents($tmpFile, $encryptedFile)) {
-            throw new \Exception('Create tmpfile faild', 1);
+            throw new Exception('Create tmpfile faild', 1);
         }
 
         // 封装上传参数
@@ -99,14 +101,14 @@ class Media
         if ($resp['errcode'] !== 0) {
             unlink($tmpFile);
 
-            throw new \Exception($resp['errmsg'], $resp['errcode']);
+            throw new Exception($resp['errmsg'], $resp['errcode']);
         }
 
         $decrypted = $this->app->decryptMsg($resp['encrypt']);
         $decoded   = json_decode($decrypted, true);
 
         if (empty($decoded['mediaId'])) {
-            throw new \Exception('mediaId is empty', 1);
+            throw new Exception('mediaId is empty', 1);
         }
 
         // 删除加密文件
@@ -143,7 +145,7 @@ class Media
         $saved  = file_put_contents($saveAs, $fileContent);
 
         if (!$saved) {
-            throw new \Exception('save faild', 1);
+            throw new Exception('save faild', 1);
         }
 
         return true;
@@ -168,19 +170,19 @@ class Media
         $resp = HttpClient::Post($url, $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new \Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
 
         if ($body['errcode'] !== 0) {
-            throw new \Exception($body['errmsg'], $body['errcode']);
+            throw new Exception($body['errmsg'], $body['errcode']);
         }
 
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
-            throw new \Exception($decoded['errmsg'], 1);
+            throw new Exception($decoded['errmsg'], 1);
         }
 
         $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
