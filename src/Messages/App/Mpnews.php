@@ -16,6 +16,10 @@ class Mpnews extends Message
         $this->mpnews = $mpnews;
     }
 
+    /**
+     * 转成 array
+     * @return array 
+     */
     public function toArray()
     {
         return [

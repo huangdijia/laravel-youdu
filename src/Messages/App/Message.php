@@ -12,21 +12,40 @@ abstract class Message implements AppMessage, Arrayable, Jsonable, JsonSerializa
     protected $toUser;
     protected $toDept;
 
+    /**
+     * 发送至用户
+     * @param string $toUser 
+     * @return void 
+     */
     public function toUser(string $toUser)
     {
         $this->toUser = $toUser;
     }
 
+    /**
+     * 发送至部门
+     * @param string $toDept 
+     * @return void 
+     */
     public function toDept(string $toDept)
     {
         $this->toDept = $toDept;
     }
 
+    /**
+     * 转成 json
+     * @param int $options 
+     * @return string|false 
+     */
     public function toJson($options = JSON_UNESCAPED_UNICODE)
     {
         return json_encode($this->jsonSerialize(), $options);
     }
 
+    /**
+     * json 序列化
+     * @return array 
+     */
     public function jsonSerialize()
     {
         $data = $this->toArray();

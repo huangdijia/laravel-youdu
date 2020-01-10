@@ -32,6 +32,10 @@ class Mail extends Message
         $this->unreadCount = $unreadCount;
     }
 
+    /**
+     * 转成 array
+     * @return array 
+     */
     public function toArray()
     {
         return [

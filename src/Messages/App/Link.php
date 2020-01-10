@@ -22,6 +22,10 @@ class Link extends Message
         ];
     }
 
+    /**
+     * 转成 array
+     * @return array 
+     */
     public function toArray()
     {
         return [

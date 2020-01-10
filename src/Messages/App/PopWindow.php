@@ -42,6 +42,10 @@ class PopWindow extends Message
 
     }
 
+    /**
+     * 转成 array
+     * @return (string|array)[] 
+     */
     public function toArray()
     {
         return [

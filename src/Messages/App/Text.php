@@ -16,6 +16,10 @@ class Text extends Message
         $this->content = $content;
     }
 
+    /**
+     * 转成 array
+     * @return (string|string[])[] 
+     */
     public function toArray()
     {
         return [

@@ -12,13 +12,17 @@ class SysMsg extends Item
      * @param integer $popDuration 弹窗显示时间，0及负数弹窗不消失，正数为对应显示秒数
      * @param array $items 消息详细内容
      */
-    public function __construct($title = '', $popDuration = 6, array $items = [])
+    public function __construct(string $title = '', int $popDuration = 6, array $items = [])
     {
         $this->title       = $title;
         $this->popDuration = $popDuration;
         $this->items       = $items;
     }
 
+    /**
+     * 转成 array
+     * @return array 
+     */
     public function toArray()
     {
         return [

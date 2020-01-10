@@ -18,6 +18,10 @@ class Sms extends Message
         $this->content = $content;
     }
 
+    /**
+     * 转成 array
+     * @return (string|array)[] 
+     */
     public function toArray()
     {
         return [

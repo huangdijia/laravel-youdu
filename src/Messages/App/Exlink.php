@@ -16,6 +16,10 @@ class Exlink extends Message
         $this->exlink = $exlink;
     }
 
+    /**
+     * 转成 array
+     * @return array 
+     */
     public function toArray()
     {
         return [

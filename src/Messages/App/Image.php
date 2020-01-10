@@ -16,6 +16,10 @@ class Image extends Message
         $this->mediaId = $mediaId;
     }
 
+    /**
+     * 转成 array
+     * @return array 
+     */
     public function toArray()
     {
         return [

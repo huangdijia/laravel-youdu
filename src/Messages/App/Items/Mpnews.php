@@ -4,6 +4,9 @@ namespace Huangdijia\Youdu\Messages\App\Items;
 
 class Mpnews extends Item
 {
+    /**
+     * @param array $items
+     */
     public function __construct(array $items = [])
     {
         $this->items = $items;
