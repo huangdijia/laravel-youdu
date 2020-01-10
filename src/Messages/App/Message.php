@@ -14,28 +14,32 @@ abstract class Message implements AppMessage, Arrayable, Jsonable, JsonSerializa
 
     /**
      * 发送至用户
-     * @param string $toUser 
-     * @return void 
+     * @param string $toUser
+     * @return void
      */
     public function toUser(string $toUser)
     {
+        // 兼容用,隔开
+        $toUser       = strtr($toUser, ',', '|');
         $this->toUser = $toUser;
     }
 
     /**
      * 发送至部门
-     * @param string $toDept 
-     * @return void 
+     * @param string $toDept
+     * @return void
      */
     public function toDept(string $toDept)
     {
+        // 兼容用,隔开
+        $toDept       = strtr($toDept, ',', '|');
         $this->toDept = $toDept;
     }
 
     /**
      * 转成 json
-     * @param int $options 
-     * @return string|false 
+     * @param int $options
+     * @return string|false
      */
     public function toJson($options = JSON_UNESCAPED_UNICODE)
     {
@@ -44,7 +48,7 @@ abstract class Message implements AppMessage, Arrayable, Jsonable, JsonSerializa
 
     /**
      * json 序列化
-     * @return array 
+     * @return array
      */
     public function jsonSerialize()
     {
