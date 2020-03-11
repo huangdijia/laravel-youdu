@@ -2,11 +2,12 @@
 
 namespace Huangdijia\Youdu\Channels;
 
-use Huangdijia\Youdu\Contracts\AppMessage;
-use Huangdijia\Youdu\Contracts\Channel;
-use Huangdijia\Youdu\Exceptions\ChannelException;
+use Throwable;
 use Huangdijia\Youdu\Facades\Youdu;
+use Huangdijia\Youdu\Contracts\Channel;
+use Huangdijia\Youdu\Contracts\AppMessage;
 use Illuminate\Notifications\Notification;
+use Huangdijia\Youdu\Exceptions\ChannelException;
 
 class YouduChannel implements Channel
 {
@@ -31,7 +32,7 @@ class YouduChannel implements Channel
             }
 
             return Youdu::app($app)->sendToUser($to, $message);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new ChannelException($e->getMessage(), 1);
         }
     }

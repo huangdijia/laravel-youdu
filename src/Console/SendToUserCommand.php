@@ -2,9 +2,10 @@
 
 namespace Huangdijia\Youdu\Console;
 
+use Throwable;
+use Illuminate\Console\Command;
 use Huangdijia\Youdu\Facades\Youdu;
 use Huangdijia\Youdu\Messages\App\Text;
-use Illuminate\Console\Command;
 
 class SendToUserCommand extends Command
 {
@@ -21,7 +22,7 @@ class SendToUserCommand extends Command
             $message = new Text($message);
 
             Youdu::app($app)->sendToUser($toUser, $message);
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             $this->warn($e->getMessage());
             return;
         }

@@ -2,6 +2,7 @@
 
 namespace Huangdijia\Youdu\Crypt;
 
+use Throwable;
 use Huangdijia\Youdu\Exceptions\ErrorCode;
 
 class SHA1
@@ -22,7 +23,7 @@ class SHA1
             $str = implode($array);
 
             return array(ErrorCode::$OK, sha1($str));
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return array(ErrorCode::$ComputeSignatureError, null);
         }
     }

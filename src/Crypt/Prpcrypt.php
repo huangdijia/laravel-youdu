@@ -2,6 +2,7 @@
 
 namespace Huangdijia\Youdu\Crypt;
 
+use Throwable;
 use Huangdijia\Youdu\Exceptions\ErrorCode;
 
 /**
@@ -40,7 +41,7 @@ class Prpcrypt
 
             // 使用BASE64对加密后的字符串进行编码
             return [ErrorCode::$OK, base64_encode($encrypted)];
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             return [ErrorCode::$EncryptAESError, 'Encrypt AES Error'];
         }
     }
@@ -59,7 +60,7 @@ class Prpcrypt
             $encrypted = base64_decode($encrypted);
             $iv        = substr($this->key, 0, 16);
             $decrypted = openssl_decrypt($encrypted, 'AES-256-CBC', $this->key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             return [ErrorCode::$DecryptAESError, 'Decrypt AES Error'];
         }
 
@@ -77,7 +78,7 @@ class Prpcrypt
             $jsonLen     = $lenList[1];
             $jsonContent = substr($content, 4, $jsonLen);
             $fromAppId   = substr($content, $jsonLen + 4);
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             return [ErrorCode::$IllegalBuffer, 'Illegal Buffer'];
         }
 
