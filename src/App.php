@@ -155,7 +155,7 @@ class App
         [$errcode, $decrypted] = $this->crypter->decrypt($encrypted, $this->appId);
 
         if ($errcode != 0) {
-            throw new Exception('Decrypt faild', $errcode);
+            throw new Exception('Decrypt faild:' . $decrypted, $errcode);
         }
 
         return $decrypted;

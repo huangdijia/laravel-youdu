@@ -2,8 +2,8 @@
 
 namespace Huangdijia\Youdu\Crypt;
 
-use Throwable;
 use Huangdijia\Youdu\Exceptions\ErrorCode;
+use Throwable;
 
 /**
  * Prpcrypt class
@@ -42,7 +42,7 @@ class Prpcrypt
             // 使用BASE64对加密后的字符串进行编码
             return [ErrorCode::$OK, base64_encode($encrypted)];
         } catch (Throwable $e) {
-            return [ErrorCode::$EncryptAESError, 'Encrypt AES Error'];
+            return [ErrorCode::$EncryptAESError, 'Encrypt AES Error:' . $e->getMessage()];
         }
     }
 
@@ -61,7 +61,7 @@ class Prpcrypt
             $iv        = substr($this->key, 0, 16);
             $decrypted = openssl_decrypt($encrypted, 'AES-256-CBC', $this->key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
         } catch (Throwable $e) {
-            return [ErrorCode::$DecryptAESError, 'Decrypt AES Error'];
+            return [ErrorCode::$DecryptAESError, 'Decrypt AES Error:' . $e->getMessage()];
         }
 
         try {
@@ -83,7 +83,7 @@ class Prpcrypt
         }
 
         if ($fromAppId != "sysOrgAssistant" && $fromAppId != $appId) {
-            return [ErrorCode::$ValidateAppIdError, 'Validate AppId Error'];
+            return [ErrorCode::$ValidateAppIdError, 'Validate AppId Error:' . $e->getMessage()];
         }
 
         return [0, $jsonContent];

@@ -2,8 +2,8 @@
 
 namespace Huangdijia\Youdu\Crypt;
 
-use Throwable;
 use Huangdijia\Youdu\Exceptions\ErrorCode;
+use Throwable;
 
 class SHA1
 {
@@ -18,13 +18,13 @@ class SHA1
     {
         //排序
         try {
-            $array = array($encrypt_msg, $token, $timestamp, $nonce);
+            $array = [$encrypt_msg, $token, $timestamp, $nonce];
             sort($array, SORT_STRING);
             $str = implode($array);
 
-            return array(ErrorCode::$OK, sha1($str));
+            return [ErrorCode::$OK, sha1($str)];
         } catch (Throwable $e) {
-            return array(ErrorCode::$ComputeSignatureError, null);
+            return [ErrorCode::$ComputeSignatureError, $e->getMessage()];
         }
     }
 
