@@ -26,6 +26,7 @@ php artisan vendor:publish --provider="Huangdijia\\Youdu\\YouduServiceProvider"
 add `YouduServiceProvider` to `bootstrap/app.php`
 
 ~~~php
+$app->register(Illuminate\Notifications\NotificationServiceProvider::class); // must before YouduServiceProvider
 $app->register(Huangdijia\Youdu\YouduServiceProvider::class);
 ~~~
 
