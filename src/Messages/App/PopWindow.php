@@ -44,7 +44,7 @@ class PopWindow extends Message
 
     /**
      * 转成 array
-     * @return (string|array)[] 
+     * @return (string|array)[]
      */
     public function toArray()
     {
@@ -52,15 +52,15 @@ class PopWindow extends Message
             "toUser"    => $this->toUser,
             "toDept"    => $this->toDept,
             "popWindow" => [
-                "url"      => $this->url,
-                "tip"      => $this->tip,
-                "title"    => $this->title,
-                "width"    => $this->width,
-                "height"   => $this->height,
-                "duration" => $this->duration,
-                "position" => $this->position,
-                "noticeId" => $this->noticeId,
-                "popMode"  => $this->popMode,
+                "url"       => $this->url,
+                "tip"       => $this->tip,
+                "title"     => $this->title,
+                "width"     => $this->width,
+                "height"    => $this->height,
+                "duration"  => $this->duration,
+                "position"  => $this->position,
+                "notice_id" => $this->noticeId,
+                "pop_mode"  => $this->popMode,
             ],
         ];
     }
