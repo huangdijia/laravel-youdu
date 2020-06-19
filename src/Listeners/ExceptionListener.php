@@ -38,17 +38,39 @@ class ExceptionListener
 
         $e = $event->context['exception'];
 
+        // $message = sprintf(
+        //     "【%s Exception Reporting】\n\nEnvironment: %s\n%sUrl: %s\nException: %s\nMessage: %s\nPosition: %s:%s\nTime: %s\n\n",
+        //     config('app.name'),
+        //     config('app.env'),
+        //     $this->getCurrentBranch(),
+        //     request()->fullUrl(),
+        //     get_class($e),
+        //     $e->getMessage(),
+        //     $e->getFile(),
+        //     $e->getLine(),
+        //     now()->toDateTimeString()
+        // );
+
+        $messages = [
+            __('youdu.environment') => config('app.env'),
+            __('youdu.branch')      => $this->getCurrentBranch(),
+            __('youdu.url')         => request()->fullUrl(),
+            __('youdu.exception')   => get_class($e),
+            __('youdu.message')     => $e->getMessage(),
+            __('youdu.position')    => $e->getFile() . ':' . $e->getLine(),
+            __('youdu.time')        => now()->toDateTimeString(),
+        ];
+
         $message = sprintf(
-            "【%s Exception Report】\n\nEnvironment: %s\n%sLink: %s\nException: %s\nMessage: %s\nPosition: %s:%s\nTime: %s\n\n",
+            "[%s %s %s]\n\n%s",
             config('app.name'),
-            config('app.env'),
-            $this->getCurrentBranch(),
-            request()->fullUrl(),
-            get_class($e),
-            $e->getMessage(),
-            $e->getFile(),
-            $e->getLine(),
-            now()->toDateTimeString()
+            __('youdu.exception'),
+            __('youdu.reporting'),
+            collect($messages)
+                ->transform(function ($item, $key) {
+                    return "{$key}: {$item}";
+                })
+                ->join("\n")
         );
 
         try {
@@ -97,6 +119,6 @@ class ExceptionListener
         $headContent   = file_get_contents($headFile);
         $currentBranch = trim(substr($headContent, 16));
 
-        return sprintf("Branch: %s\n", $currentBranch);
+        return $currentBranch;
     }
 }

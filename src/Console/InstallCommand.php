@@ -20,6 +20,10 @@ class InstallCommand extends Command
             '--provider' => YouduServiceProvider::class,
             '--tag'      => "config",
         ]);
+        $this->call('vendor:publish', [
+            '--provider' => YouduServiceProvider::class,
+            '--tag'      => "lang",
+        ]);
 
         $this->info('Installed Package');
     }

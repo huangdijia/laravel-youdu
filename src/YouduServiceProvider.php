@@ -12,7 +12,8 @@ class YouduServiceProvider extends ServiceProvider
     public function boot()
     {
         if ($this->app->runningInConsole()) {
-            $this->publishes([__DIR__ . '/../config/youdu.php' => $this->app->basePath('config/youdu.php')], 'config');
+            $this->publishes([__DIR__ . '/../config' => $this->app->basePath('config')], 'config');
+            $this->publishes([__DIR__.'/../resources/lang' => resource_path('lang')], 'lang');
 
             $this->commands([
                 Console\InstallCommand::class,

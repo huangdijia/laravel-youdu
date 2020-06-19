@@ -26,7 +26,7 @@ return [
     ],
 
     'exception'      => [
-        'ignore_environments' => ['local', 'dev'],
+        'ignore_environments' => [], // ['local', 'dev'],
         'receivers'           => [], // youdu ID
         'report_app'          => 'default',
         'report_now'          => true,
