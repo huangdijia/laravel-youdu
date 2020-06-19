@@ -68,8 +68,13 @@ class ExceptionListener
             __('youdu.reporting'),
             collect($messages)
                 ->transform(function ($item, $key) {
+                    if ($item == '') {
+                        return '';
+                    }
+
                     return "{$key}: {$item}";
                 })
+                ->filter()
                 ->join("\n")
         );
 
