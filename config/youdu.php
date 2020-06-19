@@ -24,4 +24,12 @@ return [
         'delay' => env('YOUDU_NOTIFICATION_DELAY', 0),
         'tries' => env('YOUDU_NOTIFICATION_TRIES', 3),
     ],
+
+    'exception'      => [
+        'ignore_environments' => ['local', 'dev'],
+        'receivers'           => [], // youdu ID
+        'report_app'          => 'default',
+        'report_now'          => true,
+        'show_git_branch'     => false,
+    ],
 ];
