@@ -4,10 +4,11 @@ namespace Huangdijia\Youdu;
 
 use Huangdijia\Youdu\Channels\YouduChannel;
 use Huangdijia\Youdu\Http\Guzzle;
+use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Notifications\ChannelManager;
 use Illuminate\Support\ServiceProvider;
 
-class YouduServiceProvider extends ServiceProvider
+class YouduServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     public function boot()
     {
