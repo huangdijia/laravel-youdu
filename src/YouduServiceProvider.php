@@ -13,7 +13,6 @@ class YouduServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([__DIR__ . '/../config' => $this->app->basePath('config')], 'config');
-            $this->publishes([__DIR__.'/../resources/lang' => resource_path('lang')], 'lang');
 
             $this->commands([
                 Console\InstallCommand::class,
@@ -40,6 +39,8 @@ class YouduServiceProvider extends ServiceProvider
         $this->app->make(ChannelManager::class)->extend('youdu', function ($app) {
             return $app->make(YouduChannel::class);
         });
+
+        $this->app['translator']->addJsonPath(__DIR__ . '/../resources/lang');
     }
 
     public function provides()
