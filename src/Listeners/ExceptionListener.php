@@ -104,11 +104,11 @@ class ExceptionListener
             ->put(__('youdu.environment'), config('app.env'))
             ->when($this->getCurrentBranch(), function ($collection, $branch) {
                 /** @var \Illuminate\Support\Collection $collection */
-                $collection->put(__('youdu.branch'), $branch);
+                return $collection->put(__('youdu.branch'), $branch);
             })
             ->when(!$runningInConsole, function ($collection) {
                 /** @var \Illuminate\Support\Collection $collection */
-                $collection->put(__('youdu.url'), app('request')->fullUrl());
+                return $collection->put(__('youdu.url'), app('request')->fullUrl());
             })
             ->put(__('youdu.exception'), get_class($e))
             ->put(__('youdu.message'), $e->getMessage())
