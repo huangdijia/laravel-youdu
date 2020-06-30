@@ -94,7 +94,7 @@ class ExceptionListener
      * Assemble message
      * @param Throwable $e
      * @param bool $runningInConsole
-     * @return mixed
+     * @return string
      * @throws BindingResolutionException
      * @throws UnitException
      */
