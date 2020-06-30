@@ -37,12 +37,10 @@ class ExceptionListener
             return;
         }
 
-        $message = Str::start($this->assembleMessage($event->context['exception'], app()->runningInConsole()), sprintf(
-            "[%s %s %s]\n\n",
-            config('app.name'),
-            __('youdu.exception'),
-            __('youdu.reporting')
-        ));
+        $message = Str::start(
+            $this->assembleMessage($event->context['exception'], app()->runningInConsole()),
+            __('youdu.title', ['name' => config('app.name')]) . "\n\n"
+        );
 
         try {
             collect(config('youdu.exception.receivers', []))

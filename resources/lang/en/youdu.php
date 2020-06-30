@@ -1,5 +1,6 @@
 <?php
 return [
+    'title'       => '[:NAME Exception Reporting]',
     'exception'   => 'Exception',
     'reporting'   => 'Reporting',
     'environment' => 'Environment',

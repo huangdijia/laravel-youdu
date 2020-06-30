@@ -1,5 +1,6 @@
 <?php
 return [
+    'title'       => '[:NAME 異常報告]',
     'exception'   => '異常',
     'reporting'   => '報告',
     'environment' => '環境',
