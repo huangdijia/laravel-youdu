@@ -7,6 +7,7 @@ use Huangdijia\Youdu\Http\Guzzle;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Notifications\ChannelManager;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class YouduServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -47,14 +48,15 @@ class YouduServiceProvider extends ServiceProvider implements DeferrableProvider
     public function provides()
     {
         return collect(config('youdu.apps', []))
+            ->keys()
+            ->transform(function ($app, $key) {
+                return Str::start($app, 'youdu.');
+            })
             ->merge([
                 Manager::class,
                 'youdu.manager',
                 'youdu.http.client',
             ])
-            ->transform(function ($item, $app) {
-                return 'youdu.' . $app;
-            })
             ->all();
     }
 }
