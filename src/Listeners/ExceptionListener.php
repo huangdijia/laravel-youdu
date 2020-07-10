@@ -111,6 +111,10 @@ class ExceptionListener
             ->put(__('youdu.exception'), get_class($e))
             ->put(__('youdu.message'), $e->getMessage())
             ->put(__('youdu.position'), $e->getFile() . ':' . $e->getLine())
+            ->when(defined('LARAVEL_START'), function($collection) {
+                /** @var \Illuminate\Support\Collection $collection */
+                return $collection->put(__('youdu.usetime'), number_format(microtime(true) - LARAVEL_START, 3));
+            })
             ->put(__('youdu.time'), date('Y-m-d H:i:s'))
             ->transform(function ($value, $key) {
                 return sprintf('%s: %s', $key, $value);
