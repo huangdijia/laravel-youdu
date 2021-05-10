@@ -352,7 +352,7 @@ class App
      * @param \Huangdijia\Youdu\Messages\App\PopWindow $message
      * @return bool
      */
-    public function popWindow(string $toUser = '', string $toDept = '', PopWindow $message)
+    public function popWindow(string $toUser = '', string $toDept = '', PopWindow $message = null)
     {
         if ($toUser) {
             $message->toUser($toUser);
