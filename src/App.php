@@ -27,7 +27,7 @@ class App
     protected $session;
     protected $media;
 
-    public function __construct(string $api = '', int $buin, string $appId = '', string $aesKey = '')
+    public function __construct(string $api = '', int $buin = 0, string $appId = '', string $aesKey = '')
     {
         $this->api    = $api;
         $this->buin   = $buin;
