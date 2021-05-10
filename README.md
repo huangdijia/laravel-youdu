@@ -12,7 +12,7 @@
 composer
 
 ~~~bash
-composer require huangdijia/laravel-youdu
+composer require "huangdijia/laravel-youdu:^1.0"
 ~~~
 
 publish
