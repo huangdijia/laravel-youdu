@@ -28,14 +28,14 @@ class YouduServiceProvider extends ServiceProvider implements DeferrableProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/youdu.php', 'youdu');
 
-        $this->app->singleton(Manager::class, function ($app) {
-            return new Manager(config('youdu'));
+        $this->app->bind(Manager::class, function ($app) {
+            return new Manager($app['config']['youdu']);
         });
 
         $this->app->alias(Manager::class, 'youdu.manager');
 
-        $this->app->singleton('youdu.http.client', function ($app) {
-            return new Guzzle(config('youdu.api'), (int) config('youdu.timeout', 2));
+        $this->app->bind('youdu.http.client', function ($app) {
+            return new Guzzle($app['config']['youdu.api'], (int) $app['config']['youdu.timeout'] ?? 2);
         });
 
         $this->app->make(ChannelManager::class)->extend('youdu', function ($app) {
