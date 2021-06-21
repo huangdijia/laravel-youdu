@@ -8,7 +8,20 @@ use Huangdijia\Youdu\Exceptions\Http\RequestException;
 
 class Curl implements HttpClient
 {
+    /**
+     * @var string
+     */
     protected $baseUri;
+
+    /**
+     * @var string
+     */
+    protected $userAgent;
+
+    /**
+     * @var int
+     */
+    protected $timeout;
 
     /**
      * construct
@@ -16,9 +29,11 @@ class Curl implements HttpClient
      * @param string $baseUri
      * @param integer $timeout
      */
-    public function __construct(string $baseUri = '', int $timeout = 2)
+    public function __construct(string $baseUri = '', int $timeout = 2, array $options = [])
     {
-        $this->baseUri = trim($baseUri, '/');
+        $this->baseUri   = trim($baseUri, '/');
+        $this->timeout = $timeout;
+        $this->userAgent = (string) $options['User-Agent'] ?? 'Youdu/1.0';
     }
 
     /**
@@ -42,6 +57,9 @@ class Curl implements HttpClient
             CURLOPT_HEADER         => true,
             CURLOPT_SSL_VERIFYPEER => 0,
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_USERAGENT      => $this->userAgent,
+            CURLOPT_CONNECTTIMEOUT => 0,
+            CURLOPT_TIMEOUT        => $this->timeout,
         ];
 
         $ch = curl_init();
@@ -89,6 +107,9 @@ class Curl implements HttpClient
                 'content-Length: ' . strlen(json_encode($data)),
             ],
             CURLOPT_POSTFIELDS     => json_encode($data),
+            CURLOPT_USERAGENT      => $this->userAgent,
+            CURLOPT_CONNECTTIMEOUT => 0,
+            CURLOPT_TIMEOUT        => $this->timeout,
         ];
 
         $ch = curl_init();
@@ -124,12 +145,15 @@ class Curl implements HttpClient
     public function upload(string $uri, array $data = [])
     {
         $uri = $this->baseUri . $uri;
-        
+
         $options = [
             CURLOPT_URL            => $uri,
             CURLOPT_POST           => 1,
             CURLOPT_POSTFIELDS     => $data,
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_USERAGENT      => $this->userAgent,
+            CURLOPT_CONNECTTIMEOUT => 0,
+            CURLOPT_TIMEOUT        => $this->timeout,
         ];
 
         $ch = curl_init();
