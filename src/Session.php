@@ -17,6 +17,9 @@ use Huangdijia\Youdu\Messages\Session\Text;
 
 class Session
 {
+    /**
+     * @var App
+     */
     protected $app;
 
     public function __construct(App $app)

@@ -15,6 +15,9 @@ use Illuminate\Support\Str;
 
 class User
 {
+    /**
+     * @var App
+     */
     protected $app;
 
     public function __construct(App $app)

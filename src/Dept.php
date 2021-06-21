@@ -14,6 +14,9 @@ use Huangdijia\Youdu\Facades\HttpClient;
 
 class Dept
 {
+    /**
+     * @var App
+     */
     protected $app;
 
     public function __construct(App $app)

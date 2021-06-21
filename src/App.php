@@ -22,24 +22,54 @@ use Illuminate\Support\Facades\Cache;
 
 class App
 {
+    /**
+     * @var string
+     */
     protected $api;
 
+    /**
+     * @var int
+     */
     protected $buin;
 
+    /**
+     * @var string
+     */
     protected $appId;
 
+    /**
+     * @var string
+     */
     protected $aesKey;
 
+    /**
+     * @var Prpcrypt
+     */
     protected $crypter;
 
+    /**
+     * @var Dept
+     */
     protected $dept;
 
+    /**
+     * @var Group
+     */
     protected $group;
 
+    /**
+     * @var User
+     */
     protected $user;
 
+    /**
+     * @var Session
+     */
     protected $session;
 
+    /**
+     * @var Media
+     */
     protected $media;
 
     public function __construct(string $api = '', int $buin = 0, string $appId = '', string $aesKey = '')

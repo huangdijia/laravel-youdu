@@ -11,10 +11,19 @@ namespace Huangdijia\Youdu;
 use Huangdijia\Youdu\Exceptions\Exception;
 use Illuminate\Support\Arr;
 
+/**
+ * @mixin \Huangdijia\Youdu\App
+ */
 class Manager
 {
+    /**
+     * @var App[]
+     */
     protected $apps = [];
 
+    /**
+     * @var array
+     */
     protected $config;
 
     public function __construct(array $config)
@@ -49,6 +58,7 @@ class Manager
 
     /**
      * Get an app.
+     * @return App
      */
     public function app(?string $name = null)
     {
@@ -75,7 +85,7 @@ class Manager
     /**
      * Get all app.
      *
-     * @return array
+     * @return App[]
      */
     public function apps()
     {
