@@ -35,7 +35,11 @@ class YouduServiceProvider extends ServiceProvider implements DeferrableProvider
         $this->app->alias(Manager::class, 'youdu.manager');
 
         $this->app->singleton('youdu.http.client', function ($app) {
-            return new Guzzle(config('youdu.api'), (int) config('youdu.timeout', 2));
+            return new Guzzle(
+                (string) config('youdu.api'),
+                (int) config('youdu.timeout', 2),
+                (array) config('youdu.http.options', [])
+            );
         });
 
         $this->app->make(ChannelManager::class)->extend('youdu', function ($app) {

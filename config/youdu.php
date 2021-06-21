@@ -19,6 +19,10 @@ return [
 
     'file_save_path' => env('YOUDU_FILE_SAVE_PATH', storage_path('app/youdu')),
 
+    'http' => [
+        'options' => [],
+    ],
+
     'notification'   => [
         'queue' => env('YOUDU_NOTIFICATION_QUEUE', 'youdu_notification'),
         'delay' => env('YOUDU_NOTIFICATION_DELAY', 0),

@@ -5,6 +5,7 @@ namespace Huangdijia\Youdu\Http;
 use CURLFile;
 use Huangdijia\Youdu\Contracts\HttpClient;
 use Huangdijia\Youdu\Exceptions\Http\RequestException;
+use Illuminate\Support\Arr;
 
 class Curl implements HttpClient
 {
@@ -32,8 +33,8 @@ class Curl implements HttpClient
     public function __construct(string $baseUri = '', int $timeout = 2, array $options = [])
     {
         $this->baseUri   = trim($baseUri, '/');
-        $this->timeout = $timeout;
-        $this->userAgent = (string) $options['User-Agent'] ?? 'Youdu/1.0';
+        $this->timeout   = $timeout;
+        $this->userAgent = (string) Arr::get($options, 'http.options.User-Agent', 'Youdu/1.0');
     }
 
     /**
