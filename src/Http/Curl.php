@@ -34,7 +34,7 @@ class Curl implements HttpClient
     {
         $this->baseUri   = trim($baseUri, '/');
         $this->timeout   = $timeout;
-        $this->userAgent = (string) Arr::get($options, 'http.options.headers.User-Agent', 'Youdu/1.0');
+        $this->userAgent = (string) Arr::get($options, 'headers.User-Agent', 'Youdu/1.0');
     }
 
     /**
