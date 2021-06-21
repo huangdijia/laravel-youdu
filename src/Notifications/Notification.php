@@ -9,6 +9,7 @@
 namespace Huangdijia\Youdu\Notifications;
 
 use Huangdijia\Youdu\Contracts\AppMessage;
+use Huangdijia\Youdu\Messages\App\Message;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification as BaseNotification;
@@ -23,7 +24,7 @@ class Notification extends BaseNotification implements ShouldQueue
     protected $app;
 
     /**
-     * @var AppMessage
+     * @var Message
      */
     protected $message;
 
