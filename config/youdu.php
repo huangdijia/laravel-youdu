@@ -25,8 +25,11 @@ return [
     ],
 
     'http' => [
+        'driver' => \Huangdijia\Youdu\Http\Guzzle::class,
         'options' => [
-            'User-Agent' => env('YOUDU_HTTP_USER_AGENT', 'Youdu/2.0'),
+            'headers' => [
+                'User-Agent' => env('YOUDU_HTTP_USER_AGENT', 'Youdu/2.0'),
+            ],
         ],
     ],
 

@@ -34,8 +34,10 @@ class Guzzle implements HttpClient
             'base_uri' => rtrim($baseUri, '/'),
             'timeout' => $timeout,
         ]);
-        $this->options = array_merge([
-            'User-Agent' => 'Youdu/2.0',
+        $this->options = array_merge_recursive([
+            'headers' => [
+                'User-Agent' => 'Youdu/2.0',
+            ],
         ], $options);
     }
 

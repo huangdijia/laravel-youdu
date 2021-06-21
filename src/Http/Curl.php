@@ -11,6 +11,7 @@ namespace Huangdijia\Youdu\Http;
 use CURLFile;
 use Huangdijia\Youdu\Contracts\HttpClient;
 use Huangdijia\Youdu\Exceptions\Http\RequestException;
+use Illuminate\Support\Arr;
 
 class Curl implements HttpClient
 {
@@ -20,9 +21,9 @@ class Curl implements HttpClient
     protected $baseUri;
 
     /**
-     * @var array
+     * @var string
      */
-    protected $options;
+    protected $userAgent;
 
     /**
      * @var int
@@ -35,10 +36,8 @@ class Curl implements HttpClient
     public function __construct(string $baseUri = '', int $timeout = 2, array $options = [])
     {
         $this->baseUri = trim($baseUri, '/');
-        $this->options = array_merge([
-            'User-Agent' => 'Youdu/2.0',
-        ], $options);
         $this->timeout = $timeout;
+        $this->userAgent = Arr::get($options, 'headers.User-Agent', 'Youdu/2.0');
     }
 
     /**
@@ -60,7 +59,7 @@ class Curl implements HttpClient
             CURLOPT_HEADER => true,
             CURLOPT_SSL_VERIFYPEER => 0,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_USERAGENT => $this->options['User-Agent'],
+            CURLOPT_USERAGENT => $this->userAgent,
             CURLOPT_CONNECTTIMEOUT => 0,
             CURLOPT_TIMEOUT => $this->timeout,
         ];
@@ -108,7 +107,7 @@ class Curl implements HttpClient
                 'content-Length: ' . strlen(json_encode($data)),
             ],
             CURLOPT_POSTFIELDS => json_encode($data),
-            CURLOPT_USERAGENT => $this->options['User-Agent'],
+            CURLOPT_USERAGENT => $this->userAgent,
             CURLOPT_CONNECTTIMEOUT => 0,
             CURLOPT_TIMEOUT => $this->timeout,
         ];
@@ -150,7 +149,7 @@ class Curl implements HttpClient
             CURLOPT_POST => 1,
             CURLOPT_POSTFIELDS => $data,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_USERAGENT => $this->options['User-Agent'],
+            CURLOPT_USERAGENT => $this->userAgent,
             CURLOPT_CONNECTTIMEOUT => 0,
             CURLOPT_TIMEOUT => $this->timeout,
         ];

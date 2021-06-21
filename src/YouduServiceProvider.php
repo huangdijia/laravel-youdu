@@ -41,11 +41,23 @@ class YouduServiceProvider extends ServiceProvider implements DeferrableProvider
         $this->app->alias(Manager::class, 'youdu.manager');
 
         $this->app->bind(HttpClient::class, function ($app) {
-            return new Guzzle(
-                config('youdu.api'),
-                (int) config('youdu.timeout', 2),
-                (array) config('youdu.http.options', [])
-            );
+            $driver = config('youdu.http.driver', \Huangdijia\Youdu\Http\Guzzle::class);
+
+            if (! class_exists($driver)) {
+                $driver = \Huangdijia\Youdu\Http\Guzzle::class;
+            }
+
+            return $this->app->make($driver, [
+                'baseUri' => (string) config('youdu.api', ''),
+                'timeout' => (int) config('youdu.timeout', 2),
+                'options' => (array) config('youdu.http.options', []),
+            ]);
+
+            // return new Guzzle(
+            //     config('youdu.api'),
+            //     (int) config('youdu.timeout', 2),
+            //     (array) config('youdu.http.options', [])
+            // );
         });
         $this->app->alias(HttpClient::class, 'youdu.http.client');
 
