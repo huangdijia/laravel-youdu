@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu\Messages\App\Items;
 
 use Huangdijia\Youdu\Contracts\AppMessageItem;
@@ -11,8 +17,8 @@ class Item implements AppMessageItem, Arrayable, Jsonable
     protected $items = [];
 
     /**
-     * 转成 array
-     * @return array 
+     * 转成 array.
+     * @return array
      */
     public function toArray()
     {
@@ -20,8 +26,9 @@ class Item implements AppMessageItem, Arrayable, Jsonable
     }
 
     /**
-     * 转成 json
-     * @return string 
+     * 转成 json.
+     * @param mixed $options
+     * @return string
      */
     public function toJson($options = 0)
     {

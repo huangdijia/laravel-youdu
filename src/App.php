@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu;
 
 use Huangdijia\Youdu\Crypt\Prpcrypt;
@@ -17,33 +23,42 @@ use Illuminate\Support\Facades\Cache;
 class App
 {
     protected $api;
+
     protected $buin;
+
     protected $appId;
+
     protected $aesKey;
+
     protected $crypter;
+
     protected $dept;
+
     protected $group;
+
     protected $user;
+
     protected $session;
+
     protected $media;
 
     public function __construct(string $api = '', int $buin = 0, string $appId = '', string $aesKey = '')
     {
-        $this->api    = $api;
-        $this->buin   = $buin;
-        $this->appId  = $appId;
+        $this->api = $api;
+        $this->buin = $buin;
+        $this->appId = $appId;
         $this->aesKey = $aesKey;
 
         $this->crypter = new Prpcrypt($aesKey);
-        $this->dept    = new Dept($this);
-        $this->group   = new Group($this);
-        $this->user    = new User($this);
+        $this->dept = new Dept($this);
+        $this->group = new Group($this);
+        $this->user = new User($this);
         $this->session = new Session($this);
-        $this->media   = new Media($this);
+        $this->media = new Media($this);
     }
 
     /**
-     * 部门
+     * 部门.
      *
      * @return \Huangdijia\Youdu\Dept
      */
@@ -53,7 +68,7 @@ class App
     }
 
     /**
-     * 群
+     * 群.
      *
      * @return \Huangdijia\Youdu\Group
      */
@@ -63,7 +78,7 @@ class App
     }
 
     /**
-     * 用户
+     * 用户.
      *
      * @return \Huangdijia\Youdu\User
      */
@@ -73,7 +88,7 @@ class App
     }
 
     /**
-     * 会话
+     * 会话.
      *
      * @return \Huangdijia\Youdu\Session
      */
@@ -83,7 +98,7 @@ class App
     }
 
     /**
-     * 会话
+     * 会话.
      *
      * @return \Huangdijia\Youdu\Media
      */
@@ -93,7 +108,7 @@ class App
     }
 
     /**
-     * 获取 buin
+     * 获取 buin.
      *
      * @return int
      */
@@ -103,7 +118,7 @@ class App
     }
 
     /**
-     * 获取 appId
+     * 获取 appId.
      *
      * @return string
      */
@@ -113,7 +128,7 @@ class App
     }
 
     /**
-     * 获取 aesKey
+     * 获取 aesKey.
      *
      * @return string
      */
@@ -123,10 +138,9 @@ class App
     }
 
     /**
-     * 加密
+     * 加密.
      *
-     * @param string $unencrypted
-     * @return string|bool
+     * @return bool|string
      */
     public function encryptMsg(string $unencrypted = '')
     {
@@ -137,13 +151,11 @@ class App
         }
 
         return $encrypted;
-
     }
 
     /**
-     * 解密
+     * 解密.
      *
-     * @param string|null $encrypted
      * @return bool|string
      */
     public function decryptMsg(?string $encrypted)
@@ -162,24 +174,24 @@ class App
     }
 
     /**
-     * Get access token
+     * Get access token.
      *
      * @return string
      */
     public function getAccessToken()
     {
         $appId = $this->appId;
-        $buin  = $this->buin;
+        $buin = $this->buin;
 
         return Cache::remember('youdu:tokens:' . $appId, Carbon::now()->addHours(2), function () use ($buin, $appId) {
-            $encrypted  = $this->encryptMsg((string) time());
+            $encrypted = $this->encryptMsg((string) time());
             $parameters = [
-                "buin"    => $buin,
-                "appId"   => $appId,
-                "encrypt" => $encrypted,
+                'buin' => $buin,
+                'appId' => $appId,
+                'encrypt' => $encrypted,
             ];
 
-            $url  = $this->url('/cgi/gettoken', false);
+            $url = $this->url('/cgi/gettoken', false);
             $resp = HttpClient::post($url, $parameters);
             $body = json_decode($resp['body'], true);
 
@@ -188,17 +200,14 @@ class App
             }
 
             $decrypted = $this->decryptMsg($body['encrypt']);
-            $decoded   = json_decode($decrypted, true);
+            $decoded = json_decode($decrypted, true);
 
             return $decoded['accessToken'];
         });
     }
 
     /**
-     * 组装 URL
-     *
-     * @param string $uri
-     * @param boolean $withAccessToken
+     * 组装 URL.
      *
      * @return string
      */
@@ -209,8 +218,8 @@ class App
         if ($withAccessToken) {
             $token = $this->getAccessToken();
 
-            if (!$token) {
-                throw new AccessTokenDoesNotExistException("AccessToken does not exist", 1);
+            if (! $token) {
+                throw new AccessTokenDoesNotExistException('AccessToken does not exist', 1);
             }
 
             $uri .= "?accessToken={$token}";
@@ -220,25 +229,24 @@ class App
     }
 
     /**
-     * 发送应用消息
+     * 发送应用消息.
      *
-     * @param \Huangdijia\Youdu\Messages\App\Message $message
      * @return bool
      */
     public function send(Message $message)
     {
-        $encrypted  = $this->encryptMsg($message->toJson());
+        $encrypted = $this->encryptMsg($message->toJson());
         $parameters = [
-            "buin"    => $this->buin,
-            "appId"   => $this->appId,
-            "encrypt" => $encrypted,
+            'buin' => $this->buin,
+            'appId' => $this->appId,
+            'encrypt' => $encrypted,
         ];
 
-        $url  = $this->url('/cgi/msg/send');
+        $url = $this->url('/cgi/msg/send');
         $resp = HttpClient::post($url, $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
@@ -251,7 +259,7 @@ class App
     }
 
     /**
-     * 发送消息给用户
+     * 发送消息给用户.
      *
      * @param string $toUser 接收成员的帐号列表。多个接收者用竖线分隔，最多支持1000个
      * @param \Huangdijia\Youdu\Messages\App\Message|string $message
@@ -269,7 +277,7 @@ class App
     }
 
     /**
-     * 发送消息至部门
+     * 发送消息至部门.
      *
      * @param string $toDept $toDept 接收部门id列表。多个接收者用竖线分隔，最多支持100个
      * @param \Huangdijia\Youdu\Messages\App\Message|string $message
@@ -287,10 +295,9 @@ class App
     }
 
     /**
-     * 发送系统消息
+     * 发送系统消息.
      *
      * @param \Huangdijia\Youdu\Messages\App\SysMsg|string $message
-     * @param boolean $onlineOnly
      * @return bool
      */
     public function sendToAll($message, bool $onlineOnly = false)
@@ -301,7 +308,7 @@ class App
             $message = new SysMsg($items);
         }
 
-        if (!($message instanceof SysMsg)) {
+        if (! ($message instanceof SysMsg)) {
             throw new Exception('$message must instanceof' . SysMsg::class);
         }
 
@@ -311,28 +318,25 @@ class App
     }
 
     /**
-     * 设置通知数
+     * 设置通知数.
      *
-     * @param string $account
-     * @param string $tip
-     * @param integer $msgCount
      * @return bool
      */
     public function setNoticeCount(string $account = '', string $tip = '', int $msgCount = 0)
     {
         $parameters = [
-            'app_id'      => $this->appId,
+            'app_id' => $this->appId,
             'msg_encrypt' => $this->encryptMsg(json_encode([
-                "account" => $account,
-                "tip"     => $tip,
-                "count"   => $msgCount,
+                'account' => $account,
+                'tip' => $tip,
+                'count' => $msgCount,
             ])),
         ];
 
         $resp = HttpClient::post($this->url('/cgi/set.ent.notice'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
@@ -345,10 +349,8 @@ class App
     }
 
     /**
-     * 应用弹窗
+     * 应用弹窗.
      *
-     * @param string $toUser
-     * @param string $toDept
      * @param \Huangdijia\Youdu\Messages\App\PopWindow $message
      * @return bool
      */
@@ -363,14 +365,14 @@ class App
         }
 
         $parameters = [
-            'app_id'      => $this->appId,
+            'app_id' => $this->appId,
             'msg_encrypt' => $this->encryptMsg($message->toJson()),
         ];
 
         $resp = HttpClient::post($this->url('/cgi/popwindow'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);

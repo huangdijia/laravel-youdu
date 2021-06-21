@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu\Messages\Session;
 
 class Image extends Message
@@ -7,7 +13,7 @@ class Image extends Message
     protected $mediaId;
 
     /**
-     * 图片消息
+     * 图片消息.
      *
      * @param string $mediaId 图片素材文件id。通过上传素材文件接口获取
      */
@@ -19,12 +25,12 @@ class Image extends Message
     public function toArray()
     {
         return [
-            "sessionId" => $this->sessionId,
-            "receiver"  => $this->receiver,
-            "sender"    => $this->sender,
-            "msgType"   => "image",
-            "image"     => [
-                "media_id" => $this->mediaId,
+            'sessionId' => $this->sessionId,
+            'receiver' => $this->receiver,
+            'sender' => $this->sender,
+            'msgType' => 'image',
+            'image' => [
+                'media_id' => $this->mediaId,
             ],
         ];
     }

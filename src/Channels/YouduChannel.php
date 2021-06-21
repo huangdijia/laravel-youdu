@@ -1,32 +1,36 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu\Channels;
 
-use Throwable;
-use Huangdijia\Youdu\Facades\Youdu;
-use Huangdijia\Youdu\Contracts\Channel;
 use Huangdijia\Youdu\Contracts\AppMessage;
-use Illuminate\Notifications\Notification;
+use Huangdijia\Youdu\Contracts\Channel;
 use Huangdijia\Youdu\Exceptions\ChannelException;
+use Huangdijia\Youdu\Facades\Youdu;
+use Illuminate\Notifications\Notification;
+use Throwable;
 
 class YouduChannel implements Channel
 {
     /**
      * Send the given notification.
      *
-     * @param  mixed  $notifiable
-     * @param  \Illuminate\Notifications\Notification  $notification
-     * @return void
+     * @param mixed $notifiable
      */
     public function send($notifiable, Notification $notification)
     {
         try {
             $message = $notification->toYoudu($notifiable);
-            $app     = is_callable([$notification, 'app']) ? $notification->app($notifiable) : '';
+            $app = is_callable([$notification, 'app']) ? $notification->app($notifiable) : '';
 
             if (
-                !($to = $notifiable->routeNotificationFor('youdu', $notification))
-                || !($message instanceof AppMessage)
+                ! ($to = $notifiable->routeNotificationFor('youdu', $notification))
+                || ! ($message instanceof AppMessage)
             ) {
                 return false;
             }

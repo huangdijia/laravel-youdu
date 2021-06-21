@@ -1,13 +1,20 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu;
 
-use Illuminate\Support\Arr;
 use Huangdijia\Youdu\Exceptions\Exception;
+use Illuminate\Support\Arr;
 
 class Manager
 {
     protected $apps = [];
+
     protected $config;
 
     public function __construct(array $config)
@@ -16,9 +23,19 @@ class Manager
     }
 
     /**
-     * Get config
+     * @param string $method
+     * @param array $parameters
      *
-     * @param string|null $key
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        return $this->app()->{$method}(...$parameters);
+    }
+
+    /**
+     * Get config.
+     *
      * @param mixed $default
      */
     public function config(?string $key = null, $default = null)
@@ -31,16 +48,14 @@ class Manager
     }
 
     /**
-     * Get an app
-     *
-     * @param string|null $name
+     * Get an app.
      */
     public function app(?string $name = null)
     {
         $name = $name ?: Arr::get($this->config, 'default', 'default');
 
-        if (!isset($this->apps[$name])) {
-            if (!isset($this->config['apps'][$name])) {
+        if (! isset($this->apps[$name])) {
+            if (! isset($this->config['apps'][$name])) {
                 throw new Exception("config 'youdu.apps.{$name}' is undefined", 1);
             }
 
@@ -58,23 +73,12 @@ class Manager
     }
 
     /**
-     * Get all app
-     * 
+     * Get all app.
+     *
      * @return array
      */
     public function apps()
     {
         return $this->apps;
-    }
-
-    /**
-     * @param string $method
-     * @param array $parameters
-     *
-     * @return mixed
-     */
-    public function __call($method, $parameters)
-    {
-        return $this->app()->{$method}(...$parameters);
     }
 }

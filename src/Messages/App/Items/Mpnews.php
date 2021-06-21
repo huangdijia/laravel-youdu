@@ -1,12 +1,15 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu\Messages\App\Items;
 
 class Mpnews extends Item
 {
-    /**
-     * @param array $items
-     */
     public function __construct(array $items = [])
     {
         $this->items = $items;
@@ -22,11 +25,11 @@ class Mpnews extends Item
     public function add(string $title = '', string $mediaId = '', string $content = '', string $digest = '', int $showFont = 1)
     {
         $this->items[] = [
-            "title"     => $title,
-            "media_id"  => $mediaId,
-            "content"   => $content,
-            "digest"    => $digest,
-            "showFront" => $showFont,
+            'title' => $title,
+            'media_id' => $mediaId,
+            'content' => $content,
+            'digest' => $digest,
+            'showFront' => $showFont,
         ];
     }
 }

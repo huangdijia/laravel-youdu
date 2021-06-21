@@ -1,21 +1,22 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu\Contracts;
 
 interface AppMessage
 {
     /**
-     * Set users
-     *
-     * @param string $toUser
-     * @return void
+     * Set users.
      */
     public function toUser(string $toUser);
+
     /**
-     * Set Depts
-     *
-     * @param string $toDept
-     * @return void
+     * Set Depts.
      */
     public function toDept(string $toDept);
 }

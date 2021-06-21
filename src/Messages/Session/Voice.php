@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu\Messages\Session;
 
 class Voice extends Message
@@ -7,7 +13,7 @@ class Voice extends Message
     protected $mediaId;
 
     /**
-     * 语音消息
+     * 语音消息.
      *
      * @param string $mediaId 语音素材文件id。通过上传素材文件接口获取
      */
@@ -19,12 +25,12 @@ class Voice extends Message
     public function toArray()
     {
         return [
-            "sessionId" => $this->sessionId,
-            "receiver"  => $this->receiver,
-            "sender"    => $this->sender,
-            "msgType"   => "voice",
-            "voice"     => [
-                "media_id" => $this->mediaId,
+            'sessionId' => $this->sessionId,
+            'receiver' => $this->receiver,
+            'sender' => $this->sender,
+            'msgType' => 'voice',
+            'voice' => [
+                'media_id' => $this->mediaId,
             ],
         ];
     }

@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu\Messages\App;
 
 class Link extends Message
@@ -7,7 +13,7 @@ class Link extends Message
     protected $link;
 
     /**
-     * 隐式链接
+     * 隐式链接.
      *
      * @param string $title 标题。最多允许64个字符
      * @param string $url 链接
@@ -15,24 +21,24 @@ class Link extends Message
      */
     public function __construct(string $title = '', string $url = '', int $action = 0)
     {
-        $this->link   = [
-            "title"  => $title,
-            "url"    => $url,
-            "action" => $action,
+        $this->link = [
+            'title' => $title,
+            'url' => $url,
+            'action' => $action,
         ];
     }
 
     /**
-     * 转成 array
-     * @return array 
+     * 转成 array.
+     * @return array
      */
     public function toArray()
     {
         return [
-            "toUser"  => $this->toUser,
-            "toDept"  => $this->toDept,
-            "msgType" => "link",
-            "link"    => $this->link,
+            'toUser' => $this->toUser,
+            'toDept' => $this->toDept,
+            'msgType' => 'link',
+            'link' => $this->link,
         ];
     }
 }

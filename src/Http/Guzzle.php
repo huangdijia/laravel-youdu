@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu\Http;
 
 use GuzzleHttp\Client;
@@ -7,66 +13,70 @@ use Huangdijia\Youdu\Contracts\HttpClient;
 
 class Guzzle implements HttpClient
 {
+    /**
+     * @var Client
+     */
     protected $client;
 
     /**
-     * construct
-     *
-     * @param string $baseUri
-     * @param integer $timeout
+     * @var array
      */
-    public function __construct(string $baseUri = '', int $timeout = 2)
+    protected $options;
+
+    /**
+     * construct.
+     *
+     * @param $options
+     */
+    public function __construct(string $baseUri = '', int $timeout = 2, array $options = [])
     {
         $this->client = new Client([
             'base_uri' => rtrim($baseUri, '/'),
-            'timeout'  => $timeout,
+            'timeout' => $timeout,
         ]);
+        $this->options = array_merge([
+            'User-Agent' => 'Youdu/2.0',
+        ], $options);
     }
 
     /**
-     * get
+     * get.
      *
-     * @param string $uri
-     * @param array $data
      * @return array
      */
     public function get(string $uri, array $data = [])
     {
-        $uri      .= (false === strpos($uri, '?') ? '?' : '&') . http_build_query($data);
-        $response = $this->client->request('GET', $uri);
+        $uri .= (strpos($uri, '?') === false ? '?' : '&') . http_build_query($data);
+        $response = $this->client->request('GET', $uri, $this->options);
 
         return [
-            'header'   => $response->getHeaders(),
-            'body'     => $response->getBody()->getContents(),
+            'header' => $response->getHeaders(),
+            'body' => $response->getBody()->getContents(),
             'httpCode' => $response->getStatusCode(),
         ];
     }
 
     /**
-     * post
+     * post.
      *
-     * @param string $uri
-     * @param array $data
      * @return array
      */
     public function post(string $uri, array $data = [])
     {
         $response = $this->client->request('POST', $uri, [
             'json' => $data,
-        ]);
+        ], $this->options);
 
         return [
-            'header'   => $response->getHeaders(),
-            'body'     => $response->getBody()->getContents(),
+            'header' => $response->getHeaders(),
+            'body' => $response->getBody()->getContents(),
             'httpCode' => $response->getStatusCode(),
         ];
     }
 
     /**
-     * upload
+     * upload.
      *
-     * @param string $uri
-     * @param array $data
      * @return array
      */
     public function upload(string $uri, array $data = [])
@@ -79,19 +89,18 @@ class Guzzle implements HttpClient
                 'contents' => $value,
             ];
         }
-        $data     = $parts;
+        $data = $parts;
         $response = $this->client->request('POST', $uri, [
             'multipart' => $data,
-        ]);
+        ], $this->options);
 
         return json_decode($response->getBody()->getContents(), true);
     }
 
     /**
-     * Make a upload file
+     * Make a upload file.
      *
-     * @param string $file
-     * @return resource|false
+     * @return false|resource
      */
     public function makeUploadFile(string $file)
     {

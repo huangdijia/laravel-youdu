@@ -1,19 +1,32 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu\Tests;
 
-use Huangdijia\Youdu\Contracts\HttpClient;
-use Huangdijia\Youdu\Dept;
 use Huangdijia\Youdu\Facades\Youdu;
-use Huangdijia\Youdu\Group;
-use Huangdijia\Youdu\Manager;
-use Huangdijia\Youdu\Media;
-use Huangdijia\Youdu\Session;
-use Huangdijia\Youdu\User;
 use Huangdijia\Youdu\YouduServiceProvider;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class TestCase extends \Orchestra\Testbench\TestCase
 {
+    /**
+     * Setup the test environment.
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Your code here
+    }
+
     protected function getPackageProviders($app)
     {
         return [
@@ -31,8 +44,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
     /**
      * Define environment setup.
      *
-     * @param  \Illuminate\Foundation\Application  $app
-     * @return void
+     * @param \Illuminate\Foundation\Application $app
      */
     protected function getEnvironmentSetUp($app)
     {
@@ -40,15 +52,5 @@ class TestCase extends \Orchestra\Testbench\TestCase
         $app['config']->set('youdu.buin', env('YOUDU_BUIN'));
         $app['config']->set('youdu.apps.default.app_id', env('YOUDU_DEFAULT_APP_ID'));
         $app['config']->set('youdu.apps.default.aes_key', env('YOUDU_DEFAULT_AES_KEY'));
-    }
-
-    /**
-     * Setup the test environment.
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        // Your code here
     }
 }

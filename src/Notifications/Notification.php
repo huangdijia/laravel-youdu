@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu\Notifications;
 
 use Huangdijia\Youdu\Contracts\AppMessage;
@@ -11,28 +17,38 @@ class Notification extends BaseNotification implements ShouldQueue
 {
     use Queueable;
 
+    /**
+     * @var string
+     */
     protected $app;
+
+    /**
+     * @var AppMessage
+     */
     protected $message;
 
     /**
+     * @var int
+     */
+    protected $tries;
+
+    /**
      * Create a new notification instance.
-     *
-     * @return void
      */
     public function __construct(AppMessage $message, string $app = 'default', ?int $delay = null)
     {
         $this->message = $message;
-        $this->app     = $app;
+        $this->app = $app;
 
-        $this->delay = $delay ?? config('youdu.notification.delay', 0);
-        $this->tries = config('youdu.notification.tries', 3);
+        $this->delay = $delay ?? (int) config('youdu.notification.delay', 0);
+        $this->tries = (int) config('youdu.notification.tries', 3);
         $this->queue = config('youdu.notification.queue', 'youdu_notification');
     }
 
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -51,7 +67,7 @@ class Notification extends BaseNotification implements ShouldQueue
     }
 
     /**
-     * Get the notification's message
+     * Get the notification's message.
      *
      * @param mixed $notificable
      * @return mixed
@@ -64,14 +80,14 @@ class Notification extends BaseNotification implements ShouldQueue
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function toArray($notifiable)
     {
         return [
-            'via'     => 'youdu',
-            'app'     => $this->app,
+            'via' => 'youdu',
+            'app' => $this->app,
             'message' => $this->message->toArray(),
         ];
     }

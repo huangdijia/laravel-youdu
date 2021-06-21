@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu\Http;
 
 use CURLFile;
@@ -8,40 +14,55 @@ use Huangdijia\Youdu\Exceptions\Http\RequestException;
 
 class Curl implements HttpClient
 {
+    /**
+     * @var string
+     */
     protected $baseUri;
 
     /**
-     * construct
-     *
-     * @param string $baseUri
-     * @param integer $timeout
+     * @var array
      */
-    public function __construct(string $baseUri = '', int $timeout = 2)
+    protected $options;
+
+    /**
+     * @var int
+     */
+    protected $timeout;
+
+    /**
+     * construct.
+     */
+    public function __construct(string $baseUri = '', int $timeout = 2, array $options = [])
     {
         $this->baseUri = trim($baseUri, '/');
+        $this->options = array_merge([
+            'User-Agent' => 'Youdu/2.0',
+        ], $options);
+        $this->timeout = $timeout;
     }
 
     /**
-     * GET
+     * GET.
      *
-     * @param string $uri
-     * @param array $data
-     * @return array|bool
      * @throws \Huangdijia\Youdu\Exceptions\Http\RequestException
+     * @return array|bool
      */
     public function get(string $uri = '', array $data = [])
     {
-        if (!empty($data)) {
-            $uri .= (false !== strpos($uri, '?') ? '&' : '&') . http_build_query($data);
+        if (! empty($data)) {
+            $uri .= (strpos($uri, '?') !== false ? '&' : '&') . http_build_query($data);
         }
 
         $uri = $this->baseUri . $uri;
 
         $options = [
-            CURLOPT_URL            => $uri,
-            CURLOPT_HEADER         => true,
+            CURLOPT_URL => $uri,
+            CURLOPT_HEADER => true,
             CURLOPT_SSL_VERIFYPEER => 0,
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_USERAGENT => $this->options['User-Agent'],
+            CURLOPT_CONNECTTIMEOUT => 0,
+            CURLOPT_TIMEOUT => $this->timeout,
         ];
 
         $ch = curl_init();
@@ -49,46 +70,47 @@ class Curl implements HttpClient
         $response = curl_exec($ch);
 
         if ($errno = curl_errno($ch)) {
-            throw new RequestException("Curl Request Error: " . curl_error($ch), $errno);
+            throw new RequestException('Curl Request Error: ' . curl_error($ch), $errno);
         }
 
-        $httpCode   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $header     = substr($response, 0, $headerSize);
-        $body       = substr($response, $headerSize);
+        $header = substr($response, 0, $headerSize);
+        $body = substr($response, $headerSize);
 
         curl_close($ch);
 
         return [
-            'header'   => $header,
-            'body'     => $body,
+            'header' => $header,
+            'body' => $body,
             'httpCode' => $httpCode,
         ];
     }
 
     /**
-     * POST
+     * POST.
      *
-     * @param string $uri
-     * @param array $data
-     * @return array
      * @throws \Huangdijia\Youdu\Exceptions\Http\RequestException
+     * @return array
      */
     public function post(string $uri, array $data = [])
     {
         $uri = $this->baseUri . $uri;
 
         $options = [
-            CURLOPT_URL            => $uri,
-            CURLOPT_POST           => 1,
-            CURLOPT_HEADER         => true,
+            CURLOPT_URL => $uri,
+            CURLOPT_POST => 1,
+            CURLOPT_HEADER => true,
             CURLOPT_SSL_VERIFYPEER => 0,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTPHEADER     => [
+            CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
                 'content-Length: ' . strlen(json_encode($data)),
             ],
-            CURLOPT_POSTFIELDS     => json_encode($data),
+            CURLOPT_POSTFIELDS => json_encode($data),
+            CURLOPT_USERAGENT => $this->options['User-Agent'],
+            CURLOPT_CONNECTTIMEOUT => 0,
+            CURLOPT_TIMEOUT => $this->timeout,
         ];
 
         $ch = curl_init();
@@ -96,40 +118,41 @@ class Curl implements HttpClient
         $response = curl_exec($ch);
 
         if ($errno = curl_errno($ch)) {
-            throw new RequestException("Curl Request Error: " . curl_error($ch), $errno);
+            throw new RequestException('Curl Request Error: ' . curl_error($ch), $errno);
         }
 
-        $httpCode   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $header     = substr($response, 0, $headerSize);
-        $body       = substr($response, $headerSize);
+        $header = substr($response, 0, $headerSize);
+        $body = substr($response, $headerSize);
 
         curl_close($ch);
 
         return [
-            'header'   => $header,
-            'body'     => $body,
+            'header' => $header,
+            'body' => $body,
             'httpCode' => $httpCode,
         ];
     }
 
     /**
-     * Upload
+     * Upload.
      *
-     * @param string $uri
-     * @param array $data
-     * @return array|bool
      * @throws \Huangdijia\Youdu\Exceptions\Http\RequestException
+     * @return array|bool
      */
     public function upload(string $uri, array $data = [])
     {
         $uri = $this->baseUri . $uri;
-        
+
         $options = [
-            CURLOPT_URL            => $uri,
-            CURLOPT_POST           => 1,
-            CURLOPT_POSTFIELDS     => $data,
+            CURLOPT_URL => $uri,
+            CURLOPT_POST => 1,
+            CURLOPT_POSTFIELDS => $data,
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_USERAGENT => $this->options['User-Agent'],
+            CURLOPT_CONNECTTIMEOUT => 0,
+            CURLOPT_TIMEOUT => $this->timeout,
         ];
 
         $ch = curl_init();
@@ -137,7 +160,7 @@ class Curl implements HttpClient
         $response = curl_exec($ch);
 
         if ($errno = curl_errno($ch)) {
-            throw new RequestException("Curl Request Error: " . curl_error($ch), $errno);
+            throw new RequestException('Curl Request Error: ' . curl_error($ch), $errno);
         }
 
         curl_close($ch);
@@ -146,9 +169,8 @@ class Curl implements HttpClient
     }
 
     /**
-     * Make a upload file
+     * Make a upload file.
      *
-     * @param string $file
      * @return CURLFile
      */
     public function makeUploadFile(string $file)
@@ -159,5 +181,4 @@ class Curl implements HttpClient
 
         return new CURLFile($file, $mime, $name);
     }
-
 }

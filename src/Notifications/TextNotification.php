@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu\Notifications;
 
 use Huangdijia\Youdu\Messages\App\Text;
@@ -11,7 +17,7 @@ class TextNotification extends Notification
     /**
      * Create a new notification instance.
      *
-     * @return void
+     * @param null|mixed $delay
      */
     public function __construct(string $message, string $app = 'default', $delay = null)
     {

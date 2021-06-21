@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu\Listeners;
 
 use Huangdijia\Youdu\Notifications\TextNotification;
@@ -13,19 +19,15 @@ class ExceptionListener
 {
     /**
      * Create the event listener.
-     *
-     * @return void
      */
     public function __construct()
     {
-        //
     }
 
     /**
      * Handle the event.
      *
-     * @param  object  $event
-     * @return void
+     * @param object $event
      */
     public function handle(MessageLogged $event)
     {
@@ -33,7 +35,7 @@ class ExceptionListener
             return;
         }
 
-        if (!isset($event->context['exception'])) {
+        if (! isset($event->context['exception'])) {
             return;
         }
 
@@ -48,18 +50,17 @@ class ExceptionListener
                     return Notification::route('youdu', $route);
                 })
                 ->whenNotEmpty(function ($notifiables) use ($message) {
-                    /** @var Collection $notifiables */
+                    /* @var Collection $notifiables */
 
                     if (config('youdu.exception.report_now')) {
                         Notification::sendNow($notifiables, new TextNotification($message, config('youdu.exception.report_app', 'default')));
                     } else {
                         Notification::send($notifiables, new TextNotification($message, config('youdu.exception.report_app', 'default')));
                     }
-
                 });
         } catch (Throwable $e) {
             info($e->getMessage(), [
-                'method'   => __METHOD__,
+                'method' => __METHOD__,
                 'position' => __FILE__ . ':' . __LINE__,
             ]);
         }
@@ -68,51 +69,29 @@ class ExceptionListener
     }
 
     /**
-     * Get git current branch name
-     * @return string
-     * @throws BindingResolutionException
-     */
-    private function getCurrentBranch()
-    {
-        if (!config('youdu.exception.show_git_branch', false)) {
-            return '';
-        }
-
-        if (!is_file($headFile = app()->basePath(".git/HEAD"))) {
-            return '';
-        }
-
-        $headContent   = file_get_contents($headFile);
-        $currentBranch = trim(substr($headContent, 16));
-
-        return $currentBranch;
-    }
-
-    /**
-     * Assemble message
-     * @param Throwable $e
+     * Assemble message.
      * @param bool $runningInConsole
-     * @return string
      * @throws BindingResolutionException
      * @throws UnitException
+     * @return string
      */
     protected function assembleMessage(Throwable $e, $runningInConsole = false)
     {
         return collect()
             ->put(__('youdu.environment'), config('app.env'))
             ->when($this->getCurrentBranch(), function ($collection, $branch) {
-                /** @var \Illuminate\Support\Collection $collection */
+                /* @var \Illuminate\Support\Collection $collection */
                 return $collection->put(__('youdu.branch'), $branch);
             })
-            ->when(!$runningInConsole, function ($collection) {
-                /** @var \Illuminate\Support\Collection $collection */
+            ->when(! $runningInConsole, function ($collection) {
+                /* @var \Illuminate\Support\Collection $collection */
                 return $collection->put(__('youdu.url'), app('request')->fullUrl());
             })
             ->put(__('youdu.exception'), get_class($e))
             ->put(__('youdu.message'), $e->getMessage())
             ->put(__('youdu.position'), $e->getFile() . ':' . $e->getLine())
-            ->when(defined('LARAVEL_START'), function($collection) {
-                /** @var \Illuminate\Support\Collection $collection */
+            ->when(defined('LARAVEL_START'), function ($collection) {
+                /* @var \Illuminate\Support\Collection $collection */
                 return $collection->put(__('youdu.usetime'), number_format(microtime(true) - LARAVEL_START, 3));
             })
             ->put(__('youdu.time'), date('Y-m-d H:i:s'))
@@ -120,5 +99,24 @@ class ExceptionListener
                 return sprintf('%s: %s', $key, $value);
             })
             ->join("\n");
+    }
+
+    /**
+     * Get git current branch name.
+     * @throws BindingResolutionException
+     * @return string
+     */
+    private function getCurrentBranch()
+    {
+        if (! config('youdu.exception.show_git_branch', false)) {
+            return '';
+        }
+
+        if (! is_file($headFile = app()->basePath('.git/HEAD'))) {
+            return '';
+        }
+
+        $headContent = file_get_contents($headFile);
+        return trim(substr($headContent, 16));
     }
 }

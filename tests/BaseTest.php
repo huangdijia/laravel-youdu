@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu\Tests;
 
 use Huangdijia\Youdu\Contracts\HttpClient;
@@ -11,12 +17,14 @@ use Huangdijia\Youdu\Media;
 use Huangdijia\Youdu\Session;
 use Huangdijia\Youdu\User;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class BaseTest extends TestCase
 {
     /**
-     * Test the configs
-     *
-     * @return void
+     * Test the configs.
      */
     public function testConfigs()
     {
@@ -30,9 +38,7 @@ class BaseTest extends TestCase
     }
 
     /**
-     * Test the containers
-     *
-     * @return void
+     * Test the containers.
      */
     public function testContainers()
     {
@@ -41,9 +47,7 @@ class BaseTest extends TestCase
     }
 
     /**
-     * Test the objects of app
-     *
-     * @return void
+     * Test the objects of app.
      */
     public function testAppObjects()
     {

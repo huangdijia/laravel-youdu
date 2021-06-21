@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu\Messages\App;
 
 use Huangdijia\Youdu\Contracts\AppMessage;
@@ -10,36 +16,33 @@ use JsonSerializable;
 abstract class Message implements AppMessage, Arrayable, Jsonable, JsonSerializable
 {
     protected $toUser;
+
     protected $toDept;
 
     /**
-     * 发送至用户
-     * @param string $toUser
-     * @return void
+     * 发送至用户.
      */
     public function toUser(string $toUser)
     {
         // 兼容用,隔开
-        $toUser       = strtr($toUser, ',', '|');
+        $toUser = strtr($toUser, ',', '|');
         $this->toUser = $toUser;
     }
 
     /**
-     * 发送至部门
-     * @param string $toDept
-     * @return void
+     * 发送至部门.
      */
     public function toDept(string $toDept)
     {
         // 兼容用,隔开
-        $toDept       = strtr($toDept, ',', '|');
+        $toDept = strtr($toDept, ',', '|');
         $this->toDept = $toDept;
     }
 
     /**
-     * 转成 json
+     * 转成 json.
      * @param int $options
-     * @return string|false
+     * @return false|string
      */
     public function toJson($options = JSON_UNESCAPED_UNICODE)
     {
@@ -47,7 +50,7 @@ abstract class Message implements AppMessage, Arrayable, Jsonable, JsonSerializa
     }
 
     /**
-     * json 序列化
+     * json 序列化.
      * @return array
      */
     public function jsonSerialize()

@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu\Messages\Session;
 
 use Huangdijia\Youdu\Contracts\SessionMessage;
@@ -10,7 +16,9 @@ use JsonSerializable;
 abstract class Message implements SessionMessage, Arrayable, Jsonable, JsonSerializable
 {
     protected $sender;
+
     protected $receiver;
+
     protected $sessionId;
 
     public function sender(string $sender)

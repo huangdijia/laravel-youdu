@@ -20,6 +20,8 @@
         "guzzlehttp/guzzle": "^6.4|^7.0"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.14",
+        "phpstan/phpstan": "^0.12",
         "orchestra/testbench": "^6.0"
     },
     "autoload": {
@@ -36,7 +38,9 @@
         }
     },
     "scripts": {
-        "test": "@php vendor/bin/phpunit ./tests/BaseTest.php"
+        "test": "@php vendor/bin/phpunit ./tests/BaseTest.php",
+        "cs-fix": "php-cs-fixer fix $1",
+        "analyse": "phpstan analyse --memory-limit 300M -l 0 -c phpstan.neon ./src ./config"
     },
     "extra": {
         "laravel": {
@@ -44,5 +48,8 @@
                 "Huangdijia\\Youdu\\YouduServiceProvider"
             ]
         }
+    },
+    "config": {
+        "sort-packages": true
     }
 }

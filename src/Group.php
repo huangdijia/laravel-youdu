@@ -1,10 +1,16 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu;
 
-use Huangdijia\Youdu\Facades\HttpClient;
 use Huangdijia\Youdu\Exceptions\ErrorCode;
 use Huangdijia\Youdu\Exceptions\Exception;
+use Huangdijia\Youdu\Facades\HttpClient;
 
 class Group
 {
@@ -16,9 +22,9 @@ class Group
     }
 
     /**
-     * 获取群列表
+     * 获取群列表.
      *
-     * @param string|int $userId
+     * @param int|string $userId
      * @return array
      */
     public function lists($userId = '')
@@ -29,7 +35,7 @@ class Group
             $parameters['userId'] = $userId;
         }
 
-        $resp    = HttpClient::get($this->app->url('/cgi/group/list'), $parameters);
+        $resp = HttpClient::get($this->app->url('/cgi/group/list'), $parameters);
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
@@ -42,16 +48,15 @@ class Group
     }
 
     /**
-     * 创建群
+     * 创建群.
      *
-     * @param string $name
-     * @return string|int
+     * @return int|string
      */
     public function create(string $name)
     {
         $parameters = [
-            'buin'    => $this->app->getBuin(),
-            'appId'   => $this->app->getAppId(),
+            'buin' => $this->app->getBuin(),
+            'appId' => $this->app->getAppId(),
             'encrypt' => $this->app->encryptMsg(json_encode([
                 'name' => $name,
             ])),
@@ -60,7 +65,7 @@ class Group
         $resp = HttpClient::post($this->app->url('/cgi/group/create'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
@@ -70,20 +75,19 @@ class Group
         }
 
         $decrypted = $this->app->decryptMsg($body['encrypt']);
-        $decoded   = json_decode($decrypted, true);
+        $decoded = json_decode($decrypted, true);
 
         return $decoded['id'];
     }
 
     /**
-     * 删除群
+     * 删除群.
      *
-     * @param string $groupId
      * @return bool
      */
     public function delete(string $groupId)
     {
-        $resp    = HttpClient::get($this->app->url('/cgi/group/delete'), ['groupId' => $groupId]);
+        $resp = HttpClient::get($this->app->url('/cgi/group/delete'), ['groupId' => $groupId]);
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
@@ -94,19 +98,17 @@ class Group
     }
 
     /**
-     * 修改群名称
+     * 修改群名称.
      *
-     * @param string $groupId
-     * @param string $name
      * @return bool
      */
     public function update(string $groupId, string $name)
     {
         $parameters = [
-            'buin'    => $this->app->getBuin(),
-            'appId'   => $this->app->getAppId(),
+            'buin' => $this->app->getBuin(),
+            'appId' => $this->app->getAppId(),
             'encrypt' => $this->app->encryptMsg(json_encode([
-                'id'   => $groupId,
+                'id' => $groupId,
                 'name' => $name,
             ])),
         ];
@@ -114,7 +116,7 @@ class Group
         $resp = HttpClient::post($this->app->url('/cgi/group/update'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
@@ -127,14 +129,13 @@ class Group
     }
 
     /**
-     * 查看群信息
+     * 查看群信息.
      *
-     * @param string $groupId
      * @return array
      */
     public function info(string $groupId)
     {
-        $resp    = HttpClient::get($this->app->url('/cgi/group/info'), ['id' => $groupId]);
+        $resp = HttpClient::get($this->app->url('/cgi/group/info'), ['id' => $groupId]);
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {
@@ -147,19 +148,17 @@ class Group
     }
 
     /**
-     * 添加群成员
+     * 添加群成员.
      *
-     * @param string $groupId
-     * @param array $members
      * @return bool
      */
     public function addMember(string $groupId, array $members = [])
     {
         $parameters = [
-            'buin'    => $this->app->getBuin(),
-            'appId'   => $this->app->getAppId(),
+            'buin' => $this->app->getBuin(),
+            'appId' => $this->app->getAppId(),
             'encrypt' => $this->app->encryptMsg(json_encode([
-                'id'       => $groupId,
+                'id' => $groupId,
                 'userList' => $members,
             ])),
         ];
@@ -167,7 +166,7 @@ class Group
         $resp = HttpClient::post($this->app->url('/cgi/group/addmember'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
@@ -180,17 +179,15 @@ class Group
     }
 
     /**
-     * 删除群成员
+     * 删除群成员.
      *
-     * @param string $groupId
-     * @param array $members
      * @return bool
      */
     public function delMember(string $groupId, array $members = [])
     {
         $parameters = [
             'encrypt' => $this->app->encryptMsg(json_encode([
-                'id'       => $groupId,
+                'id' => $groupId,
                 'userList' => $members,
             ])),
         ];
@@ -198,7 +195,7 @@ class Group
         $resp = HttpClient::post($this->app->url('/cgi/group/delmember'), $parameters);
 
         if ($resp['httpCode'] != 200) {
-            throw new Exception("http request code " . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
+            throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
         $body = json_decode($resp['body'], true);
@@ -211,15 +208,14 @@ class Group
     }
 
     /**
-     * 查询用户是否是群成员
+     * 查询用户是否是群成员.
      *
-     * @param string $groupId
-     * @param string|integer $userId
-     * @return boolean
+     * @param int|string $userId
+     * @return bool
      */
     public function isMember(string $groupId, $userId)
     {
-        $resp    = HttpClient::get($this->app->url('/cgi/group/ismember'), ['id' => $groupId, 'userId' => $userId]);
+        $resp = HttpClient::get($this->app->url('/cgi/group/ismember'), ['id' => $groupId, 'userId' => $userId]);
         $decoded = json_decode($resp['body'], true);
 
         if ($decoded['errcode'] !== 0) {

@@ -1,8 +1,15 @@
 <?php
-
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://github.com/huangdijia/laravel-youdu
+ * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @contact  huangdijia@gmail.com
+ */
 namespace Huangdijia\Youdu;
 
 use Huangdijia\Youdu\Channels\YouduChannel;
+use Huangdijia\Youdu\Contracts\HttpClient;
 use Huangdijia\Youdu\Http\Guzzle;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Notifications\ChannelManager;
@@ -29,14 +36,18 @@ class YouduServiceProvider extends ServiceProvider implements DeferrableProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/youdu.php', 'youdu');
 
         $this->app->bind(Manager::class, function ($app) {
-            return new Manager($app['config']['youdu']);
+            return new Manager(config('youdu'));
         });
-
         $this->app->alias(Manager::class, 'youdu.manager');
 
-        $this->app->bind('youdu.http.client', function ($app) {
-            return new Guzzle($app['config']['youdu.api'], (int) $app['config']['youdu.timeout'] ?? 2);
+        $this->app->bind(HttpClient::class, function ($app) {
+            return new Guzzle(
+                config('youdu.api'),
+                (int) config('youdu.timeout', 2),
+                (array) config('youdu.http.options', [])
+            );
         });
+        $this->app->alias(HttpClient::class, 'youdu.http.client');
 
         $this->app->make(ChannelManager::class)->extend('youdu', function ($app) {
             return $app->make(YouduChannel::class);
@@ -55,6 +66,7 @@ class YouduServiceProvider extends ServiceProvider implements DeferrableProvider
             ->merge([
                 Manager::class,
                 'youdu.manager',
+                HttpClient::class,
                 'youdu.http.client',
             ])
             ->all();
