@@ -75,7 +75,7 @@ class Manager
 
             $this->apps[$name] = new App(
                 $this->config['api'],
-                $this->config['buin'],
+                (int) $this->config['buin'],
                 $config['app_id'],
                 $config['aes_key']
             );
