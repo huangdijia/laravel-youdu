@@ -1,4 +1,4 @@
-name: YOUDU TEST ACTIONS
+name: tests
 
 on: [push]
 
