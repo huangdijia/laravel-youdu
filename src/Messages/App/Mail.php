@@ -1,9 +1,11 @@
 <?php
+
+declare(strict_types=1);
 /**
- * This file is part of Hyperf.
+ * This file is part of hyperf/helpers.
  *
  * @link     https://github.com/huangdijia/laravel-youdu
- * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @document https://github.com/huangdijia/laravel-youdu/blob/3.x/README.md
  * @contact  huangdijia@gmail.com
  */
 namespace Huangdijia\Youdu\Messages\App;
@@ -33,7 +35,7 @@ class Mail extends Message
      * @param string $link 邮件链接。action为new时有效，点此链接即可打开邮件，为空时点击邮件消息默认执行企业邮箱单点登录
      * @param string $unreadCount 未读邮件数。action为unread时有效
      */
-    public function __construct(string $action = '', string $subject = '', string $fromUser = '', string $fromEmail = '', string $link, int $unreadCount = 0)
+    public function __construct(string $action = '', string $subject = '', string $fromUser = '', string $fromEmail = '', string $link = '', int $unreadCount = 0)
     {
         $this->action = $action;
         $this->subject = $subject;

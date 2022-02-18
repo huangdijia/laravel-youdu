@@ -1,5 +1,6 @@
 # laravel-youdu
 
+[![Latest Test](https://github.com/huangdijia/laravel-youdu/workflows/tests/badge.svg)](https://github.com/huangdijia/laravel-youdu/actions)
 [![Latest Stable Version](https://poser.pugx.org/huangdijia/laravel-youdu/version.png)](https://packagist.org/packages/huangdijia/laravel-youdu)
 [![Total Downloads](https://poser.pugx.org/huangdijia/laravel-youdu/d/total.png)](https://packagist.org/packages/huangdijia/laravel-youdu)
 [![GitHub license](https://img.shields.io/github/license/huangdijia/laravel-youdu)](https://github.com/huangdijia/laravel-youdu)
