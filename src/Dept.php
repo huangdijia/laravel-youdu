@@ -23,7 +23,7 @@ class Dept
     /**
      * 获取部门列表.
      */
-    public function lists(int $parentDeptId = 0): array|bool
+    public function lists(int $parentDeptId = 0): array
     {
         $resp = HttpClient::get($this->app->url('/cgi/dept/list'), ['id' => $parentDeptId]);
         $decoded = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
