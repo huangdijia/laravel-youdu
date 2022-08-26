@@ -68,7 +68,7 @@ class User
      * @param string $email 邮箱。长度为0~64个字符
      * @param array $dept 所属部门列表,不超过20个
      */
-    public function create(int|string $userId, string $name, int $gender = 0, string $mobile = '', string $phone = '', string $email = '', array $dept = []): bool
+    public function create($userId, string $name, int $gender = 0, string $mobile = '', string $phone = '', string $email = '', array $dept = []): bool
     {
         $parameters = $this->app->encryptMsg(json_encode([
             'buin' => $this->app->getBuin(),
@@ -108,7 +108,7 @@ class User
      * @param string $email 邮箱。长度为0~64个字符
      * @param array $dept 所属部门列表,不超过20个
      */
-    public function update(int|string $userId, string $name, int $gender = 0, string $mobile = '', string $phone = '', string $email = '', array $dept = []): bool
+    public function update($userId, string $name, int $gender = 0, string $mobile = '', string $phone = '', string $email = '', array $dept = []): bool
     {
         $parameters = $this->app->encryptMsg(json_encode([
             'buin' => $this->app->getBuin(),
@@ -146,7 +146,7 @@ class User
      * @param int $weight 职务权重。用户拥有多个职务时，权重值越大的职务排序越靠前
      * @param int $sortId 用户在部门中的排序，值越大排序越靠前
      */
-    public function updatePosition(int|string $userId, int $deptId, string $position = '', int $weight = 0, int $sortId = 0): bool
+    public function updatePosition($userId, int $deptId, string $position = '', int $weight = 0, int $sortId = 0): bool
     {
         $parameters = $this->app->encryptMsg(json_encode([
             'buin' => $this->app->getBuin(),
@@ -214,8 +214,9 @@ class User
 
     /**
      * 用户详情.
+     * @param int|string $userId
      */
-    public function get(int|string $userId): array
+    public function get($userId): array
     {
         $resp = HttpClient::get($this->app->url('/cgi/user/get'), ['userId' => $userId]);
         $decoded = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
@@ -234,8 +235,9 @@ class User
      *
      * @param int $authType 认证方式：0本地认证，2第三方认证
      * @param string $passwd 原始密码md5加密后转16进制的小写字符串
+     * @param int|string $userId
      */
-    public function setAuth(int|string $userId, int $authType = 0, string $passwd = ''): bool
+    public function setAuth($userId, int $authType = 0, string $passwd = ''): bool
     {
         // md5 -> hex -> lower
         $passwd = strtolower(bin2hex(md5($passwd)));
@@ -265,8 +267,9 @@ class User
 
     /**
      * 设置头像.
+     * @param int|string $userId
      */
-    public function setAvatar(int|string $userId, string $file): bool
+    public function setAvatar($userId, string $file): bool
     {
         if (preg_match('/^https?:\/\//i', $file)) { // 远程文件
             $contextOptions = stream_context_create([
@@ -318,8 +321,9 @@ class User
 
     /**
      * 获取头像（头像二进制数据）.
+     * @param int|string $userId
      */
-    public function getAvatar(int|string $userId, int $size = 0): string
+    public function getAvatar($userId, int $size = 0): string
     {
         $resp = HttpClient::get($this->app->url('/cgi/avatar/get'), ['userId' => $userId, 'size' => $size]);
         return $this->app->decryptMsg($resp['body'] ?? '');

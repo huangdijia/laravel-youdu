@@ -22,8 +22,9 @@ class Group
 
     /**
      * 获取群列表.
+     * @param int|string $userId
      */
-    public function lists(int|string $userId = ''): array
+    public function lists($userId = ''): array
     {
         $parameters = [];
 
@@ -193,8 +194,9 @@ class Group
 
     /**
      * 查询用户是否是群成员.
+     * @param int|string $userId
      */
-    public function isMember(string $groupId, int|string $userId): bool
+    public function isMember(string $groupId, $userId): bool
     {
         $resp = HttpClient::get($this->app->url('/cgi/group/ismember'), ['id' => $groupId, 'userId' => $userId]);
         $decoded = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
