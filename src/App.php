@@ -213,7 +213,7 @@ class App
         $appId = $this->appId;
         $buin = $this->buin;
 
-        return Cache::remember('youdu:tokens:' . $appId, Carbon::now()->addHours(2), function () use ($buin, $appId) {
+        return Cache::remember('youdu:tokens:' . $appId, Carbon::now()->addHours(1), function () use ($buin, $appId) {
             $encrypted = $this->encryptMsg((string) time());
             $parameters = [
                 'buin' => $buin,
