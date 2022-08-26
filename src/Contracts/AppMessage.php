@@ -10,7 +10,11 @@ declare(strict_types=1);
  */
 namespace Huangdijia\Youdu\Contracts;
 
-interface AppMessage
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Support\Jsonable;
+use JsonSerializable;
+
+interface AppMessage extends Arrayable, Jsonable, JsonSerializable
 {
     public function toUser(string $toUser);
 

@@ -11,11 +11,8 @@ declare(strict_types=1);
 namespace Huangdijia\Youdu\Messages\App;
 
 use Huangdijia\Youdu\Contracts\AppMessage;
-use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Contracts\Support\Jsonable;
-use JsonSerializable;
 
-abstract class Message implements AppMessage, Arrayable, Jsonable, JsonSerializable
+abstract class Message implements AppMessage
 {
     protected $toUser;
 
