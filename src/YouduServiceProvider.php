@@ -12,7 +12,6 @@ namespace Huangdijia\Youdu;
 
 use Huangdijia\Youdu\Channels\YouduChannel;
 use Huangdijia\Youdu\Contracts\HttpClient;
-use Huangdijia\Youdu\Http\Guzzle;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Notifications\ChannelManager;
 use Illuminate\Support\ServiceProvider;
@@ -37,9 +36,7 @@ class YouduServiceProvider extends ServiceProvider implements DeferrableProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/youdu.php', 'youdu');
 
-        $this->app->bind(Manager::class, function ($app) {
-            return new Manager(config('youdu'));
-        });
+        $this->app->bind(Manager::class, fn ($app) => new Manager(config('youdu')));
         $this->app->alias(Manager::class, 'youdu.manager');
 
         $this->app->bind(HttpClient::class, function ($app) {
@@ -54,18 +51,10 @@ class YouduServiceProvider extends ServiceProvider implements DeferrableProvider
                 'timeout' => (int) config('youdu.timeout', 2),
                 'options' => (array) config('youdu.http.options', []),
             ]);
-
-            // return new Guzzle(
-            //     config('youdu.api'),
-            //     (int) config('youdu.timeout', 2),
-            //     (array) config('youdu.http.options', [])
-            // );
         });
         $this->app->alias(HttpClient::class, 'youdu.http.client');
 
-        $this->app->make(ChannelManager::class)->extend('youdu', function ($app) {
-            return $app->make(YouduChannel::class);
-        });
+        $this->app->make(ChannelManager::class)->extend('youdu', fn ($app) => $app->make(YouduChannel::class));
 
         $this->app['translator']->addJsonPath(__DIR__ . '/../resources/lang');
     }
@@ -74,9 +63,7 @@ class YouduServiceProvider extends ServiceProvider implements DeferrableProvider
     {
         return collect(config('youdu.apps', []))
             ->keys()
-            ->transform(function ($app, $key) {
-                return Str::start($app, 'youdu.');
-            })
+            ->transform(fn ($app, $key) => Str::start($app, 'youdu.'))
             ->merge([
                 Manager::class,
                 'youdu.manager',

@@ -12,19 +12,13 @@ namespace Huangdijia\Youdu\Messages\App\Items;
 
 class SysMsg extends Item
 {
-    protected $title;
-
-    protected $popDuration;
-
     /**
      * @param string $title 系统消息标题。最多允许64个字节
      * @param int $popDuration 弹窗显示时间，0及负数弹窗不消失，正数为对应显示秒数
      * @param array $items 消息详细内容
      */
-    public function __construct(string $title = '', int $popDuration = 6, array $items = [])
+    public function __construct(protected string $title = '', protected int $popDuration = 6, array $items = [])
     {
-        $this->title = $title;
-        $this->popDuration = $popDuration;
         $this->items = $items;
     }
 

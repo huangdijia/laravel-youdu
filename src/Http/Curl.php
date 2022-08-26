@@ -17,28 +17,16 @@ use Illuminate\Support\Arr;
 
 class Curl implements HttpClient
 {
-    /**
-     * @var string
-     */
-    protected $baseUri;
+    protected string $baseUri;
 
-    /**
-     * @var string
-     */
-    protected $userAgent;
-
-    /**
-     * @var int
-     */
-    protected $timeout;
+    protected string $userAgent;
 
     /**
      * construct.
      */
-    public function __construct(string $baseUri = '', int $timeout = 2, array $options = [])
+    public function __construct(string $baseUri = '', protected int $timeout = 2, array $options = [])
     {
         $this->baseUri = trim($baseUri, '/');
-        $this->timeout = $timeout;
         $this->userAgent = Arr::get($options, 'headers.User-Agent', 'Youdu/2.0');
     }
 
@@ -46,12 +34,11 @@ class Curl implements HttpClient
      * GET.
      *
      * @throws \Huangdijia\Youdu\Exceptions\Http\RequestException
-     * @return array|bool
      */
-    public function get(string $uri = '', array $data = [])
+    public function get(string $uri = '', array $data = []): array|bool
     {
         if (! empty($data)) {
-            $uri .= (strpos($uri, '?') !== false ? '&' : '&') . http_build_query($data);
+            $uri .= (str_contains($uri, '?') ? '&' : '&') . http_build_query($data);
         }
 
         $uri = $this->baseUri . $uri;
@@ -92,9 +79,8 @@ class Curl implements HttpClient
      * POST.
      *
      * @throws \Huangdijia\Youdu\Exceptions\Http\RequestException
-     * @return array
      */
-    public function post(string $uri, array $data = [])
+    public function post(string $uri, array $data = []): array
     {
         $uri = $this->baseUri . $uri;
 
@@ -106,9 +92,9 @@ class Curl implements HttpClient
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
-                'content-Length: ' . strlen(json_encode($data)),
+                'content-Length: ' . strlen(json_encode($data, JSON_THROW_ON_ERROR)),
             ],
-            CURLOPT_POSTFIELDS => json_encode($data),
+            CURLOPT_POSTFIELDS => json_encode($data, JSON_THROW_ON_ERROR),
             CURLOPT_USERAGENT => $this->userAgent,
             CURLOPT_CONNECTTIMEOUT => 0,
             CURLOPT_TIMEOUT => $this->timeout,
@@ -140,9 +126,8 @@ class Curl implements HttpClient
      * Upload.
      *
      * @throws \Huangdijia\Youdu\Exceptions\Http\RequestException
-     * @return array|bool
      */
-    public function upload(string $uri, array $data = [])
+    public function upload(string $uri, array $data = []): array|bool
     {
         $uri = $this->baseUri . $uri;
 
@@ -166,15 +151,13 @@ class Curl implements HttpClient
 
         curl_close($ch);
 
-        return json_decode($response, true);
+        return json_decode($response, true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**
      * Make a upload file.
-     *
-     * @return CURLFile
      */
-    public function makeUploadFile(string $file)
+    public function makeUploadFile(string $file): CURLFile
     {
         $mime = mime_content_type($file);
         $info = pathinfo($file);

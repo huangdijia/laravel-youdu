@@ -12,12 +12,6 @@ namespace Huangdijia\Youdu\Messages\Session;
 
 class File extends Message
 {
-    protected $mediaId;
-
-    protected $name;
-
-    protected $size;
-
     /**
      * 文件消息.
      *
@@ -25,11 +19,8 @@ class File extends Message
      * @param string $name 文件名
      * @param int $size 文件大小
      */
-    public function __construct(string $mediaId = '', string $name = '', int $size = 0)
+    public function __construct(protected string $mediaId = '', protected string $name = '', protected int $size = 0)
     {
-        $this->mediaId = $mediaId;
-        $this->name = $name;
-        $this->size = $size;
     }
 
     public function toArray()

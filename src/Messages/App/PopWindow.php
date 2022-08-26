@@ -18,51 +18,6 @@ class PopWindow extends Message
     protected $content;
 
     /**
-     * @var string
-     */
-    protected $url;
-
-    /**
-     * @var string
-     */
-    protected $tip;
-
-    /**
-     * @var string
-     */
-    protected $title;
-
-    /**
-     * @var int
-     */
-    protected $width;
-
-    /**
-     * @var int
-     */
-    protected $height;
-
-    /**
-     * @var int
-     */
-    protected $duration;
-
-    /**
-     * @var int
-     */
-    protected $position;
-
-    /**
-     * @var string
-     */
-    protected $noticeId;
-
-    /**
-     * @var int
-     */
-    protected $popMode;
-
-    /**
      * 应用弹窗.
      *
      * @param string $url 弹窗打开url
@@ -75,26 +30,8 @@ class PopWindow extends Message
      * @param string $noticeId 通知id，用于防止重复弹窗
      * @param int $pop_mode 打开方式。1 浏览器, 2 窗口, 其他采用应用默认配置
      */
-    public function __construct(
-        string $url = '',
-        string $tip = '',
-        string $title = '',
-        int $width = 400,
-        int $height = 300,
-        int $duration = 5,
-        int $position = 3,
-        string $noticeId = '',
-        int $popMode = 1
-    ) {
-        $this->url = $url;
-        $this->tip = $tip;
-        $this->title = $title;
-        $this->width = $width;
-        $this->height = $height;
-        $this->duration = $duration;
-        $this->position = $position;
-        $this->noticeId = $noticeId;
-        $this->popMode = $popMode;
+    public function __construct(protected string $url = '', protected string $tip = '', protected string $title = '', protected int $width = 400, protected int $height = 300, protected int $duration = 5, protected int $position = 3, protected string $noticeId = '', protected int $popMode = 1)
+    {
     }
 
     /**

@@ -21,16 +21,6 @@ class Notification extends BaseNotification implements ShouldQueue
     use Queueable;
 
     /**
-     * @var string
-     */
-    protected $app;
-
-    /**
-     * @var Message
-     */
-    protected $message;
-
-    /**
      * @var int
      */
     protected $tries;
@@ -38,11 +28,8 @@ class Notification extends BaseNotification implements ShouldQueue
     /**
      * Create a new notification instance.
      */
-    public function __construct(AppMessage $message, string $app = 'default', ?int $delay = null)
+    public function __construct(protected AppMessage $message, protected string $app = 'default', ?int $delay = null)
     {
-        $this->message = $message;
-        $this->app = $app;
-
         $this->delay = $delay ?? (int) config('youdu.notification.delay', 0);
         $this->tries = (int) config('youdu.notification.tries', 3);
         $this->queue = config('youdu.notification.queue', 'youdu_notification');

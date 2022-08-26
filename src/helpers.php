@@ -11,9 +11,8 @@ declare(strict_types=1);
 if (! function_exists('str2hex')) {
     /**
      * 字符串转十六进制.
-     * @return string
      */
-    function str2hex(string $string)
+    function str2hex(string $string): string
     {
         $hex = '';
 
@@ -28,9 +27,8 @@ if (! function_exists('str2hex')) {
 if (! function_exists('hex2str')) {
     /**
      * 十六进制转字符串.
-     * @return string
      */
-    function hex2str(string $hex)
+    function hex2str(string $hex): string
     {
         $string = '';
 

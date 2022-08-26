@@ -20,9 +20,9 @@ use Throwable;
  */
 class Prpcrypt
 {
-    protected $key;
+    protected string $key;
 
-    protected $encoder;
+    protected PKCS7Encoder $encoder;
 
     public function __construct($key = '')
     {
@@ -34,13 +34,11 @@ class Prpcrypt
      * 对明文进行加密.
      *
      * @param string $text 需要加密的明文
-     *
-     * @return array
      */
-    public function encrypt(string $text = '', string $appId = '')
+    public function encrypt(string $text = '', string $appId = ''): array
     {
         try {
-            //获得16位随机字符串，填充到明文之前
+            // 获得16位随机字符串，填充到明文之前
             $random = $this->getRandomStr();
             $text = $random . pack('N', strlen($text)) . $text . $appId;
             $iv = substr($this->key, 0, 16);
@@ -59,10 +57,9 @@ class Prpcrypt
      *
      * @param string $encrypted 需要解密的密文
      * @param mixed $appId
-     *
-     * @return array
+     * @return array<int,string>
      */
-    public function decrypt($encrypted, $appId)
+    public function decrypt(string $encrypted, $appId): array
     {
         try {
             // 使用BASE64对需要解密的字符串进行解码
@@ -74,10 +71,10 @@ class Prpcrypt
         }
 
         try {
-            //去除补位字符
+            // 去除补位字符
             $result = $this->encoder->decode($decrypted);
 
-            //去除16位随机字符串,网络字节序和AppId
+            // 去除16位随机字符串,网络字节序和AppId
             if (strlen($result) < 16) {
                 return '';
             }
@@ -87,7 +84,7 @@ class Prpcrypt
             $jsonLen = $lenList[1];
             $jsonContent = substr($content, 4, $jsonLen);
             $fromAppId = substr($content, $jsonLen + 4);
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             return [ErrorCode::$IllegalBuffer, 'Illegal Buffer'];
         }
 
@@ -100,17 +97,15 @@ class Prpcrypt
 
     /**
      * 随机生成16位字符串.
-     *
-     * @return string
      */
-    public function getRandomStr()
+    public function getRandomStr(): string
     {
         $str = '';
         $strPol = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
         $max = strlen($strPol) - 1;
 
         for ($i = 0; $i < 16; ++$i) {
-            $str .= $strPol[mt_rand(0, $max)];
+            $str .= $strPol[random_int(0, $max)];
         }
 
         return $str;

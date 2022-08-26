@@ -23,14 +23,8 @@ class Manager
      */
     protected $apps = [];
 
-    /**
-     * @var array
-     */
-    protected $config;
-
-    public function __construct(array $config)
+    public function __construct(protected array $config)
     {
-        $this->config = $config;
     }
 
     /**

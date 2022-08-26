@@ -48,9 +48,7 @@ class ExceptionListener
 
         try {
             collect(config('youdu.exception.receivers', []))
-                ->transform(function ($route) {
-                    return Notification::route('youdu', $route);
-                })
+                ->transform(fn ($route) => Notification::route('youdu', $route))
                 ->whenNotEmpty(function ($notifiables) use ($message) {
                     /* @var Collection $notifiables */
 
@@ -81,25 +79,17 @@ class ExceptionListener
     {
         return collect()
             ->put(__('youdu.environment'), config('app.env'))
-            ->when($this->getCurrentBranch(), function ($collection, $branch) {
-                /* @var \Illuminate\Support\Collection $collection */
-                return $collection->put(__('youdu.branch'), $branch);
-            })
-            ->when(! $runningInConsole, function ($collection) {
-                /* @var \Illuminate\Support\Collection $collection */
-                return $collection->put(__('youdu.url'), app('request')->fullUrl());
-            })
-            ->put(__('youdu.exception'), get_class($e))
+            ->when($this->getCurrentBranch(), fn ($collection, $branch) => /* @var \Illuminate\Support\Collection $collection */
+$collection->put(__('youdu.branch'), $branch))
+            ->when(! $runningInConsole, fn ($collection) => /* @var \Illuminate\Support\Collection $collection */
+$collection->put(__('youdu.url'), app('request')->fullUrl()))
+            ->put(__('youdu.exception'), $e::class)
             ->put(__('youdu.message'), $e->getMessage())
             ->put(__('youdu.position'), $e->getFile() . ':' . $e->getLine())
-            ->when(defined('LARAVEL_START'), function ($collection) {
-                /* @var \Illuminate\Support\Collection $collection */
-                return $collection->put(__('youdu.usetime'), number_format(microtime(true) - LARAVEL_START, 3));
-            })
+            ->when(defined('LARAVEL_START'), fn ($collection) => /* @var \Illuminate\Support\Collection $collection */
+$collection->put(__('youdu.usetime'), number_format(microtime(true) - LARAVEL_START, 3)))
             ->put(__('youdu.time'), date('Y-m-d H:i:s'))
-            ->transform(function ($value, $key) {
-                return sprintf('%s: %s', $key, $value);
-            })
+            ->transform(fn ($value, $key) => sprintf('%s: %s', $key, $value))
             ->join("\n");
     }
 

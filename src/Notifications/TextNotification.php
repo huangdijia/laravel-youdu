@@ -14,8 +14,6 @@ use Huangdijia\Youdu\Messages\App\Text;
 
 class TextNotification extends Notification
 {
-    protected $message;
-
     /**
      * Create a new notification instance.
      *

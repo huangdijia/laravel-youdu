@@ -12,8 +12,6 @@ namespace Huangdijia\Youdu\Messages\App;
 
 class SysMsg extends Message
 {
-    protected $sysMsg;
-
     protected $onlyOnline;
 
     /**
@@ -21,9 +19,8 @@ class SysMsg extends Message
      *
      * @param \Huangdijia\Youdu\Messages\App\Items\SysMsg $sysMsg 消息内容，支持表情，最长不超过600个字符，超出部分将自动截取
      */
-    public function __construct(Items\SysMsg $sysMsg)
+    public function __construct(protected Items\SysMsg $sysMsg)
     {
-        $this->sysMsg = $sysMsg;
     }
 
     /**

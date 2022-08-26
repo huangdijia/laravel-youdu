@@ -12,16 +12,13 @@ namespace Huangdijia\Youdu\Messages\Session;
 
 class Voice extends Message
 {
-    protected $mediaId;
-
     /**
      * 语音消息.
      *
      * @param string $mediaId 语音素材文件id。通过上传素材文件接口获取
      */
-    public function __construct(string $mediaId = '')
+    public function __construct(protected string $mediaId = '')
     {
-        $this->mediaId = $mediaId;
     }
 
     public function toArray()

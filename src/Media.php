@@ -17,23 +17,16 @@ use Illuminate\Support\Str;
 
 class Media
 {
-    /**
-     * @var App
-     */
-    protected $app;
-
-    public function __construct(App $app)
+    public function __construct(protected App $app)
     {
-        $this->app = $app;
     }
 
     /**
      * 上传文件.
      *
      * @param string $fileType image代表图片、file代表普通文件、voice代表语音、video代表视频
-     * @return string
      */
-    public function upload(string $file = '', string $fileType = 'file')
+    public function upload(string $file = '', string $fileType = 'file'): string
     {
         if (! in_array($fileType, ['file', 'voice', 'video', 'image'])) {
             throw new Exception('Unsupport file type ' . $fileType, 1);
@@ -58,7 +51,7 @@ class Media
         $encryptedMsg = $this->app->encryptMsg(json_encode([
             'type' => $fileType ?? 'file',
             'name' => basename($file),
-        ]));
+        ], JSON_THROW_ON_ERROR));
 
         // 保存加密文件
         if (file_put_contents($tmpFile, $encryptedFile) === false) {
@@ -81,11 +74,11 @@ class Media
         if ($resp['errcode'] !== 0) {
             unlink($tmpFile);
 
-            throw new Exception($resp['errmsg'], $resp['errcode']);
+            throw new Exception($resp['errmsg'], (int) $resp['errcode']);
         }
 
         $decrypted = $this->app->decryptMsg($resp['encrypt']);
-        $decoded = json_decode($decrypted, true);
+        $decoded = json_decode($decrypted, true, 512, JSON_THROW_ON_ERROR);
 
         if (empty($decoded['mediaId'])) {
             throw new Exception('mediaId is empty', 1);
@@ -99,13 +92,11 @@ class Media
 
     /**
      * 下载文件.
-     *
-     * @return bool
      */
-    public function download(string $mediaId = '', ?string $savePath = null)
+    public function download(string $mediaId = '', ?string $savePath = null): bool
     {
-        $savePath = $savePath ?? config('youdu.file_save_path');
-        $encrypted = $this->app->encryptMsg(json_encode(['mediaId' => $mediaId]));
+        $savePath ??= config('youdu.file_save_path');
+        $encrypted = $this->app->encryptMsg(json_encode(['mediaId' => $mediaId], JSON_THROW_ON_ERROR));
         $parameters = [
             'buin' => $this->app->getBuin(),
             'appId' => $this->app->getAppId(),
@@ -116,14 +107,14 @@ class Media
         $resp = HttpClient::Post($url, $parameters);
         $header = $this->decodeHeader($resp['header']);
         $fileInfo = $this->app->decryptMsg($header['Encrypt']);
-        $fileInfo = json_decode($fileInfo, true);
+        $fileInfo = json_decode($fileInfo, true, 512, JSON_THROW_ON_ERROR);
         $fileContent = $this->app->decryptMsg($resp['body']);
 
         $saveAs = rtrim($savePath, '/') . '/' . $fileInfo['name'];
         $saved = file_put_contents($saveAs, $fileContent);
 
         if (! $saved) {
-            throw new Exception('save faild', 1);
+            throw new Exception('save failed', 1);
         }
 
         return true;
@@ -131,12 +122,10 @@ class Media
 
     /**
      * 素材文件信息.
-     *
-     * @return bool
      */
-    public function info(string $mediaId = '')
+    public function info(string $mediaId = ''): bool
     {
-        $encrypted = $this->app->encryptMsg(json_encode(['mediaId' => $mediaId]));
+        $encrypted = $this->app->encryptMsg(json_encode(['mediaId' => $mediaId], JSON_THROW_ON_ERROR));
         $parameters = [
             'buin' => $this->app->getBuin(),
             'appId' => $this->app->getAppId(),
@@ -150,13 +139,13 @@ class Media
             throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
-        $body = json_decode($resp['body'], true);
+        $body = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
         if ($body['errcode'] !== 0) {
             throw new Exception($body['errmsg'], $body['errcode']);
         }
 
-        $decoded = json_decode($resp['body'], true);
+        $decoded = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
         if ($decoded['errcode'] !== 0) {
             throw new Exception($decoded['errmsg'], 1);
@@ -164,15 +153,13 @@ class Media
 
         $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
 
-        return json_decode($decrypted, true);
+        return json_decode($decrypted, true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**
      * 解析 Header.
-     *
-     * @return array
      */
-    protected function decodeHeader(?string $header)
+    protected function decodeHeader(?string $header): array
     {
         if (! $header) {
             return [];

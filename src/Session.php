@@ -19,14 +19,8 @@ use Huangdijia\Youdu\Messages\Session\Text;
 
 class Session
 {
-    /**
-     * @var App
-     */
-    protected $app;
-
-    public function __construct(App $app)
+    public function __construct(protected App $app)
     {
-        $this->app = $app;
     }
 
     /**
@@ -36,9 +30,8 @@ class Session
      * @param string $creator 会话创建者账号。最多允许64个字符
      * @param array $member 会话成员账号列表。包括创建者，多人会话的成员数必须在3人及以上
      * @param string $type 会话类型。仅支持多人会话(multi)
-     * @return array
      */
-    public function create(string $title, string $creator = '', array $member = [], string $type = 'multi')
+    public function create(string $title, string $creator = '', array $member = [], string $type = 'multi'): array
     {
         $parameters = [
             'buin' => $this->app->getBuin(),
@@ -48,16 +41,14 @@ class Session
                 'creator' => $creator,
                 'type' => $type,
                 'member' => $member,
-            ])),
+            ], JSON_THROW_ON_ERROR)),
         ];
 
         if (count($member) < 3) {
             throw new Exception('Members too less', 1);
         }
 
-        $member = array_map(function ($item) {
-            return (string) $item;
-        }, $member);
+        $member = array_map(fn ($item) => (string) $item, $member);
 
         $resp = HttpClient::post($this->app->url('/cgi/session/create'), $parameters);
 
@@ -65,14 +56,14 @@ class Session
             throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
-        $body = json_decode($resp['body'], true);
+        $body = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
         if ($body['errcode'] !== 0) {
             throw new Exception($body['errmsg'], $body['errcode']);
         }
 
         $decrypted = $this->app->decryptMsg($body['encrypt']);
-        return json_decode($decrypted, true);
+        return json_decode($decrypted, true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -83,17 +74,11 @@ class Session
      * @param string $title 会话标题
      * @param array $addMember 新增会话成员账号列表
      * @param array $delMember 删除会话成员账号列表
-     * @return array
      */
-    public function update(string $sessionId, string $opUser = '', string $title = '', array $addMember = [], array $delMember = [])
+    public function update(string $sessionId, string $opUser = '', string $title = '', array $addMember = [], array $delMember = []): array
     {
-        $addMember = array_map(function ($item) {
-            return (string) $item;
-        }, $addMember);
-
-        $delMember = array_map(function ($item) {
-            return (string) $item;
-        }, $delMember);
+        $addMember = array_map(fn ($item) => (string) $item, $addMember);
+        $delMember = array_map(fn ($item) => (string) $item, $delMember);
 
         $parameters = [
             'buin' => $this->app->getBuin(),
@@ -104,7 +89,7 @@ class Session
                 'opUser' => $opUser,
                 'addMember' => $addMember,
                 'delMember' => $delMember,
-            ])),
+            ], JSON_THROW_ON_ERROR)),
         ];
 
         $resp = HttpClient::post($this->app->url('/cgi/session/update'), $parameters);
@@ -113,25 +98,24 @@ class Session
             throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
-        $body = json_decode($resp['body'], true);
+        $body = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
         if ($body['errcode'] !== 0) {
             throw new Exception($body['errmsg'], $body['errcode']);
         }
 
         $decrypted = $this->app->decryptMsg($body['encrypt']);
-        return json_decode($decrypted, true);
+
+        return json_decode($decrypted, true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**
      * 获取会话.
-     *
-     * @return array
      */
-    public function info(string $sessionId)
+    public function info(string $sessionId): array
     {
         $resp = HttpClient::get($this->app->url('/cgi/session/get'), ['sessionId' => $sessionId]);
-        $decoded = json_decode($resp['body'], true);
+        $decoded = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
         if ($decoded['errcode'] !== 0) {
             throw new Exception($decoded['errmsg'], 1);
@@ -139,7 +123,7 @@ class Session
 
         $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
 
-        return json_decode($decrypted, true) ?? [];
+        return json_decode($decrypted, true, 512, JSON_THROW_ON_ERROR) ?? [];
     }
 
     /**
@@ -147,9 +131,8 @@ class Session
      *
      * @throws Exception
      * @throws AccessTokenDoesNotExistException
-     * @return bool
      */
-    public function send(Message $message)
+    public function send(Message $message): bool
     {
         $parameters = [
             'buin' => $this->app->getBuin(),
@@ -163,7 +146,7 @@ class Session
             throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
-        $body = json_decode($resp['body'], true);
+        $body = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
         if ($body['errcode'] !== 0) {
             throw new Exception($body['errmsg'], $body['errcode']);
@@ -176,9 +159,8 @@ class Session
      * 发送个人会话消息.
      *
      * @param string $message
-     * @return bool
      */
-    public function sendToUser(string $sender, string $receiver, $message = '')
+    public function sendToUser(string $sender, string $receiver, $message = ''): bool
     {
         if (is_string($message)) {
             $message = new Text($message);
@@ -194,9 +176,8 @@ class Session
      * 发送多人会话消息.
      *
      * @param string $message
-     * @return bool
      */
-    public function sendToSession(string $sender, string $sessionId, $message = '')
+    public function sendToSession(string $sender, string $sessionId, $message = ''): bool
     {
         if (is_string($message)) {
             $message = new Text($message);

@@ -15,21 +15,10 @@ use Huangdijia\Youdu\Contracts\HttpClient;
 
 class Guzzle implements HttpClient
 {
-    /**
-     * @var Client
-     */
-    protected $client;
+    protected Client $client;
 
-    /**
-     * @var array
-     */
-    protected $options;
+    protected array $options = [];
 
-    /**
-     * construct.
-     *
-     * @param $options
-     */
     public function __construct(string $baseUri = '', int $timeout = 2, array $options = [])
     {
         $this->client = new Client([
@@ -45,12 +34,10 @@ class Guzzle implements HttpClient
 
     /**
      * get.
-     *
-     * @return array
      */
-    public function get(string $uri, array $data = [])
+    public function get(string $uri, array $data = []): array
     {
-        $uri .= (strpos($uri, '?') === false ? '?' : '&') . http_build_query($data);
+        $uri .= (! str_contains($uri, '?') ? '?' : '&') . http_build_query($data);
         $response = $this->client->request('GET', $uri, $this->options);
 
         return [
@@ -62,14 +49,12 @@ class Guzzle implements HttpClient
 
     /**
      * post.
-     *
-     * @return array
      */
-    public function post(string $uri, array $data = [])
+    public function post(string $uri, array $data = []): array
     {
         $response = $this->client->request('POST', $uri, [
             'json' => $data,
-        ], $this->options);
+        ]);
 
         return [
             'header' => $response->getHeaders(),
@@ -80,10 +65,8 @@ class Guzzle implements HttpClient
 
     /**
      * upload.
-     *
-     * @return array
      */
-    public function upload(string $uri, array $data = [])
+    public function upload(string $uri, array $data = []): array
     {
         $parts = [];
 
@@ -96,9 +79,9 @@ class Guzzle implements HttpClient
         $data = $parts;
         $response = $this->client->request('POST', $uri, [
             'multipart' => $data,
-        ], $this->options);
+        ]);
 
-        return json_decode($response->getBody()->getContents(), true);
+        return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**

@@ -12,18 +12,6 @@ namespace Huangdijia\Youdu\Messages\App;
 
 class Mail extends Message
 {
-    protected $action;
-
-    protected $subject;
-
-    protected $fromUser;
-
-    protected $fromEmail;
-
-    protected $link;
-
-    protected $unreadCount;
-
     /**
      * 图片消息.
      *
@@ -35,14 +23,8 @@ class Mail extends Message
      * @param string $link 邮件链接。action为new时有效，点此链接即可打开邮件，为空时点击邮件消息默认执行企业邮箱单点登录
      * @param string $unreadCount 未读邮件数。action为unread时有效
      */
-    public function __construct(string $action = '', string $subject = '', string $fromUser = '', string $fromEmail = '', string $link = '', int $unreadCount = 0)
+    public function __construct(protected string $action = '', protected string $subject = '', protected string $fromUser = '', protected string $fromEmail = '', protected string $link = '', protected int $unreadCount = 0)
     {
-        $this->action = $action;
-        $this->subject = $subject;
-        $this->fromUser = $fromUser;
-        $this->fromEmail = $fromEmail;
-        $this->link = $link;
-        $this->unreadCount = $unreadCount;
     }
 
     /**

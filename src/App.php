@@ -24,63 +24,20 @@ use Illuminate\Support\Facades\Cache;
 
 class App
 {
-    /**
-     * @var string
-     */
-    protected $api;
+    protected Prpcrypt $crypter;
 
-    /**
-     * @var int
-     */
-    protected $buin;
+    protected Dept $dept;
 
-    /**
-     * @var string
-     */
-    protected $appId;
+    protected Group $group;
 
-    /**
-     * @var string
-     */
-    protected $aesKey;
+    protected User $user;
 
-    /**
-     * @var Prpcrypt
-     */
-    protected $crypter;
+    protected Session $session;
 
-    /**
-     * @var Dept
-     */
-    protected $dept;
+    protected Media $media;
 
-    /**
-     * @var Group
-     */
-    protected $group;
-
-    /**
-     * @var User
-     */
-    protected $user;
-
-    /**
-     * @var Session
-     */
-    protected $session;
-
-    /**
-     * @var Media
-     */
-    protected $media;
-
-    public function __construct(string $api = '', int $buin = 0, string $appId = '', string $aesKey = '')
+    public function __construct(protected string $api = '', protected int $buin = 0, protected string $appId = '', protected string $aesKey = '')
     {
-        $this->api = $api;
-        $this->buin = $buin;
-        $this->appId = $appId;
-        $this->aesKey = $aesKey;
-
         $this->crypter = new Prpcrypt($aesKey);
         $this->dept = new Dept($this);
         $this->group = new Group($this);
@@ -91,90 +48,72 @@ class App
 
     /**
      * 部门.
-     *
-     * @return \Huangdijia\Youdu\Dept
      */
-    public function dept()
+    public function dept(): Dept
     {
         return $this->dept;
     }
 
     /**
      * 群.
-     *
-     * @return \Huangdijia\Youdu\Group
      */
-    public function group()
+    public function group(): Group
     {
         return $this->group;
     }
 
     /**
      * 用户.
-     *
-     * @return \Huangdijia\Youdu\User
      */
-    public function user()
+    public function user(): User
     {
         return $this->user;
     }
 
     /**
      * 会话.
-     *
-     * @return \Huangdijia\Youdu\Session
      */
-    public function session()
+    public function session(): Session
     {
         return $this->session;
     }
 
     /**
      * 会话.
-     *
-     * @return \Huangdijia\Youdu\Media
      */
-    public function media()
+    public function media(): Media
     {
         return $this->media;
     }
 
     /**
      * 获取 buin.
-     *
-     * @return int
      */
-    public function getBuin()
+    public function getBuin(): int
     {
         return $this->buin;
     }
 
     /**
      * 获取 appId.
-     *
-     * @return string
      */
-    public function getAppId()
+    public function getAppId(): string
     {
         return $this->appId;
     }
 
     /**
      * 获取 aesKey.
-     *
-     * @return string
      */
-    public function getAesKey()
+    public function getAesKey(): string
     {
         return $this->aesKey;
     }
 
     /**
      * 加密.
-     *
-     * @return bool|string
      */
-    public function encryptMsg(string $unencrypted = '')
+    public function encryptMsg(string $unencrypted = ''): bool|string
     {
         [$errcode, $encrypted] = $this->crypter->encrypt($unencrypted, $this->appId);
 
@@ -187,10 +126,8 @@ class App
 
     /**
      * 解密.
-     *
-     * @return bool|string
      */
-    public function decryptMsg(?string $encrypted)
+    public function decryptMsg(?string $encrypted): bool|string
     {
         if (strlen($this->aesKey) != 44) {
             throw new Exception('Illegal aesKey', ErrorCode::$IllegalAesKey);
@@ -215,7 +152,7 @@ class App
         $appId = $this->appId;
         $buin = $this->buin;
 
-        return Cache::remember('youdu:tokens:' . $appId, Carbon::now()->addHours(2), function () use ($buin, $appId) {
+        return Cache::remember('youdu:tokens:' . $appId, Carbon::now()->addHours(1), function () use ($buin, $appId) {
             $encrypted = $this->encryptMsg((string) time());
             $parameters = [
                 'buin' => $buin,
@@ -225,14 +162,14 @@ class App
 
             $url = $this->url('/cgi/gettoken', false);
             $resp = HttpClient::post($url, $parameters);
-            $body = json_decode($resp['body'], true);
+            $body = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
             if ($body['errcode'] != 0) {
                 throw new Exception($body['errmsg'], $body['errcode']);
             }
 
             $decrypted = $this->decryptMsg($body['encrypt']);
-            $decoded = json_decode($decrypted, true);
+            $decoded = json_decode($decrypted, true, 512, JSON_THROW_ON_ERROR);
 
             return $decoded['accessToken'];
         });
@@ -281,7 +218,7 @@ class App
             throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
-        $body = json_decode($resp['body'], true);
+        $body = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
         if ($body['errcode'] !== 0) {
             throw new Exception($body['errmsg'], $body['errcode']);
@@ -294,10 +231,9 @@ class App
      * 发送消息给用户.
      *
      * @param string $toUser 接收成员的帐号列表。多个接收者用竖线分隔，最多支持1000个
-     * @param \Huangdijia\Youdu\Messages\App\Message|string $message
      * @return bool
      */
-    public function sendToUser(string $toUser = '', $message = '')
+    public function sendToUser(string $toUser = '', Message|string $message = '')
     {
         if (is_string($message)) {
             $message = new Text($message);
@@ -312,10 +248,9 @@ class App
      * 发送消息至部门.
      *
      * @param string $toDept $toDept 接收部门id列表。多个接收者用竖线分隔，最多支持100个
-     * @param \Huangdijia\Youdu\Messages\App\Message|string $message
      * @return bool
      */
-    public function sendToDept(string $toDept = '', $message = '')
+    public function sendToDept(string $toDept = '', Message|string $message = '')
     {
         if (is_string($message)) {
             $message = new Text($message);
@@ -329,10 +264,9 @@ class App
     /**
      * 发送系统消息.
      *
-     * @param \Huangdijia\Youdu\Messages\App\SysMsg|string $message
      * @return bool
      */
-    public function sendToAll($message, bool $onlineOnly = false)
+    public function sendToAll(SysMsg|string $message, bool $onlineOnly = false)
     {
         if (is_string($message)) {
             $items = new Messages\App\Items\SysMsg();
@@ -340,7 +274,7 @@ class App
             $message = new SysMsg($items);
         }
 
-        if (! ($message instanceof SysMsg)) {
+        if (! $message instanceof SysMsg) {
             throw new Exception('$message must instanceof' . SysMsg::class);
         }
 
@@ -362,7 +296,7 @@ class App
                 'account' => $account,
                 'tip' => $tip,
                 'count' => $msgCount,
-            ])),
+            ], JSON_THROW_ON_ERROR)),
         ];
 
         $resp = HttpClient::post($this->url('/cgi/set.ent.notice'), $parameters);
@@ -371,7 +305,7 @@ class App
             throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
-        $body = json_decode($resp['body'], true);
+        $body = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
         if ($body['errcode'] !== 0) {
             throw new Exception($body['errmsg'], $body['errcode']);
@@ -383,7 +317,6 @@ class App
     /**
      * 应用弹窗.
      *
-     * @param \Huangdijia\Youdu\Messages\App\PopWindow $message
      * @return bool
      */
     public function popWindow(string $toUser = '', string $toDept = '', PopWindow $message = null)
@@ -407,7 +340,7 @@ class App
             throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
-        $body = json_decode($resp['body'], true);
+        $body = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
         if ($body['errcode'] !== 0) {
             throw new Exception($body['errmsg'], $body['errcode']);

@@ -12,13 +12,7 @@ namespace Huangdijia\Youdu\Contracts;
 
 interface AppMessage
 {
-    /**
-     * Set users.
-     */
     public function toUser(string $toUser);
 
-    /**
-     * Set Depts.
-     */
     public function toDept(string $toDept);
 }

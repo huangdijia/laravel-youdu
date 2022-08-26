@@ -25,7 +25,7 @@ class SHA1
      */
     public function getSHA1($token, $timestamp, $nonce, $encrypt_msg)
     {
-        //排序
+        // 排序
         try {
             $array = [$encrypt_msg, $token, $timestamp, $nonce];
             sort($array, SORT_STRING);

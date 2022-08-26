@@ -12,16 +12,13 @@ namespace Huangdijia\Youdu\Messages\App;
 
 class File extends Message
 {
-    protected $mediaId;
-
     /**
      * 文件消息.
      *
      * @param string $mediaId 消息内容，支持表情，最长不超过600个字符，超出部分将自动截取
      */
-    public function __construct(string $mediaId = '')
+    public function __construct(protected string $mediaId = '')
     {
-        $this->mediaId = $mediaId;
     }
 
     /**

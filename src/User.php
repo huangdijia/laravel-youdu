@@ -17,14 +17,8 @@ use Illuminate\Support\Str;
 
 class User
 {
-    /**
-     * @var App
-     */
-    protected $app;
-
-    public function __construct(App $app)
+    public function __construct(protected App $app)
     {
-        $this->app = $app;
     }
 
     /**
@@ -35,7 +29,7 @@ class User
     public function simpleList(?int $deptId = 0)
     {
         $resp = HttpClient::get($this->app->url('/cgi/user/simplelist'), ['deptId' => $deptId]);
-        $decoded = json_decode($resp['body'], true);
+        $decoded = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
         if ($decoded['errcode'] !== 0) {
             throw new Exception($decoded['errmsg'], 1);
@@ -43,18 +37,16 @@ class User
 
         $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
 
-        return json_decode($decrypted, true)['userList'] ?? [];
+        return json_decode($decrypted, true, 512, JSON_THROW_ON_ERROR)['userList'] ?? [];
     }
 
     /**
      * 获取用户列表.
-     *
-     * @return array
      */
-    public function lists(?int $deptId = 0)
+    public function lists(?int $deptId = 0): array
     {
         $resp = HttpClient::get($this->app->url('/cgi/user/list'), ['deptId' => $deptId]);
-        $decoded = json_decode($resp['body'], true);
+        $decoded = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
         if ($decoded['errcode'] !== 0) {
             throw new Exception($decoded['errmsg'], 1);
@@ -62,7 +54,7 @@ class User
 
         $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
 
-        return json_decode($decrypted, true)['userList'] ?? [];
+        return json_decode($decrypted, true, 512, JSON_THROW_ON_ERROR)['userList'] ?? [];
     }
 
     /**
@@ -75,9 +67,8 @@ class User
      * @param string $phone 电话号码
      * @param string $email 邮箱。长度为0~64个字符
      * @param array $dept 所属部门列表,不超过20个
-     * @return bool
      */
-    public function create($userId, string $name, int $gender = 0, string $mobile = '', string $phone = '', string $email = '', array $dept = [])
+    public function create(int|string $userId, string $name, int $gender = 0, string $mobile = '', string $phone = '', string $email = '', array $dept = []): bool
     {
         $parameters = $this->app->encryptMsg(json_encode([
             'buin' => $this->app->getBuin(),
@@ -89,7 +80,7 @@ class User
             'phone' => $phone,
             'email' => $email,
             'dept' => $dept,
-        ]));
+        ], JSON_THROW_ON_ERROR));
 
         $resp = HttpClient::post($this->app->url('/cgi/user/create'), $parameters);
 
@@ -97,7 +88,7 @@ class User
             throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
-        $body = json_decode($resp['body'], true);
+        $body = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
         if ($body['errcode'] !== 0) {
             throw new Exception($body['errmsg'], $body['errcode']);
@@ -116,9 +107,8 @@ class User
      * @param string $phone 电话号码
      * @param string $email 邮箱。长度为0~64个字符
      * @param array $dept 所属部门列表,不超过20个
-     * @return bool
      */
-    public function update($userId, string $name, int $gender = 0, string $mobile = '', string $phone = '', string $email = '', array $dept = [])
+    public function update(int|string $userId, string $name, int $gender = 0, string $mobile = '', string $phone = '', string $email = '', array $dept = []): bool
     {
         $parameters = $this->app->encryptMsg(json_encode([
             'buin' => $this->app->getBuin(),
@@ -130,7 +120,7 @@ class User
             'phone' => $phone,
             'email' => $email,
             'dept' => $dept,
-        ]));
+        ], JSON_THROW_ON_ERROR));
 
         $resp = HttpClient::post($this->app->url('/cgi/user/update'), $parameters);
 
@@ -138,7 +128,7 @@ class User
             throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
-        $body = json_decode($resp['body'], true);
+        $body = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
         if ($body['errcode'] !== 0) {
             throw new Exception($body['errmsg'], $body['errcode']);
@@ -155,9 +145,8 @@ class User
      * @param string $position 职务
      * @param int $weight 职务权重。用户拥有多个职务时，权重值越大的职务排序越靠前
      * @param int $sortId 用户在部门中的排序，值越大排序越靠前
-     * @return bool
      */
-    public function updatePosition($userId, int $deptId, string $position = '', int $weight = 0, int $sortId = 0)
+    public function updatePosition(int|string $userId, int $deptId, string $position = '', int $weight = 0, int $sortId = 0): bool
     {
         $parameters = $this->app->encryptMsg(json_encode([
             'buin' => $this->app->getBuin(),
@@ -167,7 +156,7 @@ class User
             'position' => $position,
             'weight' => $weight,
             'sortId' => $sortId,
-        ]));
+        ], JSON_THROW_ON_ERROR));
 
         $resp = HttpClient::post($this->app->url('/cgi/user/positionupdate'), $parameters);
 
@@ -175,7 +164,7 @@ class User
             throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
-        $body = json_decode($resp['body'], true);
+        $body = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
         if ($body['errcode'] !== 0) {
             throw new Exception($body['errmsg'], $body['errcode']);
@@ -186,11 +175,8 @@ class User
 
     /**
      * 删除用户.
-     *
-     * @param array|int $userId
-     * @return bool
      */
-    public function delete($userId)
+    public function delete(array|int $userId): bool
     {
         // batch delete
         if (is_array($userId)) {
@@ -198,7 +184,7 @@ class User
                 'buin' => $this->app->getBuin(),
                 'appId' => $this->app->getAppId(),
                 'delList' => $userId,
-            ]));
+            ], JSON_THROW_ON_ERROR));
 
             $resp = HttpClient::post($this->app->url('/cgi/user/batchdelete'), $parameters);
 
@@ -206,7 +192,7 @@ class User
                 throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
             }
 
-            $body = json_decode($resp['body'], true);
+            $body = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
             if ($body['errcode'] !== 0) {
                 throw new Exception($body['errmsg'], $body['errcode']);
@@ -217,7 +203,7 @@ class User
 
         // single delete
         $resp = HttpClient::get($this->app->url('/cgi/user/delete'), ['userId' => $userId]);
-        $decoded = json_decode($resp['body'], true);
+        $decoded = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
         if ($decoded['errcode'] !== 0) {
             throw new Exception($decoded['errmsg'], 1);
@@ -228,14 +214,11 @@ class User
 
     /**
      * 用户详情.
-     *
-     * @param int|string $userId
-     * @return array
      */
-    public function get($userId)
+    public function get(int|string $userId): array
     {
         $resp = HttpClient::get($this->app->url('/cgi/user/get'), ['userId' => $userId]);
-        $decoded = json_decode($resp['body'], true);
+        $decoded = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
         if ($decoded['errcode'] !== 0) {
             throw new Exception($decoded['errmsg'], 1);
@@ -243,18 +226,16 @@ class User
 
         $decrypted = $this->app->decryptMsg($decoded['encrypt'] ?? '');
 
-        return json_decode($decrypted, true) ?? [];
+        return json_decode($decrypted, true, 512, JSON_THROW_ON_ERROR) ?? [];
     }
 
     /**
      * 设置认证信息.
      *
-     * @param int|string $userId
      * @param int $authType 认证方式：0本地认证，2第三方认证
      * @param string $passwd 原始密码md5加密后转16进制的小写字符串
-     * @return bool
      */
-    public function setAuth($userId, int $authType = 0, string $passwd = '')
+    public function setAuth(int|string $userId, int $authType = 0, string $passwd = ''): bool
     {
         // md5 -> hex -> lower
         $passwd = strtolower(bin2hex(md5($passwd)));
@@ -265,7 +246,7 @@ class User
             'userId' => $userId,
             'authType' => $authType,
             'passwd' => $passwd,
-        ]));
+        ], JSON_THROW_ON_ERROR));
 
         $resp = HttpClient::post($this->app->url('/cgi/user/setauth'), $parameters);
 
@@ -273,7 +254,7 @@ class User
             throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
-        $body = json_decode($resp['body'], true);
+        $body = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
         if ($body['errcode'] !== 0) {
             throw new Exception($body['errmsg'], $body['errcode']);
@@ -284,11 +265,8 @@ class User
 
     /**
      * 设置头像.
-     *
-     * @param int|string $userId
-     * @return bool
      */
-    public function setAvatar($userId, string $file)
+    public function setAvatar(int|string $userId, string $file): bool
     {
         if (preg_match('/^https?:\/\//i', $file)) { // 远程文件
             $contextOptions = stream_context_create([
@@ -309,7 +287,7 @@ class User
         $encryptedMsg = $this->app->encryptMsg(json_encode([
             'type' => 'image',
             'name' => basename($file),
-        ]));
+        ], JSON_THROW_ON_ERROR));
 
         // 保存加密文件
         if (file_put_contents($tmpFile, $encryptedFile) === false) {
@@ -340,11 +318,8 @@ class User
 
     /**
      * 获取头像（头像二进制数据）.
-     *
-     * @param int|string $userId
-     * @return string
      */
-    public function getAvatar($userId, int $size = 0)
+    public function getAvatar(int|string $userId, int $size = 0): string
     {
         $resp = HttpClient::get($this->app->url('/cgi/avatar/get'), ['userId' => $userId, 'size' => $size]);
         return $this->app->decryptMsg($resp['body'] ?? '');
@@ -352,10 +327,8 @@ class User
 
     /**
      * 单点登录.
-     *
-     * @return array
      */
-    public function identify(string $token)
+    public function identify(string $token): array
     {
         $resp = HttpClient::get($this->app->url('/cgi/identify?token=' . $token, false));
 
@@ -363,7 +336,7 @@ class User
             throw new Exception('http request code ' . $resp['httpCode'], ErrorCode::$IllegalHttpReq);
         }
 
-        $decoded = json_decode($resp['body'], true);
+        $decoded = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
         if (($decoded['status']['code'] ?? 0) != 0) {
             throw new Exception($decoded['status']['message'], 1);
