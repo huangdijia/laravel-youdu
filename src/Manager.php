@@ -30,7 +30,6 @@ class Manager
     /**
      * @param string $method
      * @param array $parameters
-     *
      * @return mixed
      */
     public function __call($method, $parameters)
@@ -42,6 +41,7 @@ class Manager
      * Get config.
      *
      * @param mixed $default
+     * @return mixed
      */
     public function config(?string $key = null, $default = null)
     {
@@ -54,9 +54,8 @@ class Manager
 
     /**
      * Get an app.
-     * @return App
      */
-    public function app(?string $name = null)
+    public function app(?string $name = null): App
     {
         $name = $name ?: Arr::get($this->config, 'default', 'default');
 
@@ -83,7 +82,7 @@ class Manager
      *
      * @return App[]
      */
-    public function apps()
+    public function apps(): array
     {
         return $this->apps;
     }
