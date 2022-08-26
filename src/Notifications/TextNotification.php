@@ -19,7 +19,7 @@ class TextNotification extends Notification
      *
      * @param null|mixed $delay
      */
-    public function __construct(string $message, string $app = 'default', $delay = null)
+    public function __construct(string $message, string $app = 'default', ?int $delay = null)
     {
         parent::__construct(new Text($message), $app, $delay);
     }
