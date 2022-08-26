@@ -35,7 +35,7 @@ class Curl implements HttpClient
      *
      * @throws \Huangdijia\Youdu\Exceptions\Http\RequestException
      */
-    public function get(string $uri = '', array $data = []): array|bool
+    public function get(string $uri = '', array $data = []): array
     {
         if (! empty($data)) {
             $uri .= (str_contains($uri, '?') ? '&' : '&') . http_build_query($data);
@@ -127,7 +127,7 @@ class Curl implements HttpClient
      *
      * @throws \Huangdijia\Youdu\Exceptions\Http\RequestException
      */
-    public function upload(string $uri, array $data = []): array|bool
+    public function upload(string $uri, array $data = []): array
     {
         $uri = $this->baseUri . $uri;
 

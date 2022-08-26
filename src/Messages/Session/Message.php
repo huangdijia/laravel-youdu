@@ -11,11 +11,8 @@ declare(strict_types=1);
 namespace Huangdijia\Youdu\Messages\Session;
 
 use Huangdijia\Youdu\Contracts\SessionMessage;
-use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Contracts\Support\Jsonable;
-use JsonSerializable;
 
-abstract class Message implements SessionMessage, Arrayable, Jsonable, JsonSerializable
+abstract class Message implements SessionMessage
 {
     protected $sender;
 

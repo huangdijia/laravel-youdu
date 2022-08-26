@@ -10,7 +10,11 @@ declare(strict_types=1);
  */
 namespace Huangdijia\Youdu\Contracts;
 
-interface SessionMessage
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Support\Jsonable;
+use JsonSerializable;
+
+interface SessionMessage extends Arrayable, Jsonable, JsonSerializable
 {
     public function sender(string $sender);
 
