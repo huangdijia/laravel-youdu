@@ -1,14 +1,14 @@
 <?php
 
 $header = <<<'EOF'
-This file is part of Hyperf.
+This file is part of laravel-youdu.
 
 @link     https://github.com/huangdijia/laravel-youdu
-@document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+@document https://github.com/huangdijia/laravel-youdu/blob/2.x/README.md
 @contact  huangdijia@gmail.com
 EOF;
 
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config())
     ->setRiskyAllowed(true)
     ->setRules([
         '@PSR2' => true,
@@ -16,7 +16,7 @@ return PhpCsFixer\Config::create()
         '@DoctrineAnnotation' => true,
         '@PhpCsFixer' => true,
         'header_comment' => [
-            'commentType' => 'PHPDoc',
+            'comment_type' => 'PHPDoc',
             'header' => $header,
             'separate' => 'none',
             'location' => 'after_declare_strict',
