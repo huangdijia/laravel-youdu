@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 /**
- * This file is part of hyperf/helpers.
+ * This file is part of laravel-youdu.
  *
  * @link     https://github.com/huangdijia/laravel-youdu
  * @document https://github.com/huangdijia/laravel-youdu/blob/3.x/README.md
@@ -71,9 +71,9 @@ class ExceptionListener
     /**
      * Assemble message.
      * @param bool $runningInConsole
+     * @return string
      * @throws BindingResolutionException
      * @throws UnitException
-     * @return string
      */
     protected function assembleMessage(Throwable $e, $runningInConsole = false)
     {
@@ -95,8 +95,8 @@ $collection->put(__('youdu.usetime'), number_format(microtime(true) - LARAVEL_ST
 
     /**
      * Get git current branch name.
-     * @throws BindingResolutionException
      * @return string
+     * @throws BindingResolutionException
      */
     private function getCurrentBranch()
     {
