@@ -189,6 +189,8 @@ class Group
     public function delMember(string $groupId, array $members = [])
     {
         $parameters = [
+            'buin'    => $this->app->getBuin(),
+            'appId'   => $this->app->getAppId(),
             'encrypt' => $this->app->encryptMsg(json_encode([
                 'id'       => $groupId,
                 'userList' => $members,
@@ -215,7 +217,7 @@ class Group
      *
      * @param string $groupId
      * @param string|integer $userId
-     * @return boolean
+     * @return bool
      */
     public function isMember(string $groupId, $userId)
     {
