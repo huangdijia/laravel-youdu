@@ -171,6 +171,8 @@ class Group
     public function delMember(string $groupId, array $members = []): bool
     {
         $parameters = [
+            'buin' => $this->app->getBuin(),
+            'appId' => $this->app->getAppId(),
             'encrypt' => $this->app->encryptMsg(json_encode([
                 'id' => $groupId,
                 'userList' => $members,
