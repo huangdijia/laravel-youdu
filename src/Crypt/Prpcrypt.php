@@ -1,9 +1,9 @@
 <?php
 /**
- * This file is part of Hyperf.
+ * This file is part of laravel-youdu.
  *
  * @link     https://github.com/huangdijia/laravel-youdu
- * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @document https://github.com/huangdijia/laravel-youdu/blob/2.x/README.md
  * @contact  huangdijia@gmail.com
  */
 namespace Huangdijia\Youdu\Crypt;
@@ -38,7 +38,7 @@ class Prpcrypt
     public function encrypt(string $text = '', string $appId = '')
     {
         try {
-            //获得16位随机字符串，填充到明文之前
+            // 获得16位随机字符串，填充到明文之前
             $random = $this->getRandomStr();
             $text = $random . pack('N', strlen($text)) . $text . $appId;
             $iv = substr($this->key, 0, 16);
@@ -72,10 +72,10 @@ class Prpcrypt
         }
 
         try {
-            //去除补位字符
+            // 去除补位字符
             $result = $this->encoder->decode($decrypted);
 
-            //去除16位随机字符串,网络字节序和AppId
+            // 去除16位随机字符串,网络字节序和AppId
             if (strlen($result) < 16) {
                 return '';
             }

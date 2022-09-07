@@ -1,9 +1,9 @@
 <?php
 /**
- * This file is part of Hyperf.
+ * This file is part of laravel-youdu.
  *
  * @link     https://github.com/huangdijia/laravel-youdu
- * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @document https://github.com/huangdijia/laravel-youdu/blob/2.x/README.md
  * @contact  huangdijia@gmail.com
  */
 namespace Huangdijia\Youdu\Crypt;
@@ -23,7 +23,7 @@ class SHA1
      */
     public function getSHA1($token, $timestamp, $nonce, $encrypt_msg)
     {
-        //排序
+        // 排序
         try {
             $array = [$encrypt_msg, $token, $timestamp, $nonce];
             sort($array, SORT_STRING);

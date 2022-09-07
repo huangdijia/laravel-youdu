@@ -1,9 +1,9 @@
 <?php
 /**
- * This file is part of Hyperf.
+ * This file is part of laravel-youdu.
  *
  * @link     https://github.com/huangdijia/laravel-youdu
- * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @document https://github.com/huangdijia/laravel-youdu/blob/2.x/README.md
  * @contact  huangdijia@gmail.com
  */
 namespace Huangdijia\Youdu\Crypt;
@@ -26,14 +26,14 @@ class PKCS7Encoder
     {
         $textLength = strlen($text);
 
-        //计算需要填充的位数
+        // 计算需要填充的位数
         $amountToPad = self::$blockSize - ($textLength % self::$blockSize);
 
         if ($amountToPad == 0) {
             $amountToPad = self::$blockSize;
         }
 
-        //获得补位所用的字符
+        // 获得补位所用的字符
         $padChr = chr($amountToPad);
         $tmp = '';
 
@@ -58,6 +58,6 @@ class PKCS7Encoder
             $pad = 0;
         }
 
-        return substr($text, 0, (strlen($text) - $pad));
+        return substr($text, 0, strlen($text) - $pad);
     }
 }

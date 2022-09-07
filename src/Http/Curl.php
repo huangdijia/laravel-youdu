@@ -1,9 +1,9 @@
 <?php
 /**
- * This file is part of Hyperf.
+ * This file is part of laravel-youdu.
  *
  * @link     https://github.com/huangdijia/laravel-youdu
- * @document https://github.com/huangdijia/laravel-youdu/blob/master/README.md
+ * @document https://github.com/huangdijia/laravel-youdu/blob/2.x/README.md
  * @contact  huangdijia@gmail.com
  */
 namespace Huangdijia\Youdu\Http;
@@ -43,8 +43,8 @@ class Curl implements HttpClient
     /**
      * GET.
      *
-     * @throws \Huangdijia\Youdu\Exceptions\Http\RequestException
      * @return array|bool
+     * @throws \Huangdijia\Youdu\Exceptions\Http\RequestException
      */
     public function get(string $uri = '', array $data = [])
     {
@@ -89,8 +89,8 @@ class Curl implements HttpClient
     /**
      * POST.
      *
-     * @throws \Huangdijia\Youdu\Exceptions\Http\RequestException
      * @return array
+     * @throws \Huangdijia\Youdu\Exceptions\Http\RequestException
      */
     public function post(string $uri, array $data = [])
     {
@@ -137,8 +137,8 @@ class Curl implements HttpClient
     /**
      * Upload.
      *
-     * @throws \Huangdijia\Youdu\Exceptions\Http\RequestException
      * @return array|bool
+     * @throws \Huangdijia\Youdu\Exceptions\Http\RequestException
      */
     public function upload(string $uri, array $data = [])
     {
