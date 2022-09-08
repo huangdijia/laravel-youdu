@@ -20,7 +20,7 @@ class Notification extends BaseNotification implements ShouldQueue
 {
     use Queueable;
 
-    protected int $tries;
+    public int $tries;
 
     /**
      * Create a new notification instance.
