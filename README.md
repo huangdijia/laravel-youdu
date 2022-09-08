@@ -5,7 +5,7 @@
 [![Total Downloads](https://poser.pugx.org/huangdijia/laravel-youdu/d/total.png)](https://packagist.org/packages/huangdijia/laravel-youdu)
 [![GitHub license](https://img.shields.io/github/license/huangdijia/laravel-youdu)](https://github.com/huangdijia/laravel-youdu)
 
-Please use [youduphp/laravel-youdu](/youduphp/laravel-youdu) instead
+Please use [youduphp/laravel-youdu](https://github.com/youduphp/laravel-youdu) instead
 
 ## Installation
 
