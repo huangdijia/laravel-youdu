@@ -11,6 +11,7 @@ class Notification extends BaseNotification implements ShouldQueue
 {
     use Queueable;
 
+    public $tries;
     protected $app;
     protected $message;
 
