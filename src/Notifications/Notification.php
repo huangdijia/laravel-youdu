@@ -31,7 +31,7 @@ class Notification extends BaseNotification implements ShouldQueue
     /**
      * @var int
      */
-    protected $tries;
+    public $tries;
 
     /**
      * Create a new notification instance.
