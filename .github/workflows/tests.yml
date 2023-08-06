@@ -8,9 +8,10 @@ on:
 
 jobs:
   build:
+    name: Test on PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }}
     runs-on: ${{ matrix.operating-system }}
     strategy:
-      max-parallel: 15
+      max-parallel: 32
       matrix:
         os: [ubuntu-latest]
         php: ['8.0', '8.1', '8.2']
@@ -18,7 +19,6 @@ jobs:
         exclude:
           - php: 8.0
             laravel: 10
-    name: Test on PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }}
     steps:
       - name: Checkout
         uses: actions/checkout@master
