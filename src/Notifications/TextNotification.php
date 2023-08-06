@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 /**
- * This file is part of laravel-youdu.
+ * This file is part of huangdijia/laravel-youdu.
  *
  * @link     https://github.com/huangdijia/laravel-youdu
  * @document https://github.com/huangdijia/laravel-youdu/blob/3.x/README.md
@@ -17,7 +17,7 @@ class TextNotification extends Notification
     /**
      * Create a new notification instance.
      *
-     * @param null|mixed $delay
+     * @param mixed|null $delay
      */
     public function __construct(string $message, string $app = 'default', ?int $delay = null)
     {

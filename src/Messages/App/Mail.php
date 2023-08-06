@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 /**
- * This file is part of laravel-youdu.
+ * This file is part of huangdijia/laravel-youdu.
  *
  * @link     https://github.com/huangdijia/laravel-youdu
  * @document https://github.com/huangdijia/laravel-youdu/blob/3.x/README.md
@@ -19,7 +19,6 @@ class Mail extends Message
      * @param string $subject 邮件主题。action为new时有效，可为空
      * @param string $fromUser 发送者帐号，action为new时有效
      * @param string $fromEmail 发送者邮件帐号，action为new时有效。fromUser不为空，fromEmail值无效
-     * @param string $time 邮件发送时间。为空默认取服务器接收到消息的时间
      * @param string $link 邮件链接。action为new时有效，点此链接即可打开邮件，为空时点击邮件消息默认执行企业邮箱单点登录
      * @param string $unreadCount 未读邮件数。action为unread时有效
      */
