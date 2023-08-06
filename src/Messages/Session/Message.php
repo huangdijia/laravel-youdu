@@ -40,7 +40,7 @@ abstract class Message implements SessionMessage
         return json_encode($this->jsonSerialize(), $options);
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $data = $this->toArray();
 

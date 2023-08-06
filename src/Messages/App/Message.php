@@ -50,9 +50,8 @@ abstract class Message implements AppMessage
 
     /**
      * json 序列化.
-     * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $data = $this->toArray();
 
