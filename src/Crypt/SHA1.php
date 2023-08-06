@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 /**
- * This file is part of laravel-youdu.
+ * This file is part of huangdijia/laravel-youdu.
  *
  * @link     https://github.com/huangdijia/laravel-youdu
  * @document https://github.com/huangdijia/laravel-youdu/blob/3.x/README.md
@@ -20,7 +20,6 @@ class SHA1
      * @param string $token 票据
      * @param string $timestamp 时间戳
      * @param string $nonce 随机字符串
-     * @param string $encrypt 密文消息
      * @param mixed $encrypt_msg
      */
     public function getSHA1($token, $timestamp, $nonce, $encrypt_msg)

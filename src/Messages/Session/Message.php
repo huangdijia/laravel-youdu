@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 /**
- * This file is part of laravel-youdu.
+ * This file is part of huangdijia/laravel-youdu.
  *
  * @link     https://github.com/huangdijia/laravel-youdu
  * @document https://github.com/huangdijia/laravel-youdu/blob/3.x/README.md
@@ -40,7 +40,7 @@ abstract class Message implements SessionMessage
         return json_encode($this->jsonSerialize(), $options);
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $data = $this->toArray();
 
