@@ -12,16 +12,20 @@ jobs:
     strategy:
       max-parallel: 15
       matrix:
-        operating-system: [ubuntu-latest]
-        php-versions: ['8.0', '8.1', '8.2']
-    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
+        os: [ubuntu-latest]
+        php: ['8.0', '8.1', '8.2']
+        laravel: ['9', '10']
+        exclude:
+          - php: 8.0
+            laravel: 10
+    name: Test on PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }}
     steps:
       - name: Checkout
         uses: actions/checkout@master
       - name: Install PHP
         uses: shivammathur/setup-php@master
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: ${{ matrix.php }}
           extension-csv: mbstring, xdebug
           ini-values-csv: "post_max_size=256M, short_open_tag=On"
           coverage: xdebug
@@ -31,9 +35,13 @@ jobs:
         run: composer -V
       - name: Check PHP Extensions
         run: php -m
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
-          composer install --dev
+          composer require "laravel/framework:^${{ matrix.laravel }}" --no-update
+          composer update --prefer-dist --no-interaction --no-progress
+      # - name: Install dependencies
+      #   run: |
+      #     composer install --dev
       - name: Test
         run: |
           composer test
