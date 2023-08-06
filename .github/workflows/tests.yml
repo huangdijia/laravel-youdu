@@ -43,5 +43,4 @@ jobs:
       #   run: |
       #     composer install --dev
       - name: Test
-        run: |
-          composer test
+        run: composer test
