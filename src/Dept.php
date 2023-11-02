@@ -140,7 +140,8 @@ class Dept
      */
     public function getId(string $alias = ''): array
     {
-        $resp = HttpClient::get($this->app->url('/cgi/dept/list'), ['alias' => $alias]);
+        $data = !empty($alias) ? ['alias' => $alias] : [];
+        $resp = HttpClient::get($this->app->url('/cgi/dept/getid'), $data);
         $decoded = json_decode($resp['body'], true, 512, JSON_THROW_ON_ERROR);
 
         if ($decoded['errcode'] !== 0) {
